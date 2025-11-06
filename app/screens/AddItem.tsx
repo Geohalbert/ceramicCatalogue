@@ -9,8 +9,6 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 
 export default function AddItem() {
-  const dispatch = useAppDispatch();
-
   const [potName, setPotName] = useState("");
   const [clayType, setClayType] = useState<ClayType>("Porcelain");
   const [dateCreated, setDateCreated] = useState(new Date().toISOString().split('T')[0]);
@@ -19,7 +17,7 @@ export default function AddItem() {
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
-
+  const dispatch = useAppDispatch();
 
   const handleSubmit = () => {
     if (!potName.trim()) {
