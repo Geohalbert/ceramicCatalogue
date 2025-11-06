@@ -1,18 +1,24 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { View, Button } from "react-native";
+import { TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import ButtonStyles from "./styles/Buttons";
 
 export default function CollectionsButton() {
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
-
+    const { button, buttonText } = ButtonStyles;
+    
     const handleCollections = () => {
         navigation.navigate('Collection');
     }
     
   return (
-    <View>
-      <Button title="Collections" onPress={handleCollections} />
-    </View>
+    <TouchableOpacity 
+      style={button}
+      onPress={handleCollections}
+      activeOpacity={0.7}
+    >
+      <Text style={buttonText}>Add Item</Text>
+    </TouchableOpacity>
   );
 }
