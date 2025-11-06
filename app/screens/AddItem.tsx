@@ -1,18 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 
 import { useAppDispatch } from "../store/hooks";
-import { addPottery } from "../store/potterySlice";
-import { ClayType, DesignType, PotStatus, GlazeType } from "../store/types";
+import { addPottery, updatePottery } from "../store/potterySlice";
+import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
 
 import AddItemStyles from "./styles/AddItemStyles";
 
+type AddItemRouteParams = {
+  AddItem: {
+    pottery?: Pottery;
+  };
+};
 
 export default function AddItem() {
+  const route = useRoute<RouteProp<AddItemRouteParams, 'AddItem'>>();
+  const editingPottery = route.params?.pottery;
+
   const [potName, setPotName] = useState("");
   const [clayType, setClayType] = useState<ClayType>("Porcelain");
   const [dateCreated, setDateCreated] = useState(new Date().toISOString().split('T')[0]);
@@ -23,6 +31,18 @@ export default function AddItem() {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
 
+  // Initialize form with existing pottery data if editing
+  useEffect(() => {
+    if (editingPottery) {
+      setPotName(editingPottery.potName);
+      setClayType(editingPottery.clayType);
+      setDateCreated(editingPottery.dateCreated);
+      setDesignType(editingPottery.designType);
+      setPotStatus(editingPottery.potStatus);
+      setGlazeType(editingPottery.glazeType);
+    }
+  }, [editingPottery]);
+
   const { container, form, label, input, pickerContainer } = AddItemStyles;
 
   const handleSubmit = () => {
@@ -31,18 +51,36 @@ export default function AddItem() {
       return;
     }
 
-    const newPottery = {
-      id: Date.now().toString(),
-      potName: potName.trim(),
-      clayType,
-      dateCreated,
-      designType,
-      potStatus,
-      glazeType,
-    };
+    if (editingPottery) {
+      // Update existing pottery
+      const updatedPottery = {
+        ...editingPottery,
+        potName: potName.trim(),
+        clayType,
+        dateCreated,
+        designType,
+        potStatus,
+        glazeType,
+      };
 
-    dispatch(addPottery(newPottery));
-    Alert.alert("Success", "Pottery item added!");
+      dispatch(updatePottery(updatedPottery));
+      Alert.alert("Success", "Pottery item updated!");
+    } else {
+      // Add new pottery
+      const newPottery = {
+        id: Date.now().toString(),
+        potName: potName.trim(),
+        clayType,
+        dateCreated,
+        designType,
+        potStatus,
+        glazeType,
+      };
+
+      dispatch(addPottery(newPottery));
+      Alert.alert("Success", "Pottery item added!");
+    }
+
     navigation.pop();
   };
 
@@ -121,7 +159,7 @@ export default function AddItem() {
           </Picker>
         </View>
 
-        <Button title="Add Pottery" onPress={handleSubmit} />
+        <Button title={editingPottery ? "Update Pottery" : "Add Pottery"} onPress={handleSubmit} />
       </View>
     </ScrollView>
   );
