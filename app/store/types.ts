@@ -10,6 +10,8 @@ export interface Pottery {
 
 export interface PotteryState {
   items: Pottery[];
+  loading: boolean;
+  error: string | null;
 }
 
 export type ClayType = 'Cinco Rojo' | 'Porcelain' | 'Cinco Blanco' | 'Buffalo Wallow' | 'Dark Chocolate' | 'Custom' | 'Other';

@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
-import { addPottery, updatePottery } from "../store/potterySlice";
+import { addPotteryThunk, updatePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
 
 import AddItemStyles from "./styles/AddItemStyles";
@@ -77,43 +77,47 @@ export default function AddItem() {
     { label: "Gloss", value: "Gloss" },
   ];
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!potName.trim()) {
       Alert.alert("Error", "Please enter a pot name");
       return;
     }
 
-    if (editingPottery) {
-      // Update existing pottery
-      const updatedPottery = {
-        ...editingPottery,
-        potName: potName.trim(),
-        clayType,
-        dateCreated,
-        designType,
-        potStatus,
-        glazeType,
-      };
+    try {
+      if (editingPottery) {
+        // Update existing pottery
+        const updatedPottery = {
+          ...editingPottery,
+          potName: potName.trim(),
+          clayType,
+          dateCreated,
+          designType,
+          potStatus,
+          glazeType,
+        };
 
-      dispatch(updatePottery(updatedPottery));
-      Alert.alert("Success", "Pottery item updated!");
-    } else {
-      // Add new pottery
-      const newPottery = {
-        id: Date.now().toString(),
-        potName: potName.trim(),
-        clayType,
-        dateCreated,
-        designType,
-        potStatus,
-        glazeType,
-      };
+        await dispatch(updatePotteryThunk(updatedPottery)).unwrap();
+        Alert.alert("Success", "Pottery item updated!");
+      } else {
+        // Add new pottery
+        const newPottery = {
+          potName: potName.trim(),
+          clayType,
+          dateCreated,
+          designType,
+          potStatus,
+          glazeType,
+        };
 
-      dispatch(addPottery(newPottery));
-      Alert.alert("Success", "Pottery item added!");
+        await dispatch(addPotteryThunk(newPottery)).unwrap();
+        Alert.alert("Success", "Pottery item added!");
+      }
+
+      navigation.pop();
+    } catch (error) {
+      console.error("Error saving pottery:", error);
+      Alert.alert("Error", "Failed to save pottery item. Please check your Firebase configuration.");
     }
-
-    navigation.pop();
   };
 
   return (
