@@ -84,48 +84,42 @@ const potterySlice = createSlice({
     // Add pottery item
     builder
       .addCase(addPotteryThunk.pending, (state) => {
-        state.loading = true;
+        // Don't set loading to true - this is handled by the AddItem screen locally
         state.error = null;
       })
       .addCase(addPotteryThunk.fulfilled, (state, action) => {
-        state.loading = false;
         state.items.push(action.payload);
       })
       .addCase(addPotteryThunk.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.error.message || 'Failed to add pottery item';
       });
 
     // Update pottery item
     builder
       .addCase(updatePotteryThunk.pending, (state) => {
-        state.loading = true;
+        // Don't set loading to true - this is handled by the AddItem screen locally
         state.error = null;
       })
       .addCase(updatePotteryThunk.fulfilled, (state, action) => {
-        state.loading = false;
         const index = state.items.findIndex((item) => item.id === action.payload.id);
         if (index !== -1) {
           state.items[index] = action.payload;
         }
       })
       .addCase(updatePotteryThunk.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.error.message || 'Failed to update pottery item';
       });
 
     // Delete pottery item
     builder
       .addCase(deletePotteryThunk.pending, (state) => {
-        state.loading = true;
+        // Don't set loading to true - this is handled locally where deletion is triggered
         state.error = null;
       })
       .addCase(deletePotteryThunk.fulfilled, (state, action) => {
-        state.loading = false;
         state.items = state.items.filter((item) => item.id !== action.payload);
       })
       .addCase(deletePotteryThunk.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.error.message || 'Failed to delete pottery item';
       });
   },

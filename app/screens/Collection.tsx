@@ -1,7 +1,6 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { useFocusEffect } from '@react-navigation/native';
 
 import PotteryTile from '../components/PotteryTile';
 import { fetchPotteryItemsThunk } from '../store/potterySlice';
@@ -13,13 +12,15 @@ export default function Collection() {
   const potteryItems = useAppSelector((state) => state.pottery.items);
   const loading = useAppSelector((state) => state.pottery.loading);
   const error = useAppSelector((state) => state.pottery.error);
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
-  // Load pottery items when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
+  // Load pottery items only on initial mount
+  useEffect(() => {
+    if (!hasInitiallyLoaded) {
       dispatch(fetchPotteryItemsThunk());
-    }, [dispatch])
-  );
+      setHasInitiallyLoaded(true);
+    }
+  }, [dispatch, hasInitiallyLoaded]);
 
   const handleRefresh = () => {
     dispatch(fetchPotteryItemsThunk());
@@ -27,7 +28,10 @@ export default function Collection() {
 
   const { container, title, emptyContainer, emptyText, emptySubtext, listContainer } = CollectionStyles;
 
-  if (loading && potteryItems.length === 0) {
+  // Only show full loading screen on very first load (no items and haven't loaded yet)
+  const isInitialLoad = loading && potteryItems.length === 0 && !hasInitiallyLoaded;
+
+  if (isInitialLoad) {
     return (
       <View style={container}>
         <Text style={title}>My Collection</Text>
