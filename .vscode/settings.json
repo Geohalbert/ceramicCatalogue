@@ -1,0 +1,26 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "sortJSON.contextMenu": {
+    "sortJSON": true,
+    "sortJSONReverse": false,
+    "sortJSONKeyLength": false,
+    "sortJSONKeyLengthReverse": false,
+    "sortJSONAlphaNum": false,
+    "sortJSONAlphaNumReverse": false,
+    "sortJSONValues": false,
+    "sortJSONValuesReverse": false,
+    "sortJSONType": false,
+    "sortJSONTypeReverse": false
+  },
+  "[json]": {
+    "editor.defaultFormatter": "richie5um2.vscode-sort-json",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "richie5um2.vscode-sort-json",
+    "editor.formatOnSave": true
+  }
+}

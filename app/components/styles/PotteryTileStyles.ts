@@ -1,46 +1,49 @@
 import { StyleSheet } from "react-native";
 
 const PotteryTileStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      margin: 8,
-      padding: 12,
-      borderRadius: 8,
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+  container: {
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    elevation: 3,
+    flex: 1,
+    margin: 8,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      height: 2,
+      width: 0
     },
-    image: {
-      width: 80,
-      height: 80,
-      marginBottom: 8,
-    },
-    name: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#333',
-      textAlign: 'center',
-      marginBottom: 4,
-    },
-    type: {
-      fontSize: 14,
-      color: '#666',
-      marginBottom: 2,
-    },
-    date: {
-      fontSize: 12,
-      color: '#999',
-      marginBottom: 4,
-    },
-    status: {
-      fontSize: 12,
-      color: '#4CAF50',
-      fontWeight: '600',
-    },
-  });
+    shadowOpacity: 0.1,
+    shadowRadius: 4
+  },
+  date: {
+    color: "#999",
+    fontSize: 12,
+    marginBottom: 4
+  },
+  image: {
+    height: 80,
+    marginBottom: 8,
+    width: 80
+  },
+  name: {
+    color: "#333",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+    textAlign: "center"
+  },
+  status: {
+    color: "#4CAF50",
+    fontSize: 12,
+    fontWeight: "600"
+  },
+  type: {
+    color: "#666",
+    fontSize: 14,
+    marginBottom: 2
+  }
+});
 
   export default PotteryTileStyles;

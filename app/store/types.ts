@@ -1,11 +1,11 @@
 export interface Pottery {
-  id: string;
-  potName: string;
   clayType: ClayType;
   dateCreated: string;
   designType: DesignType;
-  potStatus: PotStatus;
   glazeType: GlazeType;
+  id: string;
+  potName: string;
+  potStatus: PotStatus;
 }
 
 export interface PotteryState {

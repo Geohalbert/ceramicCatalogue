@@ -2,25 +2,28 @@ import { StyleSheet } from "react-native";
 
 const ButtonStyles = StyleSheet.create({
     button: {
-      width: '30%',
-      backgroundColor: '#007AFF',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 12,
-      alignItems: 'center',
-      justifyContent: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-      margin: 8,
+        alignItems: "center",
+        backgroundColor: "#007AFF",
+        borderRadius: 12,
+        elevation: 5,
+        justifyContent: "center",
+        margin: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        shadowColor: "#000",
+        shadowOffset: {
+            height: 2,
+            width: 0
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        width: "30%"
     },
     buttonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: '600',
-    },
-  });
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "600"
+    }
+});
 
   export default ButtonStyles;
