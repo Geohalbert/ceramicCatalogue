@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-
+import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
 import { addPottery, updatePottery } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
@@ -43,7 +42,40 @@ export default function AddItem() {
     }
   }, [editingPottery]);
 
-  const { container, form, label, input, pickerContainer } = AddItemStyles;
+  const { container, form, label, input } = AddItemStyles;
+
+  // Dropdown options
+  const clayTypeOptions = [
+    { label: "Porcelain", value: "Porcelain" },
+    { label: "Cinco Rojo", value: "Cinco Rojo" },
+    { label: "Cinco Blanco", value: "Cinco Blanco" },
+    { label: "Buffalo Wallow", value: "Buffalo Wallow" },
+    { label: "Dark Chocolate", value: "Dark Chocolate" },
+    { label: "Custom", value: "Custom" },
+    { label: "Other", value: "Other" },
+  ];
+
+  const designTypeOptions = [
+    { label: "Pot", value: "Pot" },
+    { label: "Vase", value: "Vase" },
+    { label: "Platter", value: "Platter" },
+    { label: "Mug", value: "Mug" },
+    { label: "Bowl", value: "Bowl" },
+    { label: "Other", value: "Other" },
+  ];
+
+  const potStatusOptions = [
+    { label: "In Progress", value: "In Progress" },
+    { label: "Drying", value: "Drying" },
+    { label: "Firing", value: "Firing" },
+    { label: "Finished", value: "Finished" },
+  ];
+
+  const glazeTypeOptions = [
+    { label: "No Glaze", value: "No Glaze" },
+    { label: "Matte", value: "Matte" },
+    { label: "Gloss", value: "Gloss" },
+  ];
 
   const handleSubmit = () => {
     if (!potName.trim()) {
@@ -96,20 +128,11 @@ export default function AddItem() {
         />
 
         <Text style={label}>Clay Type</Text>
-        <View style={pickerContainer}>
-          <Picker
-            selectedValue={clayType}
-            onValueChange={(value: ClayType) => setClayType(value)}
-          >
-            <Picker.Item label="Porcelain" value="Porcelain" />
-            <Picker.Item label="Cinco Rojo" value="Cinco Rojo" />
-            <Picker.Item label="Cinco Blanco" value="Cinco Blanco" />
-            <Picker.Item label="Buffalo Wallow" value="Buffalo Wallow" />
-            <Picker.Item label="Dark Chocolate" value="Dark Chocolate" />
-            <Picker.Item label="Custom" value="Custom" />
-            <Picker.Item label="Other" value="Other" />
-          </Picker>
-        </View>
+        <Dropdown
+          options={clayTypeOptions}
+          selectedValue={clayType}
+          onValueChange={(value) => setClayType(value as ClayType)}
+        />
 
         <Text style={label}>Date Created</Text>
         <TextInput
@@ -120,44 +143,25 @@ export default function AddItem() {
         />
 
         <Text style={label}>Design Type</Text>
-        <View style={pickerContainer}>
-          <Picker
-            selectedValue={designType}
-            onValueChange={(value: DesignType) => setDesignType(value)}
-          >
-            <Picker.Item label="Pot" value="Pot" />
-            <Picker.Item label="Vase" value="Vase" />
-            <Picker.Item label="Platter" value="Platter" />
-            <Picker.Item label="Mug" value="Mug" />
-            <Picker.Item label="Bowl" value="Bowl" />
-            <Picker.Item label="Other" value="Other" />
-          </Picker>
-        </View>
+        <Dropdown
+          options={designTypeOptions}
+          selectedValue={designType}
+          onValueChange={(value) => setDesignType(value as DesignType)}
+        />
 
         <Text style={label}>Status</Text>
-        <View style={pickerContainer}>
-          <Picker
-            selectedValue={potStatus}
-            onValueChange={(value: PotStatus) => setPotStatus(value)}
-          >
-            <Picker.Item label="In Progress" value="In Progress" />
-            <Picker.Item label="Drying" value="Drying" />
-            <Picker.Item label="Firing" value="Firing" />
-            <Picker.Item label="Finished" value="Finished" />
-          </Picker>
-        </View>
+        <Dropdown
+          options={potStatusOptions}
+          selectedValue={potStatus}
+          onValueChange={(value) => setPotStatus(value as PotStatus)}
+        />
 
         <Text style={label}>Glaze Type</Text>
-        <View style={pickerContainer}>
-          <Picker
-            selectedValue={glazeType}
-            onValueChange={(value: GlazeType) => setGlazeType(value)}
-          >
-            <Picker.Item label="No Glaze" value="No Glaze" />
-            <Picker.Item label="Matte" value="Matte" />
-            <Picker.Item label="Gloss" value="Gloss" />
-          </Picker>
-        </View>
+        <Dropdown
+          options={glazeTypeOptions}
+          selectedValue={glazeType}
+          onValueChange={(value) => setGlazeType(value as GlazeType)}
+        />
 
         <Button title={editingPottery ? "Update Pottery" : "Add Pottery"} onPress={handleSubmit} />
       </View>
