@@ -2,7 +2,26 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Pottery, PotteryState } from './types';
 
 const initialState: PotteryState = {
-  items: [],
+  items: [
+    {
+      id: '1',
+      potName: 'Vase',
+      clayType: 'Porcelain',
+      dateCreated: '2025-01-01',
+      designType: 'Vase',
+      potStatus: 'Finished',
+      glazeType: 'No Glaze',
+    },
+    {
+      id: '2',
+      potName: 'Platter',
+      clayType: 'Porcelain',
+      dateCreated: '2025-01-01',
+      designType: 'Platter',
+      potStatus: 'Finished',
+      glazeType: 'No Glaze',
+    },
+  ],
 };
 
 const potterySlice = createSlice({

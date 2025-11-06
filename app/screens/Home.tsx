@@ -1,7 +1,8 @@
 import { Image, Text, View } from "react-native";
-import PotteryTile from "../components/PotteryTile"; 
-import AddItemButton from "../components/AddItemButton"; 
 import { StyleSheet } from "react-native";
+
+import AddItemButton from "../components/AddItemButton"; 
+import CollectionsButton from "../components/CollectionsButton";
 
 
 export default function Home() {
@@ -10,7 +11,7 @@ export default function Home() {
         <Text style={styles.title}>Welcome to the Ceramic Catalogue</Text>
         <Image source={require('../../assets/home_screen_vase_cropped_300w.png')} style={styles.image} />
         <AddItemButton />
-        <PotteryTile />
+        <CollectionsButton />
     </View>
   );    
 }

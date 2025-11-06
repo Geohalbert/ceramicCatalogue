@@ -1,6 +1,8 @@
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import AddItem from "../screens/AddItem";
 import Home from "../screens/Home";
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Collection from "../screens/Collection";
 
 const Stack = createNativeStackNavigator();
 
@@ -9,6 +11,7 @@ export default function StackNavigator() {
         <Stack.Navigator>
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="AddItem" component={AddItem} />
+            <Stack.Screen name="Collection" component={Collection} />
         </Stack.Navigator>
     );
 }
