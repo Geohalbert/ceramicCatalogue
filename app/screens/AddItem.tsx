@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+
 import { useAppDispatch } from "../store/hooks";
 import { addPottery } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType } from "../store/types";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+
+import AddItemStyles from "./styles/AddItemStyles";
 
 
 export default function AddItem() {
@@ -18,6 +22,8 @@ export default function AddItem() {
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
+
+  const { container, form, label, input, pickerContainer } = AddItemStyles;
 
   const handleSubmit = () => {
     if (!potName.trim()) {
@@ -41,18 +47,18 @@ export default function AddItem() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.form}>
-        <Text style={styles.label}>Pot Name *</Text>
+    <ScrollView style={container}>
+      <View style={form}>
+        <Text style={label}>Pot Name *</Text>
         <TextInput
-          style={styles.input}
+          style={input}
           value={potName}
           onChangeText={setPotName}
           placeholder="Enter pot name"
         />
 
-        <Text style={styles.label}>Clay Type</Text>
-        <View style={styles.pickerContainer}>
+        <Text style={label}>Clay Type</Text>
+        <View style={pickerContainer}>
           <Picker
             selectedValue={clayType}
             onValueChange={(value: ClayType) => setClayType(value)}
@@ -67,16 +73,16 @@ export default function AddItem() {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Date Created</Text>
+        <Text style={label}>Date Created</Text>
         <TextInput
-          style={styles.input}
+          style={input}
           value={dateCreated}
           onChangeText={setDateCreated}
           placeholder="YYYY-MM-DD"
         />
 
-        <Text style={styles.label}>Design Type</Text>
-        <View style={styles.pickerContainer}>
+        <Text style={label}>Design Type</Text>
+        <View style={pickerContainer}>
           <Picker
             selectedValue={designType}
             onValueChange={(value: DesignType) => setDesignType(value)}
@@ -90,8 +96,8 @@ export default function AddItem() {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Status</Text>
-        <View style={styles.pickerContainer}>
+        <Text style={label}>Status</Text>
+        <View style={pickerContainer}>
           <Picker
             selectedValue={potStatus}
             onValueChange={(value: PotStatus) => setPotStatus(value)}
@@ -103,8 +109,8 @@ export default function AddItem() {
           </Picker>
         </View>
 
-        <Text style={styles.label}>Glaze Type</Text>
-        <View style={styles.pickerContainer}>
+        <Text style={label}>Glaze Type</Text>
+        <View style={pickerContainer}>
           <Picker
             selectedValue={glazeType}
             onValueChange={(value: GlazeType) => setGlazeType(value)}
@@ -120,32 +126,3 @@ export default function AddItem() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  form: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-  },
-});
-

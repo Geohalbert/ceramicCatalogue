@@ -2,7 +2,7 @@ import { TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import ButtonStyles from "./styles/Buttons";
+import ButtonStyles from "./styles/ButtonsStyles";
 
 export default function AddItemButton() {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
