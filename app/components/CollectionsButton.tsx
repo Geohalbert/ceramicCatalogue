@@ -7,7 +7,7 @@ import ButtonStyles from "./styles/Buttons";
 export default function CollectionsButton() {
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const { button, buttonText } = ButtonStyles;
-    
+
     const handleCollections = () => {
         navigation.navigate('Collection');
     }
@@ -18,7 +18,7 @@ export default function CollectionsButton() {
       onPress={handleCollections}
       activeOpacity={0.7}
     >
-      <Text style={buttonText}>Add Item</Text>
+      <Text style={buttonText}>Collection</Text>
     </TouchableOpacity>
   );
 }
