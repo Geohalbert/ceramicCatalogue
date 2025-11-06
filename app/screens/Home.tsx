@@ -106,15 +106,14 @@ export default function Home() {
         <Text style={title}>Welcome to the Ceramic Catalogue</Text>
         <Image source={require('../../assets/home_screen_vase_cropped_300w.png')} style={image} />
         
+        <AddItemButton />
+        <CollectionsButton />
         <View style={authContainer}>
           <Text style={welcomeText}>Welcome back, {user.displayName || user.email}!</Text>
           <TouchableOpacity style={signOutButton} onPress={handleSignOut}>
             <Text style={signOutButtonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
-
-        <AddItemButton />
-        <CollectionsButton />
       </View>
     );
   }
