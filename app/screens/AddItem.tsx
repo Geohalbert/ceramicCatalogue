@@ -39,7 +39,7 @@ export default function AddItem() {
 
     dispatch(addPottery(newPottery));
     Alert.alert("Success", "Pottery item added!");
-    navigation.navigate('Home');
+    navigation.pop();
   };
 
   return (
