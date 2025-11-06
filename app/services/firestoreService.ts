@@ -27,9 +27,12 @@ export const fetchPotteryItems = async (): Promise<Pottery[]> => {
     
     const items: Pottery[] = [];
     querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      // Remove non-serializable Firestore timestamps before storing in Redux
+      const { createdAt, updatedAt, ...serializableData } = data;
       items.push({
         id: doc.id,
-        ...doc.data()
+        ...serializableData
       } as Pottery);
     });
     
@@ -49,9 +52,12 @@ export const fetchPotteryById = async (id: string): Promise<Pottery | null> => {
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
+      const data = docSnap.data();
+      // Remove non-serializable Firestore timestamps before storing in Redux
+      const { createdAt, updatedAt, ...serializableData } = data;
       return {
         id: docSnap.id,
-        ...docSnap.data()
+        ...serializableData
       } as Pottery;
     }
     return null;

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { useFocusEffect } from '@react-navigation/native';
@@ -15,9 +15,11 @@ export default function Collection() {
   const error = useAppSelector((state) => state.pottery.error);
 
   // Load pottery items when the screen is focused
-  useFocusEffect(() => {
-    dispatch(fetchPotteryItemsThunk());
-  });
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchPotteryItemsThunk());
+    }, [dispatch])
+  );
 
   const handleRefresh = () => {
     dispatch(fetchPotteryItemsThunk());
