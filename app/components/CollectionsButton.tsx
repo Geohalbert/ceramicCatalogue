@@ -1,10 +1,12 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { TouchableOpacity, Text } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 
 import ButtonStyles from "./styles/ButtonsStyles";
 
 export default function CollectionsButton() {
+    const { t } = useTranslation();
     const navigation = useNavigation<NativeStackNavigationProp<any>>();
     const { button, buttonText } = ButtonStyles;
 
@@ -18,7 +20,7 @@ export default function CollectionsButton() {
       onPress={handleCollections}
       activeOpacity={0.7}
     >
-      <Text style={buttonText}>Collection</Text>
+      <Text style={buttonText}>{t('home.collectionButton')}</Text>
     </TouchableOpacity>
   );
 }

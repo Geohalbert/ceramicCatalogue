@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, setUser, clearError } from "../store/authSlice";
 import { onAuthChange, resetPassword } from "../services/authService";
@@ -11,6 +12,7 @@ interface AuthenticationProps {
 }
 
 export default function Authentication({ onAuthenticated }: AuthenticationProps) {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { user, loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   
@@ -45,22 +47,22 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please fill in all fields");
+      Alert.alert(t('common.error'), t('authentication.errors.fillAllFields'));
       return;
     }
 
     if (isSignUp && !displayName.trim()) {
-      Alert.alert("Error", "Please enter your name");
+      Alert.alert(t('common.error'), t('authentication.errors.enterName'));
       return;
     }
 
     try {
       if (isSignUp) {
         await dispatch(signUpThunk({ email, password, displayName })).unwrap();
-        Alert.alert("Success", "Account created successfully!");
+        Alert.alert(t('common.success'), t('authentication.signUp.successMessage'));
       } else {
         await dispatch(signInThunk({ email, password })).unwrap();
-        Alert.alert("Success", "Signed in successfully!");
+        Alert.alert(t('common.success'), t('authentication.signIn.successMessage'));
       }
       
       // Clear form
@@ -73,22 +75,22 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         onAuthenticated();
       }
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Authentication failed");
+      Alert.alert(t('common.error'), error.message || t('authentication.errors.authenticationFailed'));
     }
   };
 
   const handleSignOut = async () => {
     try {
       await dispatch(signOutThunk()).unwrap();
-      Alert.alert("Success", "Signed out successfully!");
+      Alert.alert(t('common.success'), t('authentication.signOut.successMessage'));
     } catch (error: any) {
-      Alert.alert("Error", "Failed to sign out");
+      Alert.alert(t('common.error'), t('authentication.signOut.errorMessage'));
     }
   };
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
-      Alert.alert("Error", "Please enter your email address");
+      Alert.alert(t('common.error'), t('authentication.errors.enterEmail'));
       return;
     }
 
@@ -96,11 +98,11 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     try {
       await resetPassword(email);
       Alert.alert(
-        "Success", 
-        "Password reset email sent! Check your inbox and follow the instructions to reset your password.",
+        t('common.success'), 
+        t('authentication.forgotPassword.successMessage'),
         [
           {
-            text: "OK",
+            text: t('common.ok'),
             onPress: () => {
               setIsForgotPassword(false);
               setEmail("");
@@ -109,7 +111,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         ]
       );
     } catch (error: any) {
-      Alert.alert("Error", error.message || "Failed to send reset email");
+      Alert.alert(t('common.error'), error.message || t('authentication.errors.resetEmailFailed'));
     } finally {
       setIsResetting(false);
     }
@@ -136,9 +138,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   if (isAuthenticated && user) {
     return (
       <View style={authContainer}>
-        <Text style={welcomeText}>Welcome back, {user.displayName || user.email}!</Text>
+        <Text style={welcomeText}>{t('authentication.welcome', { name: user.displayName || user.email })}</Text>
         <TouchableOpacity style={signOutButton} onPress={handleSignOut}>
-          <Text style={signOutButtonText}>Sign Out</Text>
+          <Text style={signOutButtonText}>{t('authentication.signOut.button')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -148,15 +150,15 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   if (isForgotPassword) {
     return (
       <View style={authContainer}>
-        <Text style={authTitle}>Reset Password</Text>
+        <Text style={authTitle}>{t('authentication.forgotPassword.title')}</Text>
         
         <Text style={{ marginBottom: 15, color: '#666', textAlign: 'center' }}>
-          Enter your email address and we'll send you instructions to reset your password.
+          {t('authentication.forgotPassword.description')}
         </Text>
         
         <TextInput
           style={input}
-          placeholder="Email"
+          placeholder={t('authentication.signIn.emailPlaceholder')}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -172,7 +174,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
           {isResetting ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={buttonText}>Send Reset Email</Text>
+            <Text style={buttonText}>{t('authentication.forgotPassword.button')}</Text>
           )}
         </TouchableOpacity>
         
@@ -183,7 +185,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
             setEmail("");
           }}
         >
-          <Text style={forgotPasswordText}>Back to Sign In</Text>
+          <Text style={forgotPasswordText}>{t('authentication.forgotPassword.backLink')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -192,14 +194,14 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   // Unauthenticated view - Sign In/Sign Up form
   return (
     <View style={authContainer}>
-      <Text style={authTitle}>{isSignUp ? "Create Account" : "Sign In"}</Text>
+      <Text style={authTitle}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
       
       {error && <Text style={errorText}>{error}</Text>}
       
       {isSignUp && (
         <TextInput
           style={input}
-          placeholder="Name"
+          placeholder={t('authentication.signUp.namePlaceholder')}
           value={displayName}
           onChangeText={setDisplayName}
           autoCapitalize="words"
@@ -208,7 +210,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       
       <TextInput
         style={input}
-        placeholder="Email"
+        placeholder={t('authentication.signIn.emailPlaceholder')}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -218,7 +220,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       
       <TextInput
         style={input}
-        placeholder="Password"
+        placeholder={t('authentication.signIn.passwordPlaceholder')}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -230,7 +232,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
           style={forgotPasswordLink}
           onPress={() => setIsForgotPassword(true)}
         >
-          <Text style={forgotPasswordText}>Forgot Password?</Text>
+          <Text style={forgotPasswordText}>{t('authentication.signIn.forgotPasswordLink')}</Text>
         </TouchableOpacity>
       )}
       
@@ -243,19 +245,19 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
           <ActivityIndicator color="#fff" />
         ) : (
           <Text style={buttonText}>
-            {isSignUp ? "Sign Up" : "Sign In"}
+            {t(isSignUp ? 'authentication.signUp.button' : 'authentication.signIn.button')}
           </Text>
         )}
       </TouchableOpacity>
       
       <View style={switchText}>
-        <Text>{isSignUp ? "Already have an account?" : "Don't have an account?"}</Text>
+        <Text>{t(isSignUp ? 'authentication.signUp.hasAccount' : 'authentication.signIn.noAccount')}</Text>
         <TouchableOpacity 
           style={switchButton}
           onPress={() => setIsSignUp(!isSignUp)}
         >
           <Text style={switchButtonText}>
-            {isSignUp ? "Sign In" : "Sign Up"}
+            {t(isSignUp ? 'authentication.signUp.signInLink' : 'authentication.signIn.signUpLink')}
           </Text>
         </TouchableOpacity>
       </View>

@@ -1,10 +1,12 @@
 import { TouchableOpacity, Text } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import ButtonStyles from "./styles/ButtonsStyles";
 
 export default function AddItemButton() {
+  const { t } = useTranslation();
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { button, buttonText } = ButtonStyles;
 
@@ -18,7 +20,7 @@ export default function AddItemButton() {
       onPress={handleAddItem}
       activeOpacity={0.7}
     >
-      <Text style={buttonText}>Add Item</Text>
+      <Text style={buttonText}>{t('home.addItemButton')}</Text>
     </TouchableOpacity>
   );
 }

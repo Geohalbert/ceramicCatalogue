@@ -1,4 +1,5 @@
 import { View, Image, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -11,6 +12,7 @@ interface PotteryTileProps {
 }
 
 export default function PotteryTile({ pottery }: PotteryTileProps) {
+  const { t } = useTranslation();
   const { container, image, name, type, date, status } = PotteryTileStyles;
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
@@ -25,7 +27,7 @@ export default function PotteryTile({ pottery }: PotteryTileProps) {
         source={require('../../assets/pot_icon.png')} 
         style={image} 
       />
-      <Text style={name}>{pottery.potName || 'Unnamed'}</Text>
+      <Text style={name}>{pottery.potName || t('potteryTile.unnamed')}</Text>
       <Text style={type}>{pottery.designType}</Text>
       <Text style={date}>{pottery.dateCreated}</Text>
       <Text style={status}>{pottery.potStatus}</Text>

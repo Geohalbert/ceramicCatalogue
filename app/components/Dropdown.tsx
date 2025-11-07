@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import DropdownStyles from "./styles/DropdownStyles";
 
 interface DropdownOption {
@@ -18,12 +19,13 @@ export default function Dropdown({
   options, 
   selectedValue, 
   onValueChange,
-  placeholder = "Select an option"
+  placeholder
 }: DropdownProps) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   
   const selectedOption = options.find(opt => opt.value === selectedValue);
-  const displayText = selectedOption?.label || placeholder;
+  const displayText = selectedOption?.label || placeholder || t('dropdown.selectOption');
 
   const handleSelect = (value: string) => {
     onValueChange(value);
@@ -66,7 +68,7 @@ export default function Dropdown({
         <View style={modal}>
           <View style={modalContent}>
             <View style={modalHeader}>
-              <Text style={modalTitle}>Select Option</Text>
+              <Text style={modalTitle}>{t('dropdown.modalTitle')}</Text>
               <TouchableOpacity 
                 style={closeButton}
                 onPress={() => setIsVisible(false)}

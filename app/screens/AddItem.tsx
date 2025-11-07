@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "react-native";
+import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -17,6 +18,7 @@ type AddItemRouteParams = {
 };
 
 export default function AddItem() {
+  const { t } = useTranslation();
   const route = useRoute<RouteProp<AddItemRouteParams, 'AddItem'>>();
   const editingPottery = route.params?.pottery;
 
@@ -46,40 +48,40 @@ export default function AddItem() {
 
   // Dropdown options
   const clayTypeOptions = [
-    { label: "Porcelain", value: "Porcelain" },
-    { label: "Cinco Rojo", value: "Cinco Rojo" },
-    { label: "Cinco Blanco", value: "Cinco Blanco" },
-    { label: "Buffalo Wallow", value: "Buffalo Wallow" },
-    { label: "Dark Chocolate", value: "Dark Chocolate" },
-    { label: "Custom", value: "Custom" },
-    { label: "Other", value: "Other" },
+    { label: t('dropdown.clayTypes.porcelain'), value: "Porcelain" },
+    { label: t('dropdown.clayTypes.cincoRojo'), value: "Cinco Rojo" },
+    { label: t('dropdown.clayTypes.cincoBlanco'), value: "Cinco Blanco" },
+    { label: t('dropdown.clayTypes.buffaloWallow'), value: "Buffalo Wallow" },
+    { label: t('dropdown.clayTypes.darkChocolate'), value: "Dark Chocolate" },
+    { label: t('dropdown.clayTypes.custom'), value: "Custom" },
+    { label: t('dropdown.clayTypes.other'), value: "Other" },
   ];
 
   const designTypeOptions = [
-    { label: "Pot", value: "Pot" },
-    { label: "Vase", value: "Vase" },
-    { label: "Platter", value: "Platter" },
-    { label: "Mug", value: "Mug" },
-    { label: "Bowl", value: "Bowl" },
-    { label: "Other", value: "Other" },
+    { label: t('dropdown.designTypes.pot'), value: "Pot" },
+    { label: t('dropdown.designTypes.vase'), value: "Vase" },
+    { label: t('dropdown.designTypes.platter'), value: "Platter" },
+    { label: t('dropdown.designTypes.mug'), value: "Mug" },
+    { label: t('dropdown.designTypes.bowl'), value: "Bowl" },
+    { label: t('dropdown.designTypes.other'), value: "Other" },
   ];
 
   const potStatusOptions = [
-    { label: "In Progress", value: "In Progress" },
-    { label: "Drying", value: "Drying" },
-    { label: "Firing", value: "Firing" },
-    { label: "Finished", value: "Finished" },
+    { label: t('dropdown.statuses.inProgress'), value: "In Progress" },
+    { label: t('dropdown.statuses.drying'), value: "Drying" },
+    { label: t('dropdown.statuses.firing'), value: "Firing" },
+    { label: t('dropdown.statuses.finished'), value: "Finished" },
   ];
 
   const glazeTypeOptions = [
-    { label: "No Glaze", value: "No Glaze" },
-    { label: "Matte", value: "Matte" },
-    { label: "Gloss", value: "Gloss" },
+    { label: t('dropdown.glazeTypes.noGlaze'), value: "No Glaze" },
+    { label: t('dropdown.glazeTypes.matte'), value: "Matte" },
+    { label: t('dropdown.glazeTypes.gloss'), value: "Gloss" },
   ];
 
   const handleSubmit = async () => {
     if (!potName.trim()) {
-      Alert.alert("Error", "Please enter a pot name");
+      Alert.alert(t('common.error'), t('addEditItem.alerts.enterName'));
       return;
     }
 
@@ -97,7 +99,7 @@ export default function AddItem() {
         };
 
         await dispatch(updatePotteryThunk(updatedPottery)).unwrap();
-        Alert.alert("Success", "Pottery item updated!");
+        Alert.alert(t('common.success'), t('addEditItem.alerts.updateSuccess'));
       } else {
         // Add new pottery
         const newPottery = {
@@ -110,13 +112,13 @@ export default function AddItem() {
         };
 
         await dispatch(addPotteryThunk(newPottery)).unwrap();
-        Alert.alert("Success", "Pottery item added!");
+        Alert.alert(t('common.success'), t('addEditItem.alerts.addSuccess'));
       }
 
       navigation.pop();
     } catch (error) {
       console.error("Error saving pottery:", error);
-      Alert.alert("Error", "Failed to save pottery item. Please check your Firebase configuration.");
+      Alert.alert(t('common.error'), t('addEditItem.alerts.saveFailed'));
     }
   };
 
@@ -124,24 +126,24 @@ export default function AddItem() {
     if (!editingPottery) return;
 
     Alert.alert(
-      "Delete Pottery",
-      `Are you sure you want to delete "${editingPottery.potName}"? This action cannot be undone.`,
+      t('addEditItem.alerts.deleteConfirmTitle'),
+      t('addEditItem.alerts.deleteConfirmMessage', { name: editingPottery.potName }),
       [
         {
-          text: "Cancel",
+          text: t('common.cancel'),
           style: "cancel"
         },
         {
-          text: "Delete",
+          text: t('common.delete'),
           style: "destructive",
           onPress: async () => {
             try {
               await dispatch(deletePotteryThunk(editingPottery.id)).unwrap();
-              Alert.alert("Success", "Pottery item deleted!");
+              Alert.alert(t('common.success'), t('addEditItem.alerts.deleteSuccess'));
               navigation.pop();
             } catch (error) {
               console.error("Error deleting pottery:", error);
-              Alert.alert("Error", "Failed to delete pottery item. Please try again.");
+              Alert.alert(t('common.error'), t('addEditItem.alerts.deleteFailed'));
             }
           }
         }
@@ -152,55 +154,55 @@ export default function AddItem() {
   return (
     <ScrollView style={container}>
       <View style={form}>
-        <Text style={label}>Pot Name *</Text>
+        <Text style={label}>{t('addEditItem.fields.potName.label')}</Text>
         <TextInput
           style={input}
           value={potName}
           onChangeText={setPotName}
-          placeholder="Enter pot name"
+          placeholder={t('addEditItem.fields.potName.placeholder')}
         />
 
-        <Text style={label}>Clay Type</Text>
+        <Text style={label}>{t('addEditItem.fields.clayType.label')}</Text>
         <Dropdown
           options={clayTypeOptions}
           selectedValue={clayType}
           onValueChange={(value) => setClayType(value as ClayType)}
         />
 
-        <Text style={label}>Date Created</Text>
+        <Text style={label}>{t('addEditItem.fields.dateCreated.label')}</Text>
         <TextInput
           style={input}
           value={dateCreated}
           onChangeText={setDateCreated}
-          placeholder="YYYY-MM-DD"
+          placeholder={t('addEditItem.fields.dateCreated.placeholder')}
         />
 
-        <Text style={label}>Design Type</Text>
+        <Text style={label}>{t('addEditItem.fields.designType.label')}</Text>
         <Dropdown
           options={designTypeOptions}
           selectedValue={designType}
           onValueChange={(value) => setDesignType(value as DesignType)}
         />
 
-        <Text style={label}>Status</Text>
+        <Text style={label}>{t('addEditItem.fields.status.label')}</Text>
         <Dropdown
           options={potStatusOptions}
           selectedValue={potStatus}
           onValueChange={(value) => setPotStatus(value as PotStatus)}
         />
 
-        <Text style={label}>Glaze Type</Text>
+        <Text style={label}>{t('addEditItem.fields.glazeType.label')}</Text>
         <Dropdown
           options={glazeTypeOptions}
           selectedValue={glazeType}
           onValueChange={(value) => setGlazeType(value as GlazeType)}
         />
 
-        <Button title={editingPottery ? "Update Pottery" : "Add Pottery"} onPress={handleSubmit} />
+        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} />
         
         {editingPottery && (
           <View style={{ marginTop: 20 }}>
-            <Button title="Delete Pottery" onPress={handleDelete} color="#dc3545" />
+            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color="#dc3545" />
           </View>
         )}
       </View>
