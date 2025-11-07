@@ -12,31 +12,26 @@ import HomeStyles from "./styles/HomeStyles";
 export default function Home() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const { container, title, image } = HomeStyles;
+  const { container, title, image, guestNotice, guestNoticeText } = HomeStyles;
 
-  // Authenticated view
-  if (isAuthenticated) {
-    return (
-      <View style={container}>
-        <LanguageSwitcher />
-        <Text style={title}>{t('home.title')}</Text>
-        <Image source={require('../../assets/home_screen_vase_cropped_300w.png')} style={image} />
-        
-        <AddItemButton />
-        <CollectionsButton />
-        
-        <Authentication />
-      </View>
-    );
-  }
-
-  // Unauthenticated view - Sign In/Sign Up
   return (
     <ScrollView contentContainerStyle={container}>
       <LanguageSwitcher />
       <Text style={title}>{t('home.title')}</Text>
       <Image source={require('../../assets/home_screen_vase_cropped_300w.png')} style={image} />
       
+      {/* Show guest notice if not authenticated */}
+      {!isAuthenticated && (
+        <View style={guestNotice}>
+          <Text style={guestNoticeText}>{t('home.guestMode')}</Text>
+        </View>
+      )}
+      
+      {/* App navigation - available to everyone */}
+      <AddItemButton />
+      <CollectionsButton />
+      
+      {/* Authentication section */}
       <Authentication />
     </ScrollView>
   );

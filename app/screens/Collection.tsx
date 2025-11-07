@@ -14,6 +14,7 @@ export default function Collection() {
   const potteryItems = useAppSelector((state) => state.pottery.items);
   const loading = useAppSelector((state) => state.pottery.loading);
   const error = useAppSelector((state) => state.pottery.error);
+  const isAuthenticated = useAppSelector((state) => state.auth?.isAuthenticated);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
   // Load pottery items only on initial mount
@@ -28,7 +29,7 @@ export default function Collection() {
     dispatch(fetchPotteryItemsThunk());
   };
 
-  const { container, title, emptyContainer, emptyText, emptySubtext, listContainer } = CollectionStyles;
+  const { container, title, emptyContainer, emptyText, emptySubtext, listContainer, storageIndicator, storageIndicatorText } = CollectionStyles;
 
   // Only show full loading screen on very first load (no items and haven't loaded yet)
   const isInitialLoad = loading && potteryItems.length === 0 && !hasInitiallyLoaded;
@@ -61,6 +62,14 @@ export default function Collection() {
   return (
     <View style={container}>
       <Text style={title}>{t('collection.title')}</Text>
+      
+      {/* Storage indicator */}
+      <View style={storageIndicator}>
+        <Text style={storageIndicatorText}>
+          {isAuthenticated ? t('collection.cloudStorage') : t('collection.localStorage')}
+        </Text>
+      </View>
+      
       {potteryItems.length === 0 ? (
         <View style={emptyContainer}>
           <Text style={emptyText}>{t('collection.empty.title')}</Text>

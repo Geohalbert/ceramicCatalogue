@@ -96,7 +96,9 @@
       "title": "Error loading pottery"
     },
     "loading": "Loading your pottery...",
-    "title": "My Collection"
+    "title": "My Collection",
+    "localStorage": "💾 Local Storage",
+    "cloudStorage": "☁️ Cloud Storage"
   },
   "common": {
     "cancel": "Cancel",
@@ -140,7 +142,8 @@
   "home": {
     "addItemButton": "Add Item",
     "collectionButton": "Collection",
-    "title": "Welcome to the Ceramic Catalogue"
+    "title": "Welcome to the Ceramic Catalogue",
+    "guestMode": "📱 Using guest mode - Data saved locally on this device. Sign in to sync across devices!"
   },
   "potteryTile": {
     "unnamed": "Unnamed"

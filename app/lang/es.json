@@ -96,7 +96,9 @@
             "title": "Error al cargar la cerámica"
         },
         "loading": "Cargando tu cerámica...",
-        "title": "Mi colección"
+        "title": "Mi colección",
+        "localStorage": "💾 Almacenamiento Local",
+        "cloudStorage": "☁️ Almacenamiento en la Nube"
     },
     "common": {
         "cancel": "Cancelar",
@@ -140,7 +142,8 @@
     "home": {
         "addItemButton": "Agregar pieza",
         "collectionButton": "Colección",
-        "title": "Bienvenido al Catálogo de Cerámica"
+        "title": "Bienvenido al Catálogo de Cerámica",
+        "guestMode": "📱 Modo invitado - Datos guardados localmente en este dispositivo. ¡Inicia sesión para sincronizar en todos los dispositivos!"
     },
     "potteryTile": {
         "unnamed": "Sin nombre"

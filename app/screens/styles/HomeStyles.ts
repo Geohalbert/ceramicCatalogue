@@ -154,6 +154,22 @@ const HomeStyles = StyleSheet.create({
         color: '#666',
         fontSize: 14,
         fontWeight: '600',
+    },
+    guestNotice: {
+        width: '100%',
+        maxWidth: 400,
+        padding: 12,
+        backgroundColor: '#e7f3ff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#007AFF',
+        marginBottom: 15,
+    },
+    guestNoticeText: {
+        color: '#007AFF',
+        fontSize: 14,
+        textAlign: 'center',
+        fontWeight: '500',
     }
 });
 

@@ -29,7 +29,19 @@ const CollectionStyles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 16
+    },
+    storageIndicator: {
+        backgroundColor: '#f0f0f0',
+        padding: 8,
+        borderRadius: 6,
+        marginBottom: 15,
+        alignSelf: 'center',
+    },
+    storageIndicatorText: {
+        fontSize: 12,
+        color: '#666',
+        fontWeight: '500',
     }
 });
 
-  export default CollectionStyles;
+export default CollectionStyles;

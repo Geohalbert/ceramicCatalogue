@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import * as Google from 'expo-auth-session/providers/google';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, signInWithGoogleThunk, setUser, clearError } from "../store/authSlice";
+import { migrateLocalToFirebaseThunk } from "../store/potterySlice";
 import { onAuthChange, resetPassword, createGoogleAuthConfig } from "../services/authService";
 
 import HomeStyles from "../screens/styles/HomeStyles";
@@ -70,6 +71,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         Alert.alert(t('common.success'), t('authentication.signIn.successMessage'));
       }
       
+      // Migrate local data to Firebase after successful sign-in
+      await migrateLocalData();
+      
       // Clear form
       setEmail("");
       setPassword("");
@@ -132,6 +136,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       await dispatch(signInWithGoogleThunk({ request, promptAsync })).unwrap();
       Alert.alert(t('common.success'), t('authentication.google.successMessage'));
       
+      // Migrate local data to Firebase after successful sign-in
+      await migrateLocalData();
+      
       // Call optional callback
       if (onAuthenticated) {
         onAuthenticated();
@@ -141,6 +148,18 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       if (error.message !== 'Sign in cancelled') {
         Alert.alert(t('common.error'), error.message || t('authentication.errors.googleSignInFailed'));
       }
+    }
+  };
+
+  const migrateLocalData = async () => {
+    try {
+      const result = await dispatch(migrateLocalToFirebaseThunk()).unwrap();
+      if (result.length > 0) {
+        console.log(`Migrated ${result.length} items to Firebase`);
+      }
+    } catch (error) {
+      console.error('Error migrating data:', error);
+      // Don't show error to user - migration failure shouldn't block sign-in
     }
   };
 
