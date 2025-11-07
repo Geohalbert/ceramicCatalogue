@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
-import { addPotteryThunk, updatePotteryThunk } from "../store/potterySlice";
+import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
 
 import AddItemStyles from "./styles/AddItemStyles";
@@ -120,6 +120,35 @@ export default function AddItem() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!editingPottery) return;
+
+    Alert.alert(
+      "Delete Pottery",
+      `Are you sure you want to delete "${editingPottery.potName}"? This action cannot be undone.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await dispatch(deletePotteryThunk(editingPottery.id)).unwrap();
+              Alert.alert("Success", "Pottery item deleted!");
+              navigation.pop();
+            } catch (error) {
+              console.error("Error deleting pottery:", error);
+              Alert.alert("Error", "Failed to delete pottery item. Please try again.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <ScrollView style={container}>
       <View style={form}>
@@ -168,6 +197,12 @@ export default function AddItem() {
         />
 
         <Button title={editingPottery ? "Update Pottery" : "Add Pottery"} onPress={handleSubmit} />
+        
+        {editingPottery && (
+          <View style={{ marginTop: 20 }}>
+            <Button title="Delete Pottery" onPress={handleDelete} color="#dc3545" />
+          </View>
+        )}
       </View>
     </ScrollView>
   );
