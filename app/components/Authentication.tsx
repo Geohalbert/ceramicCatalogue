@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, setUser, clearError } from "../store/authSlice";
-import { onAuthChange } from "../services/authService";
+import { onAuthChange, resetPassword } from "../services/authService";
 
 import HomeStyles from "../screens/styles/HomeStyles";
 
@@ -15,9 +15,11 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   const { user, loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -36,10 +38,10 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     return () => unsubscribe();
   }, [dispatch]);
 
-  // Clear error when switching between sign in/up
+  // Clear error when switching between sign in/up/forgot password
   useEffect(() => {
     dispatch(clearError());
-  }, [isSignUp, dispatch]);
+  }, [isSignUp, isForgotPassword, dispatch]);
 
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
@@ -84,6 +86,35 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert("Error", "Please enter your email address");
+      return;
+    }
+
+    setIsResetting(true);
+    try {
+      await resetPassword(email);
+      Alert.alert(
+        "Success", 
+        "Password reset email sent! Check your inbox and follow the instructions to reset your password.",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              setIsForgotPassword(false);
+              setEmail("");
+            }
+          }
+        ]
+      );
+    } catch (error: any) {
+      Alert.alert("Error", error.message || "Failed to send reset email");
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const { 
     authContainer,
     authTitle,
@@ -96,7 +127,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     welcomeText,
     signOutButton,
     signOutButtonText,
-    errorText
+    errorText,
+    forgotPasswordLink,
+    forgotPasswordText
   } = HomeStyles;
 
   // Authenticated view - User info and sign out
@@ -106,6 +139,51 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         <Text style={welcomeText}>Welcome back, {user.displayName || user.email}!</Text>
         <TouchableOpacity style={signOutButton} onPress={handleSignOut}>
           <Text style={signOutButtonText}>Sign Out</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // Forgot Password view
+  if (isForgotPassword) {
+    return (
+      <View style={authContainer}>
+        <Text style={authTitle}>Reset Password</Text>
+        
+        <Text style={{ marginBottom: 15, color: '#666', textAlign: 'center' }}>
+          Enter your email address and we'll send you instructions to reset your password.
+        </Text>
+        
+        <TextInput
+          style={input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+        />
+        
+        <TouchableOpacity 
+          style={button} 
+          onPress={handleForgotPassword}
+          disabled={isResetting}
+        >
+          {isResetting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={buttonText}>Send Reset Email</Text>
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={forgotPasswordLink}
+          onPress={() => {
+            setIsForgotPassword(false);
+            setEmail("");
+          }}
+        >
+          <Text style={forgotPasswordText}>Back to Sign In</Text>
         </TouchableOpacity>
       </View>
     );
@@ -146,6 +224,15 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         secureTextEntry
         autoCapitalize="none"
       />
+      
+      {!isSignUp && (
+        <TouchableOpacity 
+          style={forgotPasswordLink}
+          onPress={() => setIsForgotPassword(true)}
+        >
+          <Text style={forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+      )}
       
       <TouchableOpacity 
         style={button} 

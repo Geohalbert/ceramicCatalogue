@@ -43,6 +43,15 @@ const HomeStyles = StyleSheet.create({
         padding: 10,
         textAlign: "center"
     },
+    forgotPasswordLink: {
+        alignSelf: "flex-end",
+        marginBottom: 10,
+        marginTop: 5
+    },
+    forgotPasswordText: {
+        color: "#007AFF",
+        fontSize: 14
+    },
     image: {
         height: 261,
         width: 200
