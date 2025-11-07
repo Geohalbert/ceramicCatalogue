@@ -1,0 +1,142 @@
+{
+  "addEditItem": {
+    "alerts": {
+      "addSuccess": "Pottery item added!",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
+      "deleteConfirmTitle": "Delete Pottery",
+      "deleteFailed": "Failed to delete pottery item. Please try again.",
+      "deleteSuccess": "Pottery item deleted!",
+      "enterName": "Please enter a pot name",
+      "saveFailed": "Failed to save pottery item. Please check your Firebase configuration.",
+      "updateSuccess": "Pottery item updated!"
+    },
+    "buttons": {
+      "add": "Add Pottery",
+      "delete": "Delete Pottery",
+      "update": "Update Pottery"
+    },
+    "fields": {
+      "clayType": {
+        "label": "Clay Type"
+      },
+      "dateCreated": {
+        "label": "Date Created",
+        "placeholder": "YYYY-MM-DD"
+      },
+      "designType": {
+        "label": "Design Type"
+      },
+      "glazeType": {
+        "label": "Glaze Type"
+      },
+      "potName": {
+        "label": "Pot Name *",
+        "placeholder": "Enter pot name"
+      },
+      "status": {
+        "label": "Status"
+      }
+    }
+  },
+  "authentication": {
+    "errors": {
+      "authenticationFailed": "Authentication failed",
+      "enterEmail": "Please enter your email address",
+      "enterName": "Please enter your name",
+      "fillAllFields": "Please fill in all fields",
+      "resetEmailFailed": "Failed to send reset email"
+    },
+    "forgotPassword": {
+      "backLink": "Back to Sign In",
+      "button": "Send Reset Email",
+      "description": "Enter your email address and we'll send you instructions to reset your password.",
+      "successMessage": "Password reset email sent! Check your inbox and follow the instructions to reset your password.",
+      "title": "Reset Password"
+    },
+    "signIn": {
+      "button": "Sign In",
+      "emailPlaceholder": "Email",
+      "forgotPasswordLink": "Forgot Password?",
+      "noAccount": "Don't have an account?",
+      "passwordPlaceholder": "Password",
+      "signUpLink": "Sign Up",
+      "successMessage": "Signed in successfully!",
+      "title": "Sign In"
+    },
+    "signOut": {
+      "button": "Sign Out",
+      "errorMessage": "Failed to sign out",
+      "successMessage": "Signed out successfully!"
+    },
+    "signUp": {
+      "button": "Sign Up",
+      "emailPlaceholder": "Email",
+      "hasAccount": "Already have an account?",
+      "namePlaceholder": "Name",
+      "passwordPlaceholder": "Password",
+      "signInLink": "Sign In",
+      "successMessage": "Account created successfully!",
+      "title": "Create Account"
+    },
+    "welcome": "Welcome back, {{name}}!"
+  },
+  "collection": {
+    "empty": {
+      "subtitle": "Add your first piece to get started!",
+      "title": "No pottery items yet"
+    },
+    "error": {
+      "checkConfig": "Please check your Firebase configuration.",
+      "title": "Error loading pottery"
+    },
+    "loading": "Loading your pottery...",
+    "title": "My Collection"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "error": "Error",
+    "ok": "OK",
+    "success": "Success"
+  },
+  "dropdown": {
+    "clayTypes": {
+      "buffaloWallow": "Buffalo Wallow",
+      "cincoBlanco": "Cinco Blanco",
+      "cincoRojo": "Cinco Rojo",
+      "custom": "Custom",
+      "darkChocolate": "Dark Chocolate",
+      "other": "Other",
+      "porcelain": "Porcelain"
+    },
+    "designTypes": {
+      "bowl": "Bowl",
+      "mug": "Mug",
+      "other": "Other",
+      "platter": "Platter",
+      "pot": "Pot",
+      "vase": "Vase"
+    },
+    "glazeTypes": {
+      "gloss": "Gloss",
+      "matte": "Matte",
+      "noGlaze": "No Glaze"
+    },
+    "modalTitle": "Select Option",
+    "selectOption": "Select an option",
+    "statuses": {
+      "drying": "Drying",
+      "finished": "Finished",
+      "firing": "Firing",
+      "inProgress": "In Progress"
+    }
+  },
+  "home": {
+    "addItemButton": "Add Item",
+    "collectionButton": "Collection",
+    "title": "Welcome to the Ceramic Catalogue"
+  },
+  "potteryTile": {
+    "unnamed": "Unnamed"
+  }
+}
