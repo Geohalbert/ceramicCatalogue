@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
+import * as Google from 'expo-auth-session/providers/google';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { signInThunk, signUpThunk, signOutThunk, setUser, clearError } from "../store/authSlice";
-import { onAuthChange, resetPassword } from "../services/authService";
+import { signInThunk, signUpThunk, signOutThunk, signInWithGoogleThunk, setUser, clearError } from "../store/authSlice";
+import { onAuthChange, resetPassword, createGoogleAuthConfig } from "../services/authService";
 
 import HomeStyles from "../screens/styles/HomeStyles";
 
@@ -22,6 +23,10 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [isResetting, setIsResetting] = useState(false);
+
+  // Configure Google authentication with Expo
+  const googleConfig = createGoogleAuthConfig();
+  const [request, response, promptAsync] = Google.useAuthRequest(googleConfig);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -117,6 +122,28 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    if (!request) {
+      Alert.alert(t('common.error'), 'Google Sign-In is not configured yet');
+      return;
+    }
+
+    try {
+      await dispatch(signInWithGoogleThunk({ request, promptAsync })).unwrap();
+      Alert.alert(t('common.success'), t('authentication.google.successMessage'));
+      
+      // Call optional callback
+      if (onAuthenticated) {
+        onAuthenticated();
+      }
+    } catch (error: any) {
+      // Don't show alert if user cancelled
+      if (error.message !== 'Sign in cancelled') {
+        Alert.alert(t('common.error'), error.message || t('authentication.errors.googleSignInFailed'));
+      }
+    }
+  };
+
   const { 
     authContainer,
     authTitle,
@@ -131,7 +158,12 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     signOutButtonText,
     errorText,
     forgotPasswordLink,
-    forgotPasswordText
+    forgotPasswordText,
+    googleButton,
+    googleButtonText,
+    dividerContainer,
+    dividerLine,
+    dividerText
   } = HomeStyles;
 
   // Authenticated view - User info and sign out
@@ -197,6 +229,29 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       <Text style={authTitle}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
       
       {error && <Text style={errorText}>{error}</Text>}
+      
+      {/* Google Sign-In Button */}
+      <TouchableOpacity 
+        style={googleButton} 
+        onPress={handleGoogleSignIn}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="#333" />
+        ) : (
+          <>
+            <Text style={{ fontSize: 18, marginRight: 10 }}>G</Text>
+            <Text style={googleButtonText}>{t('authentication.google.button')}</Text>
+          </>
+        )}
+      </TouchableOpacity>
+
+      {/* Divider */}
+      <View style={dividerContainer}>
+        <View style={dividerLine} />
+        <Text style={dividerText}>{t('authentication.google.divider')}</Text>
+        <View style={dividerLine} />
+      </View>
       
       {isSignUp && (
         <TextInput

@@ -6,11 +6,18 @@ import {
   onAuthStateChanged,
   User,
   sendPasswordResetEmail,
-  updateProfile
+  updateProfile,
+  GoogleAuthProvider,
+  signInWithCredential
 } from 'firebase/auth';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 import app from '../config/firebase';
 
 const auth = getAuth(app);
+
+// Required for Expo WebBrowser
+WebBrowser.maybeCompleteAuthSession();
 
 /**
  * Sign up a new user with email and password
@@ -66,6 +73,58 @@ export const resetPassword = async (email: string): Promise<void> => {
     console.error('Error sending password reset email:', error);
     throw new Error(getAuthErrorMessage(error.code));
   }
+};
+
+/**
+ * Sign in with Google using Expo AuthSession
+ * Note: This uses expo-auth-session which works with Expo Go
+ * 
+ * IMPORTANT: You need to configure OAuth 2.0 Client IDs in Google Cloud Console
+ * See GOOGLE_SIGNIN_SETUP.md for detailed instructions
+ */
+export const signInWithGoogle = async (request: any, promptAsync: any): Promise<User> => {
+  try {
+    const result = await promptAsync();
+    
+    if (result?.type === 'cancel') {
+      throw new Error('Sign in cancelled');
+    }
+    
+    if (result?.type === 'success' && result.params.id_token) {
+      const { id_token } = result.params;
+      
+      // Create a Google credential with the token
+      const googleCredential = GoogleAuthProvider.credential(id_token);
+      
+      // Sign in with the credential
+      const userCredential = await signInWithCredential(auth, googleCredential);
+      
+      return userCredential.user;
+    }
+    
+    throw new Error('Failed to sign in with Google');
+  } catch (error: any) {
+    console.error('Error signing in with Google:', error);
+    
+    if (error.message === 'Sign in cancelled') {
+      throw error;
+    }
+    
+    throw new Error('Failed to sign in with Google');
+  }
+};
+
+/**
+ * Create Google authentication request configuration
+ * This should be called in the component using useAuthRequest hook
+ */
+export const createGoogleAuthConfig = () => {
+  return {
+    expoClientId: 'YOUR_EXPO_CLIENT_ID.apps.googleusercontent.com',
+    iosClientId: 'YOUR_IOS_CLIENT_ID.apps.googleusercontent.com',
+    androidClientId: 'YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com',
+    webClientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com',
+  };
 };
 
 /**

@@ -59,6 +59,18 @@ export const resetPasswordThunk = createAsyncThunk(
   }
 );
 
+export const signInWithGoogleThunk = createAsyncThunk(
+  'auth/signInWithGoogle',
+  async ({ request, promptAsync }: { request: any; promptAsync: any }) => {
+    const user = await authService.signInWithGoogle(request, promptAsync);
+    return {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+    };
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -132,6 +144,22 @@ const authSlice = createSlice({
       .addCase(resetPasswordThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to send reset email';
+      });
+
+    // Sign In with Google
+    builder
+      .addCase(signInWithGoogleThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signInWithGoogleThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.isAuthenticated = true;
+      })
+      .addCase(signInWithGoogleThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Failed to sign in with Google';
       });
   },
 });

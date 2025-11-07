@@ -44,7 +44,13 @@
       "enterEmail": "Please enter your email address",
       "enterName": "Please enter your name",
       "fillAllFields": "Please fill in all fields",
-      "resetEmailFailed": "Failed to send reset email"
+      "resetEmailFailed": "Failed to send reset email",
+      "googleSignInFailed": "Failed to sign in with Google"
+    },
+    "google": {
+      "button": "Continue with Google",
+      "successMessage": "Signed in with Google successfully!",
+      "divider": "OR"
     },
     "forgotPassword": {
       "backLink": "Back to Sign In",

@@ -7,19 +7,22 @@
     "icon": "./assets/home_screen_vase_cropped_300w.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "ceramiccatalogue",
     "splash": {
       "image": "./assets/home_screen_vase_cropped_300w.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ceramiccatalogue.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.ceramiccatalogue.app",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },

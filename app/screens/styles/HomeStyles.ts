@@ -121,6 +121,39 @@ const HomeStyles = StyleSheet.create({
         fontWeight: "600",
         marginBottom: 15,
         textAlign: "center"
+    },
+    googleButton: {
+        width: '100%',
+        padding: 15,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 15,
+    },
+    googleButtonText: {
+        color: '#333',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    dividerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    dividerLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#ddd',
+    },
+    dividerText: {
+        marginHorizontal: 10,
+        color: '#666',
+        fontSize: 14,
+        fontWeight: '600',
     }
 });
 

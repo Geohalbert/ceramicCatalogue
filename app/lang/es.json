@@ -44,7 +44,13 @@
             "enterEmail": "Por favor ingresa tu correo electrónico",
             "enterName": "Por favor ingresa tu nombre",
             "fillAllFields": "Por favor completa todos los campos",
-            "resetEmailFailed": "No se pudo enviar el correo de restablecimiento"
+            "resetEmailFailed": "No se pudo enviar el correo de restablecimiento",
+            "googleSignInFailed": "No se pudo iniciar sesión con Google"
+        },
+        "google": {
+            "button": "Continuar con Google",
+            "successMessage": "¡Inicio de sesión con Google exitoso!",
+            "divider": "O"
         },
         "forgotPassword": {
             "backLink": "Volver a iniciar sesión",
