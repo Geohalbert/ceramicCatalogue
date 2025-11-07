@@ -1,0 +1,142 @@
+{
+    "addEditItem": {
+        "alerts": {
+            "addSuccess": "¡Artículo de cerámica agregado!",
+            "deleteConfirmMessage": "¿Seguro que deseas eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
+            "deleteConfirmTitle": "Eliminar cerámica",
+            "deleteFailed": "No se pudo eliminar el artículo de cerámica. Por favor, inténtalo de nuevo.",
+            "deleteSuccess": "¡Artículo de cerámica eliminado!",
+            "enterName": "Por favor ingresa un nombre para la pieza",
+            "saveFailed": "No se pudo guardar el artículo de cerámica. Verifica tu configuración de Firebase.",
+            "updateSuccess": "¡Artículo de cerámica actualizado!"
+        },
+        "buttons": {
+            "add": "Agregar cerámica",
+            "delete": "Eliminar cerámica",
+            "update": "Actualizar cerámica"
+        },
+        "fields": {
+            "clayType": {
+                "label": "Tipo de arcilla"
+            },
+            "dateCreated": {
+                "label": "Fecha de creación",
+                "placeholder": "AAAA-MM-DD"
+            },
+            "designType": {
+                "label": "Tipo de diseño"
+            },
+            "glazeType": {
+                "label": "Tipo de esmalte"
+            },
+            "potName": {
+                "label": "Nombre de la pieza *",
+                "placeholder": "Ingresa el nombre de la pieza"
+            },
+            "status": {
+                "label": "Estado"
+            }
+        }
+    },
+    "authentication": {
+        "errors": {
+            "authenticationFailed": "Autenticación fallida",
+            "enterEmail": "Por favor ingresa tu correo electrónico",
+            "enterName": "Por favor ingresa tu nombre",
+            "fillAllFields": "Por favor completa todos los campos",
+            "resetEmailFailed": "No se pudo enviar el correo de restablecimiento"
+        },
+        "forgotPassword": {
+            "backLink": "Volver a iniciar sesión",
+            "button": "Enviar correo de restablecimiento",
+            "description": "Ingresa tu correo electrónico y te enviaremos instrucciones para restablecer tu contraseña.",
+            "successMessage": "¡Correo de restablecimiento enviado! Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.",
+            "title": "Restablecer contraseña"
+        },
+        "signIn": {
+            "button": "Iniciar sesión",
+            "emailPlaceholder": "Correo electrónico",
+            "forgotPasswordLink": "¿Olvidaste tu contraseña?",
+            "noAccount": "¿No tienes una cuenta?",
+            "passwordPlaceholder": "Contraseña",
+            "signUpLink": "Registrarse",
+            "successMessage": "¡Inicio de sesión exitoso!",
+            "title": "Iniciar sesión"
+        },
+        "signOut": {
+            "button": "Cerrar sesión",
+            "errorMessage": "No se pudo cerrar la sesión",
+            "successMessage": "¡Sesión cerrada correctamente!"
+        },
+        "signUp": {
+            "button": "Registrarse",
+            "emailPlaceholder": "Correo electrónico",
+            "hasAccount": "¿Ya tienes una cuenta?",
+            "namePlaceholder": "Nombre",
+            "passwordPlaceholder": "Contraseña",
+            "signInLink": "Iniciar sesión",
+            "successMessage": "¡Cuenta creada con éxito!",
+            "title": "Crear cuenta"
+        },
+        "welcome": "Bienvenido de nuevo, {{name}}!"
+    },
+    "collection": {
+        "empty": {
+            "subtitle": "¡Agrega tu primera pieza para comenzar!",
+            "title": "Aún no hay artículos de cerámica"
+        },
+        "error": {
+            "checkConfig": "Por favor verifica tu configuración de Firebase.",
+            "title": "Error al cargar la cerámica"
+        },
+        "loading": "Cargando tu cerámica...",
+        "title": "Mi colección"
+    },
+    "common": {
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "error": "Error",
+        "ok": "Aceptar",
+        "success": "Éxito"
+    },
+    "dropdown": {
+        "clayTypes": {
+            "buffaloWallow": "Buffalo Wallow",
+            "cincoBlanco": "Cinco Blanco",
+            "cincoRojo": "Cinco Rojo",
+            "custom": "Personalizado",
+            "darkChocolate": "Chocolate Oscuro",
+            "other": "Otro",
+            "porcelain": "Porcelana"
+        },
+        "designTypes": {
+            "bowl": "Tazón",
+            "mug": "Taza",
+            "other": "Otro",
+            "platter": "Bandeja",
+            "pot": "Maceta",
+            "vase": "Jarrón"
+        },
+        "glazeTypes": {
+            "gloss": "Brillante",
+            "matte": "Mate",
+            "noGlaze": "Sin esmalte"
+        },
+        "modalTitle": "Seleccionar opción",
+        "selectOption": "Selecciona una opción",
+        "statuses": {
+            "drying": "Secando",
+            "finished": "Terminado",
+            "firing": "Cociendo",
+            "inProgress": "En progreso"
+        }
+    },
+    "home": {
+        "addItemButton": "Agregar pieza",
+        "collectionButton": "Colección",
+        "title": "Bienvenido al Catálogo de Cerámica"
+    },
+    "potteryTile": {
+        "unnamed": "Sin nombre"
+    }
+}
