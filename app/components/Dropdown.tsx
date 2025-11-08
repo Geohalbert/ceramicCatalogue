@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useTheme } from "../context/ThemeContext";
 import DropdownStyles from "./styles/DropdownStyles";
 
 interface DropdownOption {
@@ -22,6 +23,7 @@ export default function Dropdown({
   placeholder
 }: DropdownProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
   
   const selectedOption = options.find(opt => opt.value === selectedValue);
@@ -51,12 +53,12 @@ export default function Dropdown({
   return (
     <View style={container}>
       <TouchableOpacity 
-        style={trigger} 
+        style={[trigger, { backgroundColor: colors.inputBackground, borderColor: colors.border }]} 
         onPress={() => setIsVisible(true)}
         activeOpacity={0.7}
       >
-        <Text style={triggerText}>{displayText}</Text>
-        <Text style={triggerText}>▼</Text>
+        <Text style={[triggerText, { color: colors.text }]}>{displayText}</Text>
+        <Text style={[triggerText, { color: colors.text }]}>▼</Text>
       </TouchableOpacity>
 
       <Modal
@@ -66,14 +68,14 @@ export default function Dropdown({
         onRequestClose={() => setIsVisible(false)}
       >
         <View style={modal}>
-          <View style={modalContent}>
-            <View style={modalHeader}>
-              <Text style={modalTitle}>{t('dropdown.modalTitle')}</Text>
+          <View style={[modalContent, { backgroundColor: colors.card }]}>
+            <View style={[modalHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[modalTitle, { color: colors.text }]}>{t('dropdown.modalTitle')}</Text>
               <TouchableOpacity 
                 style={closeButton}
                 onPress={() => setIsVisible(false)}
               >
-                <Text style={closeButtonText}>✕</Text>
+                <Text style={[closeButtonText, { color: colors.secondaryText }]}>✕</Text>
               </TouchableOpacity>
             </View>
 
@@ -84,14 +86,22 @@ export default function Dropdown({
                 const isSelected = item.value === selectedValue;
                 return (
                   <TouchableOpacity
-                    style={[optionItem, isSelected && optionItemSelected]}
+                    style={[
+                      optionItem, 
+                      { borderBottomColor: colors.border },
+                      isSelected && { backgroundColor: colors.info }
+                    ]}
                     onPress={() => handleSelect(item.value)}
                     activeOpacity={0.7}
                   >
-                    <Text style={[optionText, isSelected && optionTextSelected]}>
+                    <Text style={[
+                      optionText, 
+                      { color: colors.text },
+                      isSelected && { color: colors.primary, fontWeight: '600' }
+                    ]}>
                       {item.label}
                     </Text>
-                    {isSelected && <Text style={optionTextSelected}>✓</Text>}
+                    {isSelected && <Text style={{ color: colors.primary, fontWeight: '600' }}>✓</Text>}
                   </TouchableOpacity>
                 );
               }}

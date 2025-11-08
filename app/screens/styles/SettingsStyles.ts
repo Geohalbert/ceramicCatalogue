@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-const SettingsStyles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -51,6 +51,4 @@ const SettingsStyles = StyleSheet.create({
     marginVertical: 20,
   },
 });
-
-export default SettingsStyles;
 

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, signInWithGoogleThunk, setUser, clearError } from "../store/authSlice";
 import { migrateLocalToFirebaseThunk } from "../store/potterySlice";
 import { onAuthChange, resetPassword, createGoogleAuthConfig } from "../services/authService";
+import { useTheme } from "../context/ThemeContext";
 
 import HomeStyles from "../screens/styles/HomeStyles";
 
@@ -15,6 +16,7 @@ interface AuthenticationProps {
 
 export default function Authentication({ onAuthenticated }: AuthenticationProps) {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const dispatch = useAppDispatch();
   const { user, loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   
@@ -188,9 +190,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   // Authenticated view - User info and sign out
   if (isAuthenticated && user) {
     return (
-      <View style={authContainer}>
-        <Text style={welcomeText}>{t('authentication.welcome', { name: user.displayName || user.email })}</Text>
-        <TouchableOpacity style={signOutButton} onPress={handleSignOut}>
+      <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+        <Text style={[welcomeText, { color: colors.text }]}>{t('authentication.welcome', { name: user.displayName || user.email })}</Text>
+        <TouchableOpacity style={[signOutButton, { backgroundColor: colors.danger }]} onPress={handleSignOut}>
           <Text style={signOutButtonText}>{t('authentication.signOut.button')}</Text>
         </TouchableOpacity>
       </View>
@@ -200,16 +202,17 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   // Forgot Password view
   if (isForgotPassword) {
     return (
-      <View style={authContainer}>
-        <Text style={authTitle}>{t('authentication.forgotPassword.title')}</Text>
+      <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+        <Text style={[authTitle, { color: colors.text }]}>{t('authentication.forgotPassword.title')}</Text>
         
-        <Text style={{ marginBottom: 15, color: '#666', textAlign: 'center' }}>
+        <Text style={{ marginBottom: 15, color: colors.secondaryText, textAlign: 'center' }}>
           {t('authentication.forgotPassword.description')}
         </Text>
         
         <TextInput
-          style={input}
+          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           placeholder={t('authentication.signIn.emailPlaceholder')}
+          placeholderTextColor={colors.placeholder}
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
@@ -218,7 +221,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
         />
         
         <TouchableOpacity 
-          style={button} 
+          style={[button, { backgroundColor: colors.primary }]} 
           onPress={handleForgotPassword}
           disabled={isResetting}
         >
@@ -236,7 +239,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
             setEmail("");
           }}
         >
-          <Text style={forgotPasswordText}>{t('authentication.forgotPassword.backLink')}</Text>
+          <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.forgotPassword.backLink')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -244,38 +247,39 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
 
   // Unauthenticated view - Sign In/Sign Up form
   return (
-    <View style={authContainer}>
-      <Text style={authTitle}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
+    <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+      <Text style={[authTitle, { color: colors.text }]}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
       
       {error && <Text style={errorText}>{error}</Text>}
       
       {/* Google Sign-In Button */}
       <TouchableOpacity 
-        style={googleButton} 
+        style={[googleButton, { backgroundColor: colors.card, borderColor: colors.border }]} 
         onPress={handleGoogleSignIn}
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#333" />
+          <ActivityIndicator color={colors.text} />
         ) : (
           <>
-            <Text style={{ fontSize: 18, marginRight: 10 }}>G</Text>
-            <Text style={googleButtonText}>{t('authentication.google.button')}</Text>
+            <Text style={{ fontSize: 18, marginRight: 10, color: colors.text }}>G</Text>
+            <Text style={[googleButtonText, { color: colors.text }]}>{t('authentication.google.button')}</Text>
           </>
         )}
       </TouchableOpacity>
 
       {/* Divider */}
       <View style={dividerContainer}>
-        <View style={dividerLine} />
-        <Text style={dividerText}>{t('authentication.google.divider')}</Text>
-        <View style={dividerLine} />
+        <View style={[dividerLine, { backgroundColor: colors.border }]} />
+        <Text style={[dividerText, { color: colors.secondaryText }]}>{t('authentication.google.divider')}</Text>
+        <View style={[dividerLine, { backgroundColor: colors.border }]} />
       </View>
       
       {isSignUp && (
         <TextInput
-          style={input}
+          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           placeholder={t('authentication.signUp.namePlaceholder')}
+          placeholderTextColor={colors.placeholder}
           value={displayName}
           onChangeText={setDisplayName}
           autoCapitalize="words"
@@ -283,8 +287,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       )}
       
       <TextInput
-        style={input}
+        style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
         placeholder={t('authentication.signIn.emailPlaceholder')}
+        placeholderTextColor={colors.placeholder}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
@@ -293,8 +298,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       />
       
       <TextInput
-        style={input}
+        style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
         placeholder={t('authentication.signIn.passwordPlaceholder')}
+        placeholderTextColor={colors.placeholder}
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -306,12 +312,12 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
           style={forgotPasswordLink}
           onPress={() => setIsForgotPassword(true)}
         >
-          <Text style={forgotPasswordText}>{t('authentication.signIn.forgotPasswordLink')}</Text>
+          <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.signIn.forgotPasswordLink')}</Text>
         </TouchableOpacity>
       )}
       
       <TouchableOpacity 
-        style={button} 
+        style={[button, { backgroundColor: colors.primary }]} 
         onPress={handleAuth}
         disabled={loading}
       >
@@ -325,12 +331,12 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       </TouchableOpacity>
       
       <View style={switchText}>
-        <Text>{t(isSignUp ? 'authentication.signUp.hasAccount' : 'authentication.signIn.noAccount')}</Text>
+        <Text style={{ color: colors.text }}>{t(isSignUp ? 'authentication.signUp.hasAccount' : 'authentication.signIn.noAccount')}</Text>
         <TouchableOpacity 
           style={switchButton}
           onPress={() => setIsSignUp(!isSignUp)}
         >
-          <Text style={switchButtonText}>
+          <Text style={[switchButtonText, { color: colors.primary }]}>
             {t(isSignUp ? 'authentication.signUp.signInLink' : 'authentication.signIn.signUpLink')}
           </Text>
         </TouchableOpacity>

@@ -3,6 +3,7 @@ import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "re
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useTheme } from "../context/ThemeContext";
 
 import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
@@ -19,6 +20,7 @@ type AddItemRouteParams = {
 
 export default function AddItem() {
   const { t } = useTranslation();
+  const { colors } = useTheme();
   const route = useRoute<RouteProp<AddItemRouteParams, 'AddItem'>>();
   const editingPottery = route.params?.pottery;
 
@@ -152,57 +154,59 @@ export default function AddItem() {
   };
 
   return (
-    <ScrollView style={container}>
+    <ScrollView style={[container, { backgroundColor: colors.background }]}>
       <View style={form}>
-        <Text style={label}>{t('addEditItem.fields.potName.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.potName.label')}</Text>
         <TextInput
-          style={input}
+          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           value={potName}
           onChangeText={setPotName}
           placeholder={t('addEditItem.fields.potName.placeholder')}
+          placeholderTextColor={colors.placeholder}
         />
 
-        <Text style={label}>{t('addEditItem.fields.clayType.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.clayType.label')}</Text>
         <Dropdown
           options={clayTypeOptions}
           selectedValue={clayType}
           onValueChange={(value) => setClayType(value as ClayType)}
         />
 
-        <Text style={label}>{t('addEditItem.fields.dateCreated.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.dateCreated.label')}</Text>
         <TextInput
-          style={input}
+          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           value={dateCreated}
           onChangeText={setDateCreated}
           placeholder={t('addEditItem.fields.dateCreated.placeholder')}
+          placeholderTextColor={colors.placeholder}
         />
 
-        <Text style={label}>{t('addEditItem.fields.designType.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.designType.label')}</Text>
         <Dropdown
           options={designTypeOptions}
           selectedValue={designType}
           onValueChange={(value) => setDesignType(value as DesignType)}
         />
 
-        <Text style={label}>{t('addEditItem.fields.status.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.status.label')}</Text>
         <Dropdown
           options={potStatusOptions}
           selectedValue={potStatus}
           onValueChange={(value) => setPotStatus(value as PotStatus)}
         />
 
-        <Text style={label}>{t('addEditItem.fields.glazeType.label')}</Text>
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.glazeType.label')}</Text>
         <Dropdown
           options={glazeTypeOptions}
           selectedValue={glazeType}
           onValueChange={(value) => setGlazeType(value as GlazeType)}
         />
 
-        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} />
+        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />
         
         {editingPottery && (
           <View style={{ marginTop: 20 }}>
-            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color="#dc3545" />
+            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
           </View>
         )}
       </View>

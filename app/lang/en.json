@@ -155,6 +155,11 @@
       "email": "Email",
       "name": "Name"
     },
+    "appearance": {
+      "title": "Appearance",
+      "light": "Light Mode",
+      "dark": "Dark Mode"
+    },
     "language": {
       "title": "Language"
     },
