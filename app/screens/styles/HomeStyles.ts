@@ -4,24 +4,25 @@ const HomeStyles = StyleSheet.create({
     authContainer: {
         backgroundColor: "#f9f9f9",
         borderRadius: 10,
-        marginBottom: 20,
+        marginBottom: 10,
+        marginTop: 10,
         maxWidth: 400,
-        padding: 20,
+        padding: 15,
         width: "100%"
     },
     authTitle: {
         color: "#333",
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 20,
+        marginBottom: 15,
         textAlign: "center"
     },
     button: {
         alignItems: "center",
         backgroundColor: "#007AFF",
         borderRadius: 8,
-        marginTop: 10,
-        padding: 15,
+        marginTop: 5,
+        padding: 12,
         width: "100%"
     },
     buttonText: {
@@ -31,8 +32,25 @@ const HomeStyles = StyleSheet.create({
     },
     container: {
         alignItems: "center",
+        flexGrow: 1,
+        paddingHorizontal: 20,
+        paddingVertical: 20
+    },
+    dividerContainer: {
+        alignItems: "center",
+        flexDirection: "row",
+        marginVertical: 10
+    },
+    dividerLine: {
+        backgroundColor: "#ddd",
         flex: 1,
-        justifyContent: "center"
+        height: 1
+    },
+    dividerText: {
+        color: "#666",
+        fontSize: 14,
+        fontWeight: "600",
+        marginHorizontal: 10
     },
     errorText: {
         backgroundColor: "#f8d7da",
@@ -52,18 +70,52 @@ const HomeStyles = StyleSheet.create({
         color: "#007AFF",
         fontSize: 14
     },
+    googleButton: {
+        alignItems: "center",
+        backgroundColor: "#fff",
+        borderColor: "#ddd",
+        borderRadius: 8,
+        borderWidth: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        marginBottom: 10,
+        padding: 12,
+        width: "100%"
+    },
+    googleButtonText: {
+        color: "#333",
+        fontSize: 16,
+        fontWeight: "600"
+    },
+    guestNotice: {
+        backgroundColor: "#e7f3ff",
+        borderColor: "#007AFF",
+        borderRadius: 6,
+        borderWidth: 1,
+        marginBottom: 10,
+        maxWidth: 400,
+        padding: 8,
+        width: "100%"
+    },
+    guestNoticeText: {
+        color: "#007AFF",
+        fontSize: 12,
+        fontWeight: "500",
+        textAlign: "center"
+    },
     image: {
-        height: 261,
-        width: 200
+        height: 150,
+        marginBottom: 10,
+        width: 115
     },
     input: {
         backgroundColor: "#fff",
         borderColor: "#ddd",
         borderRadius: 8,
         borderWidth: 1,
-        fontSize: 16,
-        marginBottom: 15,
-        padding: 12,
+        fontSize: 14,
+        marginBottom: 10,
+        padding: 10,
         width: "100%"
     },
     secondaryButton: {
@@ -102,12 +154,13 @@ const HomeStyles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
-        marginTop: 20
+        marginTop: 10
     },
     title: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 20
+        marginBottom: 10,
+        marginTop: 40
     },
     userInfo: {
         color: "#666",
@@ -121,55 +174,6 @@ const HomeStyles = StyleSheet.create({
         fontWeight: "600",
         marginBottom: 15,
         textAlign: "center"
-    },
-    googleButton: {
-        width: '100%',
-        padding: 15,
-        backgroundColor: '#fff',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginBottom: 15,
-    },
-    googleButtonText: {
-        color: '#333',
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    dividerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginVertical: 20,
-    },
-    dividerLine: {
-        flex: 1,
-        height: 1,
-        backgroundColor: '#ddd',
-    },
-    dividerText: {
-        marginHorizontal: 10,
-        color: '#666',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    guestNotice: {
-        width: '100%',
-        maxWidth: 400,
-        padding: 12,
-        backgroundColor: '#e7f3ff',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#007AFF',
-        marginBottom: 15,
-    },
-    guestNoticeText: {
-        color: '#007AFF',
-        fontSize: 14,
-        textAlign: 'center',
-        fontWeight: '500',
     }
 });
 
