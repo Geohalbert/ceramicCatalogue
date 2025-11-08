@@ -24,9 +24,6 @@ const LanguageSwitcherStyles = StyleSheet.create({
     borderWidth: 1,
     flexDirection: "row",
     overflow: "hidden",
-    position: "absolute",
-    right: 10,
-    top: 10
   }
 });
 

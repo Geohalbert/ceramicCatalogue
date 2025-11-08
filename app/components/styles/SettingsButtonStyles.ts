@@ -2,9 +2,6 @@ import { StyleSheet } from 'react-native';
 
 const SettingsButtonStyles = StyleSheet.create({
   button: {
-    position: 'absolute',
-    top: 50,
-    right: 10,
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 8,

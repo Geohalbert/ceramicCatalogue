@@ -34,7 +34,8 @@ const HomeStyles = StyleSheet.create({
         alignItems: "center",
         flexGrow: 1,
         paddingHorizontal: 20,
-        paddingVertical: 20
+        paddingTop: 40,
+        paddingBottom: 20
     },
     dividerContainer: {
         alignItems: "center",
@@ -160,7 +161,7 @@ const HomeStyles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         marginBottom: 10,
-        marginTop: 40
+        marginTop: 100
     },
     userInfo: {
         color: "#666",
