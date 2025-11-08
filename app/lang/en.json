@@ -147,5 +147,21 @@
   },
   "potteryTile": {
     "unnamed": "Unnamed"
+  },
+  "settings": {
+    "title": "Settings",
+    "account": {
+      "title": "Account",
+      "email": "Email",
+      "name": "Name"
+    },
+    "language": {
+      "title": "Language"
+    },
+    "storage": {
+      "title": "Storage",
+      "local": "Local Storage (Device Only)",
+      "cloud": "Cloud Storage (Synced)"
+    }
   }
 }

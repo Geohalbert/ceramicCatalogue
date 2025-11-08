@@ -147,5 +147,21 @@
     },
     "potteryTile": {
         "unnamed": "Sin nombre"
+    },
+    "settings": {
+        "title": "Configuración",
+        "account": {
+            "title": "Cuenta",
+            "email": "Correo electrónico",
+            "name": "Nombre"
+        },
+        "language": {
+            "title": "Idioma"
+        },
+        "storage": {
+            "title": "Almacenamiento",
+            "local": "Almacenamiento Local (Solo Dispositivo)",
+            "cloud": "Almacenamiento en la Nube (Sincronizado)"
+        }
     }
 }

@@ -6,6 +6,7 @@ import Authentication from "../components/Authentication";
 import AddItemButton from "../components/AddItemButton"; 
 import CollectionsButton from "../components/CollectionsButton";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import SettingsButton from "../components/SettingsButton";
 
 import HomeStyles from "./styles/HomeStyles";
 
@@ -17,6 +18,7 @@ export default function Home() {
   return (
     <ScrollView contentContainerStyle={container}>
       <LanguageSwitcher />
+      <SettingsButton />
       <Text style={title}>{t('home.title')}</Text>
       <Image source={require('../../assets/home_screen_vase_cropped_300w.png')} style={image} />
       
