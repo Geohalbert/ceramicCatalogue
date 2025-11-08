@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
+import {  useEffect, useState } from 'react';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 
 import PotteryTile from '../components/PotteryTile';
+import AddItemButton from '../components/AddItemButton';
 import { fetchPotteryItemsThunk } from '../store/potterySlice';
-
 import CollectionStyles from './styles/CollectionStyles';
 
 export default function Collection() {
@@ -14,7 +14,6 @@ export default function Collection() {
   const potteryItems = useAppSelector((state) => state.pottery.items);
   const loading = useAppSelector((state) => state.pottery.loading);
   const error = useAppSelector((state) => state.pottery.error);
-  const isAuthenticated = useAppSelector((state) => state.auth?.isAuthenticated);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
   // Load pottery items only on initial mount
@@ -62,13 +61,10 @@ export default function Collection() {
   return (
     <View style={container}>
       <Text style={title}>{t('collection.title')}</Text>
+
+      <AddItemButton /> 
       
-      {/* Storage indicator */}
-      <View style={storageIndicator}>
-        <Text style={storageIndicatorText}>
-          {isAuthenticated ? t('collection.cloudStorage') : t('collection.localStorage')}
-        </Text>
-      </View>
+      
       
       {potteryItems.length === 0 ? (
         <View style={emptyContainer}>

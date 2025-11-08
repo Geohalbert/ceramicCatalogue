@@ -27,11 +27,7 @@ export default function Home() {
         </View>
       )}
       
-      {/* App navigation - available to everyone */}
-      <AddItemButton />
       <CollectionsButton />
-      
-      {/* Authentication section */}
       <Authentication />
     </ScrollView>
   );
