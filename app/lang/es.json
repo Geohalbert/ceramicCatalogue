@@ -45,7 +45,13 @@
             "enterName": "Por favor ingresa tu nombre",
             "fillAllFields": "Por favor completa todos los campos",
             "resetEmailFailed": "No se pudo enviar el correo de restablecimiento",
-            "googleSignInFailed": "No se pudo iniciar sesión con Google"
+            "googleSignInFailed": "No se pudo iniciar sesión con Google",
+            "weakPassword": "La contraseña no cumple con los requisitos",
+            "passwordLength": "• Al menos 8 caracteres",
+            "passwordUppercase": "• Al menos una letra mayúscula (A-Z)",
+            "passwordLowercase": "• Al menos una letra minúscula (a-z)",
+            "passwordNumbers": "• Al menos 2 números",
+            "passwordSymbol": "• Al menos un símbolo (!@#$%^&* etc.)"
         },
         "google": {
             "button": "Continuar con Google",

@@ -80,6 +80,41 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     dispatch(clearError());
   }, [isSignUp, isForgotPassword, dispatch]);
 
+  const validatePassword = (password: string): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // Check length
+    if (password.length < 8) {
+      errors.push(t('authentication.errors.passwordLength'));
+    }
+    
+    // Check for uppercase letter
+    if (!/[A-Z]/.test(password)) {
+      errors.push(t('authentication.errors.passwordUppercase'));
+    }
+    
+    // Check for lowercase letter
+    if (!/[a-z]/.test(password)) {
+      errors.push(t('authentication.errors.passwordLowercase'));
+    }
+    
+    // Check for at least 2 numbers
+    const numberCount = (password.match(/[0-9]/g) || []).length;
+    if (numberCount < 2) {
+      errors.push(t('authentication.errors.passwordNumbers'));
+    }
+    
+    // Check for symbol
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      errors.push(t('authentication.errors.passwordSymbol'));
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  };
+
   const handleAuth = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert(t('common.error'), t('authentication.errors.fillAllFields'));
@@ -89,6 +124,18 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
     if (isSignUp && !displayName.trim()) {
       Alert.alert(t('common.error'), t('authentication.errors.enterName'));
       return;
+    }
+
+    // Validate password for sign up
+    if (isSignUp) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        Alert.alert(
+          t('authentication.errors.weakPassword'),
+          passwordValidation.errors.join('\n')
+        );
+        return;
+      }
     }
 
     try {

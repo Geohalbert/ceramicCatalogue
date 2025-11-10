@@ -45,7 +45,13 @@
       "enterName": "Please enter your name",
       "fillAllFields": "Please fill in all fields",
       "resetEmailFailed": "Failed to send reset email",
-      "googleSignInFailed": "Failed to sign in with Google"
+      "googleSignInFailed": "Failed to sign in with Google",
+      "weakPassword": "Password does not meet requirements",
+      "passwordLength": "• At least 8 characters",
+      "passwordUppercase": "• At least one uppercase letter (A-Z)",
+      "passwordLowercase": "• At least one lowercase letter (a-z)",
+      "passwordNumbers": "• At least 2 numbers",
+      "passwordSymbol": "• At least one symbol (!@#$%^&* etc.)"
     },
     "google": {
       "button": "Continue with Google",
