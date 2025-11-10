@@ -16,7 +16,11 @@ export default function StackNavigator() {
                 options={{ headerShown: false }}
             />
             <Stack.Screen name="AddItem" component={AddItem} />
-            <Stack.Screen name="Collection" component={Collection} />
+            <Stack.Screen 
+                name="Collection" 
+                component={Collection} 
+                options={{ headerShown: false }}
+            />
             <Stack.Screen name="Settings" component={Settings} />
         </Stack.Navigator>
     );

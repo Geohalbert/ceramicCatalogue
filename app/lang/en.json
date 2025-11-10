@@ -98,7 +98,21 @@
     "loading": "Loading your pottery...",
     "title": "My Collection",
     "localStorage": "💾 Local Storage",
-    "cloudStorage": "☁️ Cloud Storage"
+    "cloudStorage": "☁️ Cloud Storage",
+    "noItemsForFilter": "No items match this filter",
+    "tryDifferentFilter": "Try selecting a different filter to see your pottery",
+    "drawer": {
+      "title": "Menu",
+      "navigation": "Navigation",
+      "home": "Home",
+      "settings": "Settings",
+      "filterBy": "Filter By",
+      "filters": {
+        "all": "All Items",
+        "inProgress": "In Progress",
+        "finished": "Finished"
+      }
+    }
   },
   "common": {
     "cancel": "Cancel",

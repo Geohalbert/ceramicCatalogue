@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
+import { useEffect, useState, useMemo } from 'react';
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, StatusBar } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { useTheme } from '../context/ThemeContext';
 
 import PotteryTile from '../components/PotteryTile';
 import AddItemButton from '../components/AddItemButton';
+import CollectionDrawer from '../components/CollectionDrawer';
 import { fetchPotteryItemsThunk } from '../store/potterySlice';
 import CollectionStyles from './styles/CollectionStyles';
 
@@ -18,6 +19,8 @@ export default function Collection() {
   const error = useAppSelector((state) => state.pottery.error);
   const isAuthenticated = useAppSelector((state) => state.auth?.isAuthenticated);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished'>('all');
 
   // Load pottery items only on initial mount
   useEffect(() => {
@@ -31,7 +34,19 @@ export default function Collection() {
     dispatch(fetchPotteryItemsThunk());
   };
 
-  const { container, title, emptyContainer, emptyText, emptySubtext, listContainer, storageIndicator, storageIndicatorText } = CollectionStyles;
+  // Filter pottery items based on selected filter
+  const filteredPotteryItems = useMemo(() => {
+    if (selectedFilter === 'all') {
+      return potteryItems;
+    } else if (selectedFilter === 'inProgress') {
+      return potteryItems.filter(item => item.potStatus === 'In Progress');
+    } else if (selectedFilter === 'finished') {
+      return potteryItems.filter(item => item.potStatus === 'Finished');
+    }
+    return potteryItems;
+  }, [potteryItems, selectedFilter]);
+
+  const { container, title, emptyContainer, emptyText, emptySubtext, listContainer, storageIndicator, storageIndicatorText, hamburgerButton, hamburgerIcon } = CollectionStyles;
 
   // Only show full loading screen on very first load (no items and haven't loaded yet)
   const isInitialLoad = loading && potteryItems.length === 0 && !hasInitiallyLoaded;
@@ -61,29 +76,68 @@ export default function Collection() {
     );
   }
 
+  const statusBarHeight = StatusBar.currentHeight || 0;
+
   return (
-    <View style={[container, { backgroundColor: colors.background }]}>
-      <Text style={[title, { color: colors.text }]}>{t('collection.title')}</Text>
+    <View style={[container, { backgroundColor: colors.background, paddingTop: statusBarHeight + 10 }]}>
+      {/* Header with Title and Hamburger Menu */}
+      <View style={{ 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        paddingHorizontal: 20, 
+        paddingVertical: 15,
+        marginBottom: 10,
+        position: 'relative'
+      }}>
+        {/* Spacer for centering */}
+        <View style={{ width: 48 }} />
+        
+        <Text style={[title, { color: colors.text, marginBottom: 0, position: 'absolute', left: 0, right: 0, textAlign: 'center' }]}>
+          {t('collection.title')}
+        </Text>
+        
+        <TouchableOpacity
+          style={[hamburgerButton, { backgroundColor: colors.card, borderColor: colors.border, zIndex: 10 }]}
+          onPress={() => setIsDrawerOpen(true)}
+          activeOpacity={0.7}
+        >
+          <Text style={[hamburgerIcon, { color: colors.text }]}>☰</Text>
+        </TouchableOpacity>
+      </View>
 
       <AddItemButton /> 
       
-      {/* Storage indicator */}
-      {isAuthenticated !== undefined && (
-        <View style={[storageIndicator, { backgroundColor: colors.secondaryBackground }]}>
-          <Text style={[storageIndicatorText, { color: colors.secondaryText }]}>
-            {isAuthenticated ? t('collection.cloudStorage') : t('collection.localStorage')}
-          </Text>
-        </View>
-      )}
+      {/* Storage indicator and filter badge */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+        {isAuthenticated !== undefined && (
+          <View style={[storageIndicator, { backgroundColor: colors.secondaryBackground }]}>
+            <Text style={[storageIndicatorText, { color: colors.secondaryText }]}>
+              {isAuthenticated ? t('collection.cloudStorage') : t('collection.localStorage')}
+            </Text>
+          </View>
+        )}
+        {selectedFilter !== 'all' && (
+          <View style={[storageIndicator, { backgroundColor: colors.primary }]}>
+            <Text style={[storageIndicatorText, { color: '#fff' }]}>
+              {selectedFilter === 'inProgress' ? t('collection.drawer.filters.inProgress') : t('collection.drawer.filters.finished')}
+            </Text>
+          </View>
+        )}
+      </View>
       
-      {potteryItems.length === 0 ? (
+      {filteredPotteryItems.length === 0 ? (
         <View style={emptyContainer}>
-          <Text style={[emptyText, { color: colors.text }]}>{t('collection.empty.title')}</Text>
-          <Text style={[emptySubtext, { color: colors.secondaryText }]}>{t('collection.empty.subtitle')}</Text>
+          <Text style={[emptyText, { color: colors.text }]}>
+            {potteryItems.length === 0 ? t('collection.empty.title') : t('collection.noItemsForFilter')}
+          </Text>
+          <Text style={[emptySubtext, { color: colors.secondaryText }]}>
+            {potteryItems.length === 0 ? t('collection.empty.subtitle') : t('collection.tryDifferentFilter')}
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={potteryItems}
+          data={filteredPotteryItems}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PotteryTile pottery={item} />}
           contentContainerStyle={listContainer}
@@ -93,6 +147,14 @@ export default function Collection() {
           }
         />
       )}
+
+      {/* Drawer */}
+      <CollectionDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        selectedFilter={selectedFilter}
+        onFilterChange={setSelectedFilter}
+      />
     </View>
   );
 }

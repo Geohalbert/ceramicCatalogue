@@ -98,7 +98,21 @@
         "loading": "Cargando tu cerámica...",
         "title": "Mi colección",
         "localStorage": "💾 Almacenamiento Local",
-        "cloudStorage": "☁️ Almacenamiento en la Nube"
+        "cloudStorage": "☁️ Almacenamiento en la Nube",
+        "noItemsForFilter": "No hay artículos que coincidan con este filtro",
+        "tryDifferentFilter": "Intenta seleccionar un filtro diferente para ver tu cerámica",
+        "drawer": {
+            "title": "Menú",
+            "navigation": "Navegación",
+            "home": "Inicio",
+            "settings": "Configuración",
+            "filterBy": "Filtrar Por",
+            "filters": {
+                "all": "Todos los Artículos",
+                "inProgress": "En Progreso",
+                "finished": "Terminado"
+            }
+        }
     },
     "common": {
         "cancel": "Cancelar",

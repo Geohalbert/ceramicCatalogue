@@ -41,6 +41,20 @@ const CollectionStyles = StyleSheet.create({
         fontSize: 12,
         color: '#666',
         fontWeight: '500',
+    },
+    hamburgerButton: {
+        width: 48,
+        height: 48,
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ddd',
+    },
+    hamburgerIcon: {
+        fontSize: 24,
+        color: '#333',
     }
 });
 
