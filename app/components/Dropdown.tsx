@@ -67,8 +67,16 @@ export default function Dropdown({
         animationType="slide"
         onRequestClose={() => setIsVisible(false)}
       >
-        <View style={modal}>
-          <View style={[modalContent, { backgroundColor: colors.card }]}>
+        <TouchableOpacity 
+          style={modal}
+          activeOpacity={1}
+          onPress={() => setIsVisible(false)}
+        >
+          <TouchableOpacity 
+            style={[modalContent, { backgroundColor: colors.card }]}
+            activeOpacity={1}
+            onPress={(e) => e.stopPropagation()}
+          >
             <View style={[modalHeader, { borderBottomColor: colors.border }]}>
               <Text style={[modalTitle, { color: colors.text }]}>{t('dropdown.modalTitle')}</Text>
               <TouchableOpacity 
@@ -106,8 +114,8 @@ export default function Dropdown({
                 );
               }}
             />
-          </View>
-        </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
       </Modal>
     </View>
   );
