@@ -20,7 +20,7 @@ export default function Collection() {
   const isAuthenticated = useAppSelector((state) => state.auth?.isAuthenticated);
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished' | 'firing' | 'drying'>('all');
 
   // Load pottery items only on initial mount
   useEffect(() => {
@@ -42,6 +42,10 @@ export default function Collection() {
       return potteryItems.filter(item => item.potStatus === 'In Progress');
     } else if (selectedFilter === 'finished') {
       return potteryItems.filter(item => item.potStatus === 'Finished');
+    } else if (selectedFilter === 'firing') {
+      return potteryItems.filter(item => item.potStatus === 'Firing');
+    } else if (selectedFilter === 'drying') {
+      return potteryItems.filter(item => item.potStatus === 'Drying');
     }
     return potteryItems;
   }, [potteryItems, selectedFilter]);
@@ -106,7 +110,9 @@ export default function Collection() {
         </TouchableOpacity>
       </View>
 
-      <AddItemButton /> 
+      <View style={{ alignItems: 'center', marginBottom: 15 }}>
+        <AddItemButton /> 
+      </View>
       
       {/* Storage indicator and filter badge */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 10 }}>
@@ -120,7 +126,10 @@ export default function Collection() {
         {selectedFilter !== 'all' && (
           <View style={[storageIndicator, { backgroundColor: colors.primary }]}>
             <Text style={[storageIndicatorText, { color: '#fff' }]}>
-              {selectedFilter === 'inProgress' ? t('collection.drawer.filters.inProgress') : t('collection.drawer.filters.finished')}
+              {selectedFilter === 'inProgress' && t('collection.drawer.filters.inProgress')}
+              {selectedFilter === 'finished' && t('collection.drawer.filters.finished')}
+              {selectedFilter === 'firing' && t('collection.drawer.filters.firing')}
+              {selectedFilter === 'drying' && t('collection.drawer.filters.drying')}
             </Text>
           </View>
         )}

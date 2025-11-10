@@ -8,8 +8,8 @@ import { useEffect, useRef } from 'react';
 interface CollectionDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedFilter: 'all' | 'inProgress' | 'finished';
-  onFilterChange: (filter: 'all' | 'inProgress' | 'finished') => void;
+  selectedFilter: 'all' | 'inProgress' | 'finished' | 'firing' | 'drying';
+  onFilterChange: (filter: 'all' | 'inProgress' | 'finished' | 'firing' | 'drying') => void;
 }
 
 const DRAWER_WIDTH = Dimensions.get('window').width * 0.75;
@@ -40,7 +40,7 @@ export default function CollectionDrawer({
     }, 300);
   };
 
-  const handleFilterSelect = (filter: 'all' | 'inProgress' | 'finished') => {
+  const handleFilterSelect = (filter: 'all' | 'inProgress' | 'finished' | 'firing' | 'drying') => {
     onFilterChange(filter);
     onClose();
   };
@@ -188,6 +188,7 @@ export default function CollectionDrawer({
                   paddingHorizontal: 15,
                   backgroundColor: selectedFilter === 'finished' ? colors.primary : colors.secondaryBackground,
                   borderRadius: 8,
+                  marginBottom: 8,
                 }}
                 onPress={() => handleFilterSelect('finished')}
               >
@@ -197,6 +198,43 @@ export default function CollectionDrawer({
                   fontWeight: selectedFilter === 'finished' ? '600' : 'normal'
                 }}>
                   {t('collection.drawer.filters.finished')} {selectedFilter === 'finished' && '✓'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 15,
+                  paddingHorizontal: 15,
+                  backgroundColor: selectedFilter === 'firing' ? colors.primary : colors.secondaryBackground,
+                  borderRadius: 8,
+                  marginBottom: 8,
+                }}
+                onPress={() => handleFilterSelect('firing')}
+              >
+                <Text style={{ 
+                  fontSize: 16, 
+                  color: selectedFilter === 'firing' ? '#fff' : colors.text,
+                  fontWeight: selectedFilter === 'firing' ? '600' : 'normal'
+                }}>
+                  {t('collection.drawer.filters.firing')} {selectedFilter === 'firing' && '✓'}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 15,
+                  paddingHorizontal: 15,
+                  backgroundColor: selectedFilter === 'drying' ? colors.primary : colors.secondaryBackground,
+                  borderRadius: 8,
+                }}
+                onPress={() => handleFilterSelect('drying')}
+              >
+                <Text style={{ 
+                  fontSize: 16, 
+                  color: selectedFilter === 'drying' ? '#fff' : colors.text,
+                  fontWeight: selectedFilter === 'drying' ? '600' : 'normal'
+                }}>
+                  {t('collection.drawer.filters.drying')} {selectedFilter === 'drying' && '✓'}
                 </Text>
               </TouchableOpacity>
             </View>

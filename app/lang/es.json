@@ -110,7 +110,9 @@
             "filters": {
                 "all": "Todos los Artículos",
                 "inProgress": "En Progreso",
-                "finished": "Terminado"
+                "finished": "Terminado",
+                "firing": "Cocción",
+                "drying": "Secado"
             }
         }
     },

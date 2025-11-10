@@ -110,7 +110,9 @@
       "filters": {
         "all": "All Items",
         "inProgress": "In Progress",
-        "finished": "Finished"
+        "finished": "Finished",
+        "firing": "Firing",
+        "drying": "Drying"
       }
     }
   },
