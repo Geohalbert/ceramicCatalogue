@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Google from 'expo-auth-session/providers/google';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, signInWithGoogleThunk, setUser, clearError } from "../store/authSlice";
@@ -18,6 +20,7 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   const { t } = useTranslation();
   const { colors } = useTheme();
   const dispatch = useAppDispatch();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user, loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
   
   const [isSignUp, setIsSignUp] = useState(false);
@@ -85,6 +88,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       if (onAuthenticated) {
         onAuthenticated();
       }
+      
+      // Navigate to Collection screen
+      navigation.navigate('Collection');
     } catch (error: any) {
       Alert.alert(t('common.error'), error.message || t('authentication.errors.authenticationFailed'));
     }
@@ -145,6 +151,9 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       if (onAuthenticated) {
         onAuthenticated();
       }
+      
+      // Navigate to Collection screen
+      navigation.navigate('Collection');
     } catch (error: any) {
       // Don't show alert if user cancelled
       if (error.message !== 'Sign in cancelled') {
