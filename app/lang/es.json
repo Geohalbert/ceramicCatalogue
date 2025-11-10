@@ -65,6 +65,7 @@
             "forgotPasswordLink": "¿Olvidaste tu contraseña?",
             "noAccount": "¿No tienes una cuenta?",
             "passwordPlaceholder": "Contraseña",
+            "rememberMe": "Recuérdame",
             "signUpLink": "Registrarse",
             "successMessage": "¡Inicio de sesión exitoso!",
             "title": "Iniciar sesión"

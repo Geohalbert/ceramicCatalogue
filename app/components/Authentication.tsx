@@ -3,6 +3,7 @@ import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, Scro
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Google from 'expo-auth-session/providers/google';
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { signInThunk, signUpThunk, signOutThunk, signInWithGoogleThunk, setUser, clearError } from "../store/authSlice";
@@ -11,6 +12,9 @@ import { onAuthChange, resetPassword, createGoogleAuthConfig } from "../services
 import { useTheme } from "../context/ThemeContext";
 
 import HomeStyles from "../screens/styles/HomeStyles";
+
+const REMEMBER_ME_KEY = '@ceramicCatalogue:rememberMe';
+const SAVED_EMAIL_KEY = '@ceramicCatalogue:savedEmail';
 
 interface AuthenticationProps {
   onAuthenticated?: () => void;
@@ -29,10 +33,30 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [isResetting, setIsResetting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Configure Google authentication with Expo
   const googleConfig = createGoogleAuthConfig();
   const [request, response, promptAsync] = Google.useAuthRequest(googleConfig);
+
+  // Load saved email on mount if "Remember Me" was previously checked
+  useEffect(() => {
+    const loadSavedEmail = async () => {
+      try {
+        const savedRememberMe = await AsyncStorage.getItem(REMEMBER_ME_KEY);
+        const savedEmail = await AsyncStorage.getItem(SAVED_EMAIL_KEY);
+        
+        if (savedRememberMe === 'true' && savedEmail) {
+          setEmail(savedEmail);
+          setRememberMe(true);
+        }
+      } catch (error) {
+        console.error('Error loading saved email:', error);
+      }
+    };
+    
+    loadSavedEmail();
+  }, []);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -74,13 +98,24 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       } else {
         await dispatch(signInThunk({ email, password })).unwrap();
         Alert.alert(t('common.success'), t('authentication.signIn.successMessage'));
+        
+        // Save email if "Remember Me" is checked
+        if (rememberMe) {
+          await AsyncStorage.setItem(REMEMBER_ME_KEY, 'true');
+          await AsyncStorage.setItem(SAVED_EMAIL_KEY, email);
+        } else {
+          await AsyncStorage.removeItem(REMEMBER_ME_KEY);
+          await AsyncStorage.removeItem(SAVED_EMAIL_KEY);
+        }
       }
       
       // Migrate local data to Firebase after successful sign-in
       await migrateLocalData();
       
-      // Clear form
-      setEmail("");
+      // Clear form (but keep email if remember me is checked)
+      if (!rememberMe) {
+        setEmail("");
+      }
       setPassword("");
       setDisplayName("");
       
@@ -317,12 +352,43 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
       />
       
       {!isSignUp && (
-        <TouchableOpacity 
-          style={forgotPasswordLink}
-          onPress={() => setIsForgotPassword(true)}
-        >
-          <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.signIn.forgotPasswordLink')}</Text>
-        </TouchableOpacity>
+        <>
+          {/* Remember Me Checkbox */}
+          <TouchableOpacity 
+            style={{ 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              marginBottom: 10,
+              marginTop: 5
+            }}
+            onPress={() => setRememberMe(!rememberMe)}
+            activeOpacity={0.7}
+          >
+            <View style={{
+              width: 20,
+              height: 20,
+              borderRadius: 4,
+              borderWidth: 2,
+              borderColor: colors.primary,
+              backgroundColor: rememberMe ? colors.primary : 'transparent',
+              marginRight: 8,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              {rememberMe && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
+            </View>
+            <Text style={{ color: colors.text, fontSize: 14 }}>
+              {t('authentication.signIn.rememberMe')}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={forgotPasswordLink}
+            onPress={() => setIsForgotPassword(true)}
+          >
+            <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.signIn.forgotPasswordLink')}</Text>
+          </TouchableOpacity>
+        </>
       )}
       
       <TouchableOpacity 

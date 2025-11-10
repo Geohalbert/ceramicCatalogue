@@ -65,6 +65,7 @@
       "forgotPasswordLink": "Forgot Password?",
       "noAccount": "Don't have an account?",
       "passwordPlaceholder": "Password",
+      "rememberMe": "Remember me",
       "signUpLink": "Sign Up",
       "successMessage": "Signed in successfully!",
       "title": "Sign In"
