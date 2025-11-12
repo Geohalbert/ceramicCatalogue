@@ -35,6 +35,11 @@
             },
             "status": {
                 "label": "Estado"
+            },
+            "timer": {
+                "label": "Configurar Temporizador de Notificación (Opcional)",
+                "days": "día",
+                "description": "Recibirás una notificación en {{days}} día(s)"
             }
         }
     },
@@ -169,7 +174,8 @@
         "guestMode": "📱 Modo invitado - Datos guardados localmente en este dispositivo. ¡Inicia sesión para sincronizar en todos los dispositivos!"
     },
     "potteryTile": {
-        "unnamed": "Sin nombre"
+        "unnamed": "Sin nombre",
+        "timerComplete": "¡Listo!"
     },
     "settings": {
         "title": "Configuración",

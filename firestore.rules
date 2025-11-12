@@ -22,11 +22,17 @@ service cloud.firestore {
                       && request.resource.data.dateCreated is string
                       && request.resource.data.designType is string
                       && request.resource.data.potStatus is string
-                      && request.resource.data.glazeType is string;
+                      && request.resource.data.glazeType is string
+                      && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
+                      && (!request.resource.data.keys().hasAny(['timerDays']) || request.resource.data.timerDays is number)
+                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
         
         allow update: if request.auth != null 
                       && request.auth.uid == userId
-                      && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType']);
+                      && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType'])
+                      && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
+                      && (!request.resource.data.keys().hasAny(['timerDays']) || request.resource.data.timerDays is number)
+                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
         
         allow delete: if request.auth != null && request.auth.uid == userId;
       }

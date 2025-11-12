@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert } from "react-native";
+import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -9,6 +9,7 @@ import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
 import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
+import { schedulePotteryNotification, cancelPotteryNotification, getRemainingTime } from "../services/notificationService";
 
 import AddItemStyles from "./styles/AddItemStyles";
 
@@ -30,6 +31,8 @@ export default function AddItem() {
   const [designType, setDesignType] = useState<DesignType>("Pot");
   const [potStatus, setPotStatus] = useState<PotStatus>("In Progress");
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
+  const [timerDays, setTimerDays] = useState<number | null>(null);
+  const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -43,6 +46,8 @@ export default function AddItem() {
       setDesignType(editingPottery.designType);
       setPotStatus(editingPottery.potStatus);
       setGlazeType(editingPottery.glazeType);
+      setTimerDays(editingPottery.timerDays || null);
+      setExistingNotificationId(editingPottery.notificationId);
     }
   }, [editingPottery]);
 
@@ -88,9 +93,37 @@ export default function AddItem() {
     }
 
     try {
+      // Handle notifications for Firing or Drying status
+      let notificationId: string | undefined = existingNotificationId;
+      const timerStartDate = new Date().toISOString();
+
+      // Cancel existing notification if status changed or timer removed
+      if (existingNotificationId && (potStatus !== 'Firing' && potStatus !== 'Drying' || !timerDays)) {
+        await cancelPotteryNotification(existingNotificationId);
+        notificationId = undefined;
+      }
+
+      // Schedule new notification if Firing or Drying with timer
+      if ((potStatus === 'Firing' || potStatus === 'Drying') && timerDays) {
+        // Cancel old notification if exists
+        if (existingNotificationId) {
+          await cancelPotteryNotification(existingNotificationId);
+        }
+        
+        const newNotificationId = await schedulePotteryNotification(
+          potName.trim(),
+          potStatus,
+          timerDays
+        );
+        
+        if (newNotificationId) {
+          notificationId = newNotificationId;
+        }
+      }
+
       if (editingPottery) {
         // Update existing pottery
-        const updatedPottery = {
+        const updatedPottery: Pottery = {
           ...editingPottery,
           potName: potName.trim(),
           clayType,
@@ -98,6 +131,9 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
+          notificationId,
+          timerDays: timerDays || undefined,
+          timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
         };
 
         await dispatch(updatePotteryThunk(updatedPottery)).unwrap();
@@ -111,6 +147,9 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
+          notificationId,
+          timerDays: timerDays || undefined,
+          timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
         };
 
         await dispatch(addPotteryThunk(newPottery)).unwrap();
@@ -140,6 +179,11 @@ export default function AddItem() {
           style: "destructive",
           onPress: async () => {
             try {
+              // Cancel notification if exists
+              if (editingPottery.notificationId) {
+                await cancelPotteryNotification(editingPottery.notificationId);
+              }
+              
               await dispatch(deletePotteryThunk(editingPottery.id)).unwrap();
               Alert.alert(t('common.success'), t('addEditItem.alerts.deleteSuccess'));
               navigation.pop();
@@ -194,6 +238,45 @@ export default function AddItem() {
           selectedValue={potStatus}
           onValueChange={(value) => setPotStatus(value as PotStatus)}
         />
+
+        {/* Timer for Firing or Drying */}
+        {(potStatus === 'Firing' || potStatus === 'Drying') && (
+          <View style={{ marginTop: 15, marginBottom: 15 }}>
+            <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.timer.label')}</Text>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+              {[1, 2, 3].map((days) => (
+                <TouchableOpacity
+                  key={days}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    borderRadius: 8,
+                    backgroundColor: timerDays === days ? colors.primary : colors.inputBackground,
+                    borderWidth: 2,
+                    borderColor: timerDays === days ? colors.primary : colors.border,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => setTimerDays(timerDays === days ? null : days)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={{ 
+                    fontSize: 16, 
+                    fontWeight: timerDays === days ? '600' : 'normal',
+                    color: timerDays === days ? '#fff' : colors.text 
+                  }}>
+                    {days} {t('addEditItem.fields.timer.days')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            {timerDays && (
+              <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
+                {t('addEditItem.fields.timer.description', { days: timerDays })}
+              </Text>
+            )}
+          </View>
+        )}
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.glazeType.label')}</Text>
         <Dropdown

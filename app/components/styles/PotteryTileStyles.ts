@@ -43,7 +43,18 @@ const PotteryTileStyles = StyleSheet.create({
     color: "#666",
     fontSize: 14,
     marginBottom: 2
-  }
+  },
+  timerBadge: {
+    marginTop: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 6,
+  },
+  timerText: {
+    fontSize: 10,
+    color: '#fff',
+    fontWeight: '600',
+  },
 });
 
-  export default PotteryTileStyles;
+export default PotteryTileStyles;

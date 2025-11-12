@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "../context/ThemeContext";
+import { getRemainingTime } from "../services/notificationService";
 
 import { Pottery } from "../store/types";
 
@@ -15,12 +16,18 @@ interface PotteryTileProps {
 export default function PotteryTile({ pottery }: PotteryTileProps) {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { container, image, name, type, date, status } = PotteryTileStyles;
+  const { container, image, name, type, date, status, timerBadge, timerText } = PotteryTileStyles;
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
 
   const handlePress = () => {
     navigation.navigate('AddItem', { pottery });
   };
+
+  // Calculate remaining time if timer is set
+  const hasActiveTimer = pottery.timerStartDate && pottery.timerDays;
+  const remainingTime = hasActiveTimer 
+    ? getRemainingTime(pottery.timerStartDate!, pottery.timerDays!) 
+    : null;
 
   if (pottery) {
   return (
@@ -33,6 +40,20 @@ export default function PotteryTile({ pottery }: PotteryTileProps) {
       <Text style={[type, { color: colors.secondaryText }]}>{pottery.designType}</Text>
       <Text style={[date, { color: colors.secondaryText }]}>{pottery.dateCreated}</Text>
       <Text style={[status, { color: colors.secondaryText }]}>{pottery.potStatus}</Text>
+      
+      {/* Timer Badge */}
+      {hasActiveTimer && remainingTime && !remainingTime.isExpired && (
+        <View style={[timerBadge, { backgroundColor: colors.warning }]}>
+          <Text style={timerText}>
+            ⏱️ {remainingTime.days}d {remainingTime.hours}h
+          </Text>
+        </View>
+      )}
+      {hasActiveTimer && remainingTime && remainingTime.isExpired && (
+        <View style={[timerBadge, { backgroundColor: colors.success }]}>
+          <Text style={timerText}>✓ {t('potteryTile.timerComplete')}</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );}
 }

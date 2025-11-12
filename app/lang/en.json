@@ -35,6 +35,11 @@
       },
       "status": {
         "label": "Status"
+      },
+      "timer": {
+        "label": "Set Notification Timer (Optional)",
+        "days": "day",
+        "description": "You'll receive a notification in {{days}} day(s)"
       }
     }
   },
@@ -169,7 +174,8 @@
     "guestMode": "📱 Using guest mode - Data saved locally on this device. Sign in to sync across devices!"
   },
   "potteryTile": {
-    "unnamed": "Unnamed"
+    "unnamed": "Unnamed",
+    "timerComplete": "Ready!"
   },
   "settings": {
     "title": "Settings",
