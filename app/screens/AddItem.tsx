@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "../context/ThemeContext";
+import * as ImagePicker from 'expo-image-picker';
 
 import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
@@ -33,6 +34,7 @@ export default function AddItem() {
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
   const [timerDays, setTimerDays] = useState<number | null>(null);
   const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
+  const [imageUri, setImageUri] = useState<string | undefined>();
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -48,8 +50,84 @@ export default function AddItem() {
       setGlazeType(editingPottery.glazeType);
       setTimerDays(editingPottery.timerDays || null);
       setExistingNotificationId(editingPottery.notificationId);
+      setImageUri(editingPottery.imageUri);
     }
   }, [editingPottery]);
+
+  // Image picker functions
+  const pickImageFromLibrary = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (!permissionResult.granted) {
+        Alert.alert(t('common.error'), t('addEditItem.fields.image.permissionDenied'));
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setImageUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error picking image from library:', error);
+      Alert.alert(t('common.error'), 'Failed to pick image');
+    }
+  };
+
+  const pickImageFromCamera = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (!permissionResult.granted) {
+        Alert.alert(t('common.error'), t('addEditItem.fields.image.permissionDenied'));
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setImageUri(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error('Error taking photo:', error);
+      Alert.alert(t('common.error'), 'Failed to take photo');
+    }
+  };
+
+  const handleAddPhoto = () => {
+    Alert.alert(
+      t('addEditItem.fields.image.chooseSource'),
+      '',
+      [
+        {
+          text: t('addEditItem.fields.image.fromCamera'),
+          onPress: pickImageFromCamera,
+        },
+        {
+          text: t('addEditItem.fields.image.fromLibrary'),
+          onPress: pickImageFromLibrary,
+        },
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+      ]
+    );
+  };
+
+  const handleRemovePhoto = () => {
+    setImageUri(undefined);
+  };
 
   const { container, form, label, input } = AddItemStyles;
 
@@ -131,6 +209,7 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
+          imageUri,
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
@@ -147,6 +226,7 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
+          imageUri,
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
@@ -208,6 +288,79 @@ export default function AddItem() {
           placeholder={t('addEditItem.fields.potName.placeholder')}
           placeholderTextColor={colors.placeholder}
         />
+
+        {/* Photo Section */}
+        <Text style={[label, { color: colors.text, marginTop: 15 }]}>{t('addEditItem.fields.image.label')}</Text>
+        {imageUri ? (
+          <View style={{ marginTop: 10, marginBottom: 15 }}>
+            <Image 
+              source={{ uri: imageUri }} 
+              style={{ 
+                width: '100%', 
+                height: 200, 
+                borderRadius: 8, 
+                backgroundColor: colors.inputBackground 
+              }} 
+              resizeMode="cover"
+            />
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  borderRadius: 8,
+                  backgroundColor: colors.inputBackground,
+                  borderWidth: 2,
+                  borderColor: colors.border,
+                  alignItems: 'center',
+                }}
+                onPress={handleAddPhoto}
+              >
+                <Text style={{ color: colors.text, fontSize: 14, fontWeight: '500' }}>
+                  {t('addEditItem.fields.image.changePhoto')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  borderRadius: 8,
+                  backgroundColor: colors.danger,
+                  alignItems: 'center',
+                }}
+                onPress={handleRemovePhoto}
+              >
+                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
+                  {t('addEditItem.fields.image.removePhoto')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={{
+              marginTop: 10,
+              marginBottom: 15,
+              paddingVertical: 40,
+              paddingHorizontal: 20,
+              borderRadius: 8,
+              backgroundColor: colors.inputBackground,
+              borderWidth: 2,
+              borderColor: colors.border,
+              borderStyle: 'dashed',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            onPress={handleAddPhoto}
+          >
+            <Text style={{ fontSize: 40, marginBottom: 10 }}>📷</Text>
+            <Text style={{ color: colors.text, fontSize: 16, fontWeight: '500' }}>
+              {t('addEditItem.fields.image.addPhoto')}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.clayType.label')}</Text>
         <Dropdown

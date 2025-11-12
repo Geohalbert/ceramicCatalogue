@@ -29,6 +29,16 @@
       "glazeType": {
         "label": "Glaze Type"
       },
+      "image": {
+        "label": "Photo (Optional)",
+        "addPhoto": "Add Photo",
+        "changePhoto": "Change Photo",
+        "removePhoto": "Remove Photo",
+        "fromCamera": "Take Photo",
+        "fromLibrary": "Choose from Library",
+        "chooseSource": "Choose Photo Source",
+        "permissionDenied": "Permission to access camera or photo library was denied"
+      },
       "potName": {
         "label": "Pot Name *",
         "placeholder": "Enter pot name"

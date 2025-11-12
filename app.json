@@ -17,7 +17,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.ceramiccatalogue.app",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": ["remote-notification"],
+        "NSCameraUsageDescription": "This app uses the camera to take photos of your pottery items.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to select photos of your pottery items.",
+        "NSPhotoLibraryAddUsageDescription": "This app saves photos to your photo library."
       }
     },
     "android": {
@@ -30,7 +33,11 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
-        "android.permission.SCHEDULE_EXACT_ALARM"
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
       ]
     },
     "plugins": [
@@ -40,6 +47,13 @@
           "icon": "./assets/pot_icon.png",
           "color": "#007AFF",
           "sounds": []
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "This app accesses your photos to let you select images of your pottery items.",
+          "cameraPermission": "This app uses the camera to take photos of your pottery items."
         }
       ]
     ],

@@ -33,7 +33,7 @@ export default function PotteryTile({ pottery }: PotteryTileProps) {
   return (
     <TouchableOpacity style={[container, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handlePress}>
       <Image 
-        source={require('../../assets/pot_icon.png')} 
+        source={pottery.imageUri ? { uri: pottery.imageUri } : require('../../assets/pot_icon.png')} 
         style={image} 
       />
       <Text style={[name, { color: colors.text }]}>{pottery.potName || t('potteryTile.unnamed')}</Text>

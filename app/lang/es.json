@@ -29,6 +29,16 @@
             "glazeType": {
                 "label": "Tipo de esmalte"
             },
+            "image": {
+                "label": "Foto (Opcional)",
+                "addPhoto": "Agregar Foto",
+                "changePhoto": "Cambiar Foto",
+                "removePhoto": "Eliminar Foto",
+                "fromCamera": "Tomar Foto",
+                "fromLibrary": "Elegir de la Galería",
+                "chooseSource": "Elegir Origen de la Foto",
+                "permissionDenied": "Se denegó el permiso para acceder a la cámara o la galería"
+            },
             "potName": {
                 "label": "Nombre de la pieza *",
                 "placeholder": "Ingresa el nombre de la pieza"
