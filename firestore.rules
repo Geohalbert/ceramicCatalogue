@@ -1,0 +1,41 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - each user can only read/write their own data
+    match /users/{userId} {
+      // Users can read and write their own user document
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Pottery subcollection - users can only access their own pottery items
+      match /pottery/{potteryId} {
+        // User must be authenticated and the userId must match
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+        
+        // Additional validation for writes
+        allow create: if request.auth != null 
+                      && request.auth.uid == userId
+                      && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType'])
+                      && request.resource.data.potName is string
+                      && request.resource.data.clayType is string
+                      && request.resource.data.dateCreated is string
+                      && request.resource.data.designType is string
+                      && request.resource.data.potStatus is string
+                      && request.resource.data.glazeType is string;
+        
+        allow update: if request.auth != null 
+                      && request.auth.uid == userId
+                      && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType']);
+        
+        allow delete: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

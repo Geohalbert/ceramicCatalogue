@@ -14,14 +14,19 @@ import {
 import { db } from '../config/firebase';
 import { Pottery } from '../store/types';
 
-const COLLECTION_NAME = 'pottery';
+/**
+ * Get the user's pottery collection path
+ */
+const getUserPotteryCollection = (userId: string) => {
+  return collection(db, 'users', userId, 'pottery');
+};
 
 /**
- * Fetch all pottery items from Firestore
+ * Fetch all pottery items from Firestore for a specific user
  */
-export const fetchPotteryItems = async (): Promise<Pottery[]> => {
+export const fetchPotteryItems = async (userId: string): Promise<Pottery[]> => {
   try {
-    const potteryCollection = collection(db, COLLECTION_NAME);
+    const potteryCollection = getUserPotteryCollection(userId);
     const q = query(potteryCollection, orderBy('dateCreated', 'desc'));
     const querySnapshot = await getDocs(q);
     
@@ -44,11 +49,11 @@ export const fetchPotteryItems = async (): Promise<Pottery[]> => {
 };
 
 /**
- * Fetch a single pottery item by ID
+ * Fetch a single pottery item by ID for a specific user
  */
-export const fetchPotteryById = async (id: string): Promise<Pottery | null> => {
+export const fetchPotteryById = async (userId: string, id: string): Promise<Pottery | null> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, id);
+    const docRef = doc(db, 'users', userId, 'pottery', id);
     const docSnap = await getDoc(docRef);
     
     if (docSnap.exists()) {
@@ -68,11 +73,12 @@ export const fetchPotteryById = async (id: string): Promise<Pottery | null> => {
 };
 
 /**
- * Add a new pottery item to Firestore
+ * Add a new pottery item to Firestore for a specific user
  */
-export const addPotteryItem = async (pottery: Omit<Pottery, 'id'>): Promise<string> => {
+export const addPotteryItem = async (userId: string, pottery: Omit<Pottery, 'id'>): Promise<string> => {
   try {
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+    const potteryCollection = getUserPotteryCollection(userId);
+    const docRef = await addDoc(potteryCollection, {
       ...pottery,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
@@ -85,11 +91,11 @@ export const addPotteryItem = async (pottery: Omit<Pottery, 'id'>): Promise<stri
 };
 
 /**
- * Update an existing pottery item in Firestore
+ * Update an existing pottery item in Firestore for a specific user
  */
-export const updatePotteryItem = async (pottery: Pottery): Promise<void> => {
+export const updatePotteryItem = async (userId: string, pottery: Pottery): Promise<void> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, pottery.id);
+    const docRef = doc(db, 'users', userId, 'pottery', pottery.id);
     const { id, ...updateData } = pottery;
     await updateDoc(docRef, {
       ...updateData,
@@ -102,11 +108,11 @@ export const updatePotteryItem = async (pottery: Pottery): Promise<void> => {
 };
 
 /**
- * Delete a pottery item from Firestore
+ * Delete a pottery item from Firestore for a specific user
  */
-export const deletePotteryItem = async (id: string): Promise<void> => {
+export const deletePotteryItem = async (userId: string, id: string): Promise<void> => {
   try {
-    const docRef = doc(db, COLLECTION_NAME, id);
+    const docRef = doc(db, 'users', userId, 'pottery', id);
     await deleteDoc(docRef);
   } catch (error) {
     console.error('Error deleting pottery item:', error);

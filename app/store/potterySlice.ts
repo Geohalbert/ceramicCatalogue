@@ -16,10 +16,11 @@ export const fetchPotteryItemsThunk = createAsyncThunk(
   async (_, { getState }) => {
     const state = getState() as RootState;
     const isAuthenticated = state.auth?.isAuthenticated;
+    const userId = state.auth?.user?.uid;
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId) {
       // Fetch from Firebase
-      const items = await firestoreService.fetchPotteryItems();
+      const items = await firestoreService.fetchPotteryItems(userId);
       return items;
     } else {
       // Fetch from local storage
@@ -34,10 +35,11 @@ export const addPotteryThunk = createAsyncThunk(
   async (pottery: Omit<Pottery, 'id'>, { getState }) => {
     const state = getState() as RootState;
     const isAuthenticated = state.auth?.isAuthenticated;
+    const userId = state.auth?.user?.uid;
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId) {
       // Add to Firebase
-      const id = await firestoreService.addPotteryItem(pottery);
+      const id = await firestoreService.addPotteryItem(userId, pottery);
       return { ...pottery, id };
     } else {
       // Add to local storage
@@ -52,10 +54,11 @@ export const updatePotteryThunk = createAsyncThunk(
   async (pottery: Pottery, { getState }) => {
     const state = getState() as RootState;
     const isAuthenticated = state.auth?.isAuthenticated;
+    const userId = state.auth?.user?.uid;
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId) {
       // Update in Firebase
-      await firestoreService.updatePotteryItem(pottery);
+      await firestoreService.updatePotteryItem(userId, pottery);
       return pottery;
     } else {
       // Update in local storage
@@ -70,10 +73,11 @@ export const deletePotteryThunk = createAsyncThunk(
   async (id: string, { getState }) => {
     const state = getState() as RootState;
     const isAuthenticated = state.auth?.isAuthenticated;
+    const userId = state.auth?.user?.uid;
 
-    if (isAuthenticated) {
+    if (isAuthenticated && userId) {
       // Delete from Firebase
-      await firestoreService.deletePotteryItem(id);
+      await firestoreService.deletePotteryItem(userId, id);
       return id;
     } else {
       // Delete from local storage
@@ -88,6 +92,12 @@ export const migrateLocalToFirebaseThunk = createAsyncThunk(
   'pottery/migrateToFirebase',
   async (_, { getState }) => {
     const state = getState() as RootState;
+    const userId = state.auth?.user?.uid;
+    
+    if (!userId) {
+      throw new Error('User must be authenticated to migrate data');
+    }
+    
     const localItems = await localStorageService.fetchLocalPotteryItems();
     
     if (localItems.length === 0) {
@@ -98,7 +108,7 @@ export const migrateLocalToFirebaseThunk = createAsyncThunk(
     const migratedItems: Pottery[] = [];
     for (const item of localItems) {
       const { id, ...itemData } = item; // Remove local ID
-      const newId = await firestoreService.addPotteryItem(itemData);
+      const newId = await firestoreService.addPotteryItem(userId, itemData);
       migratedItems.push({ ...itemData, id: newId });
     }
 
