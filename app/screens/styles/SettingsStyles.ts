@@ -18,23 +18,19 @@ export default StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#666',
     marginBottom: 10,
     textTransform: 'uppercase',
   },
   option: {
     paddingVertical: 12,
     paddingHorizontal: 15,
-    backgroundColor: '#f9f9f9',
     borderRadius: 8,
     marginBottom: 8,
   },
   optionText: {
     fontSize: 16,
-    color: '#333',
   },
   button: {
-    backgroundColor: '#dc3545',
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
@@ -47,7 +43,6 @@ export default StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#e0e0e0',
     marginVertical: 20,
   },
 });

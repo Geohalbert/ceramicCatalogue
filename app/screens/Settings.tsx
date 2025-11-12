@@ -1,8 +1,10 @@
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { signOutThunk } from '../store/authSlice';
 import { useTheme } from '../context/ThemeContext';
+
+import SettingsStyles from './styles/SettingsStyles';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
@@ -10,41 +12,7 @@ export default function Settings() {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const { theme, toggleTheme, colors } = useTheme();
   
-  const styles = StyleSheet.create({
-    section: {
-      marginBottom: 20,
-    },
-    sectionTitle: {
-      fontSize: 16,
-      fontWeight: '600',
-      marginBottom: 10,
-      textTransform: 'uppercase',
-    },
-    option: {
-      paddingVertical: 12,
-      paddingHorizontal: 15,
-      borderRadius: 8,
-      marginBottom: 8,
-    },
-    optionText: {
-      fontSize: 16,
-    },
-    button: {
-      padding: 15,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginTop: 20,
-    },
-    buttonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    divider: {
-      height: 1,
-      marginVertical: 20,
-    },
-  });
+  const { section, sectionTitle, option, optionText, button, buttonText, divider } = SettingsStyles;
 
   const handleSignOut = async () => {
     try {
@@ -68,58 +36,58 @@ export default function Settings() {
       {/* Account Section */}
       {isAuthenticated && (
         <>
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>{t('settings.account.title')}</Text>
-            <View style={[styles.option, { backgroundColor: colors.secondaryBackground }]}>
-              <Text style={[styles.optionText, { color: colors.text }]}>{t('settings.account.email')}: {user?.email}</Text>
+          <View style={section}>
+            <Text style={[sectionTitle, { color: colors.secondaryText }]}>{t('settings.account.title')}</Text>
+            <View style={[option, { backgroundColor: colors.secondaryBackground }]}>
+              <Text style={[optionText, { color: colors.text }]}>{t('settings.account.email')}: {user?.email}</Text>
             </View>
             {user?.displayName && (
-              <View style={[styles.option, { backgroundColor: colors.secondaryBackground }]}>
-                <Text style={[styles.optionText, { color: colors.text }]}>{t('settings.account.name')}: {user.displayName}</Text>
+              <View style={[option, { backgroundColor: colors.secondaryBackground }]}>
+                <Text style={[optionText, { color: colors.text }]}>{t('settings.account.name')}: {user.displayName}</Text>
               </View>
             )}
           </View>
-          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+          <View style={[divider, { backgroundColor: colors.divider }]} />
         </>
       )}
 
       {/* Appearance Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>{t('settings.appearance.title')}</Text>
+      <View style={section}>
+        <Text style={[sectionTitle, { color: colors.secondaryText }]}>{t('settings.appearance.title')}</Text>
         <TouchableOpacity 
-          style={[styles.option, { backgroundColor: colors.secondaryBackground }]}
+          style={[option, { backgroundColor: colors.secondaryBackground }]}
           onPress={toggleTheme}
         >
-          <Text style={[styles.optionText, { color: colors.text }]}>
+          <Text style={[optionText, { color: colors.text }]}>
             {theme === 'light' ? t('settings.appearance.light') : t('settings.appearance.dark')} {theme === 'light' ? '☀️' : '🌙'}
           </Text>
         </TouchableOpacity>
       </View>
-      <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+      <View style={[divider, { backgroundColor: colors.divider }]} />
 
       {/* Language Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>{t('settings.language.title')}</Text>
+      <View style={section}>
+        <Text style={[sectionTitle, { color: colors.secondaryText }]}>{t('settings.language.title')}</Text>
         <TouchableOpacity 
-          style={[styles.option, { backgroundColor: colors.secondaryBackground }]}
+          style={[option, { backgroundColor: colors.secondaryBackground }]}
           onPress={() => changeLanguage('en')}
         >
-          <Text style={[styles.optionText, { color: colors.text }]}>English {i18n.language === 'en' && '✓'}</Text>
+          <Text style={[optionText, { color: colors.text }]}>English {i18n.language === 'en' && '✓'}</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.option, { backgroundColor: colors.secondaryBackground }]}
+          style={[option, { backgroundColor: colors.secondaryBackground }]}
           onPress={() => changeLanguage('es')}
         >
-          <Text style={[styles.optionText, { color: colors.text }]}>Español {i18n.language === 'es' && '✓'}</Text>
+          <Text style={[optionText, { color: colors.text }]}>Español {i18n.language === 'es' && '✓'}</Text>
         </TouchableOpacity>
       </View>
-      <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+      <View style={[divider, { backgroundColor: colors.divider }]} />
 
       {/* Storage Info Section */}
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>{t('settings.storage.title')}</Text>
-        <View style={[styles.option, { backgroundColor: colors.secondaryBackground }]}>
-          <Text style={[styles.optionText, { color: colors.text }]}>
+      <View style={section}>
+        <Text style={[sectionTitle, { color: colors.secondaryText }]}>{t('settings.storage.title')}</Text>
+        <View style={[option, { backgroundColor: colors.secondaryBackground }]}>
+          <Text style={[optionText, { color: colors.text }]}>
             {isAuthenticated ? t('settings.storage.cloud') : t('settings.storage.local')}
           </Text>
         </View>
@@ -128,9 +96,9 @@ export default function Settings() {
       {/* Sign Out Button */}
       {isAuthenticated && (
         <>
-          <View style={[styles.divider, { backgroundColor: colors.divider }]} />
-          <TouchableOpacity style={[styles.button, { backgroundColor: colors.danger }]} onPress={handleSignOut}>
-            <Text style={styles.buttonText}>{t('authentication.signOut.button')}</Text>
+          <View style={[divider, { backgroundColor: colors.divider }]} />
+          <TouchableOpacity style={[button, { backgroundColor: colors.danger }]} onPress={handleSignOut}>
+            <Text style={buttonText}>{t('authentication.signOut.button')}</Text>
           </TouchableOpacity>
         </>
       )}
