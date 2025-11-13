@@ -15,6 +15,20 @@ import { db } from '../config/firebase';
 import { Pottery } from '../store/types';
 
 /**
+ * Remove undefined values from an object
+ * Firestore doesn't accept undefined, only null or omit the field
+ */
+const removeUndefinedFields = <T extends Record<string, any>>(obj: T): Partial<T> => {
+  const cleaned: any = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      cleaned[key] = obj[key];
+    }
+  }
+  return cleaned;
+};
+
+/**
  * Get the user's pottery collection path
  */
 const getUserPotteryCollection = (userId: string) => {
@@ -78,8 +92,10 @@ export const fetchPotteryById = async (userId: string, id: string): Promise<Pott
 export const addPotteryItem = async (userId: string, pottery: Omit<Pottery, 'id'>): Promise<string> => {
   try {
     const potteryCollection = getUserPotteryCollection(userId);
+    // Remove undefined values before saving to Firestore
+    const cleanedPottery = removeUndefinedFields(pottery);
     const docRef = await addDoc(potteryCollection, {
-      ...pottery,
+      ...cleanedPottery,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
@@ -97,8 +113,10 @@ export const updatePotteryItem = async (userId: string, pottery: Pottery): Promi
   try {
     const docRef = doc(db, 'users', userId, 'pottery', pottery.id);
     const { id, ...updateData } = pottery;
+    // Remove undefined values before saving to Firestore
+    const cleanedUpdateData = removeUndefinedFields(updateData);
     await updateDoc(docRef, {
-      ...updateData,
+      ...cleanedUpdateData,
       updatedAt: serverTimestamp()
     });
   } catch (error) {

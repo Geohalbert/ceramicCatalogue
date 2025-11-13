@@ -18,20 +18,27 @@ service cloud.firestore {
                       && request.auth.uid == userId
                       && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType'])
                       && request.resource.data.potName is string
+                      && request.resource.data.potName.size() > 0
+                      && request.resource.data.potName.size() <= 100
                       && request.resource.data.clayType is string
                       && request.resource.data.dateCreated is string
                       && request.resource.data.designType is string
                       && request.resource.data.potStatus is string
                       && request.resource.data.glazeType is string
+                      && (!request.resource.data.keys().hasAny(['imageUri']) || (request.resource.data.imageUri is string && request.resource.data.imageUri.size() <= 2048))
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
-                      && (!request.resource.data.keys().hasAny(['timerDays']) || request.resource.data.timerDays is number)
+                      && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
                       && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
         
         allow update: if request.auth != null 
                       && request.auth.uid == userId
                       && request.resource.data.keys().hasAll(['potName', 'clayType', 'dateCreated', 'designType', 'potStatus', 'glazeType'])
+                      && request.resource.data.potName is string
+                      && request.resource.data.potName.size() > 0
+                      && request.resource.data.potName.size() <= 100
+                      && (!request.resource.data.keys().hasAny(['imageUri']) || (request.resource.data.imageUri is string && request.resource.data.imageUri.size() <= 2048))
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
-                      && (!request.resource.data.keys().hasAny(['timerDays']) || request.resource.data.timerDays is number)
+                      && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
                       && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
         
         allow delete: if request.auth != null && request.auth.uid == userId;
