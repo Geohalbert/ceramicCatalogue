@@ -445,6 +445,10 @@ export default function AddItem() {
             <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
           </View>
         )}
+
+        <View style={{ marginTop: 20 }}>
+          <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
+        </View>
       </View>
     </ScrollView>
   );

@@ -13,7 +13,8 @@
     "buttons": {
       "add": "Add Pottery",
       "delete": "Delete Pottery",
-      "update": "Update Pottery"
+      "update": "Update Pottery",
+      "cancel": "Cancel"
     },
     "fields": {
       "clayType": {

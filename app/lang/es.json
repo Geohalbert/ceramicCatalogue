@@ -13,7 +13,8 @@
         "buttons": {
             "add": "Agregar cerámica",
             "delete": "Eliminar cerámica",
-            "update": "Actualizar cerámica"
+            "update": "Actualizar cerámica",
+            "cancel": "Cancelar"
         },
         "fields": {
             "clayType": {
