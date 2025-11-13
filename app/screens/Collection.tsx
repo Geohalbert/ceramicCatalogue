@@ -7,6 +7,7 @@ import { useTheme } from '../context/ThemeContext';
 import PotteryTile from '../components/PotteryTile';
 import AddItemButton from '../components/AddItemButton';
 import CollectionDrawer from '../components/CollectionDrawer';
+import SortBar, { SortOrder } from '../components/SortBar';
 import { fetchPotteryItemsThunk } from '../store/potterySlice';
 import CollectionStyles from './styles/CollectionStyles';
 
@@ -21,7 +22,7 @@ export default function Collection() {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished' | 'firing' | 'drying'>('all');
-  const [sortOrder, setSortOrder] = useState<'nameAsc' | 'nameDesc' | 'dateOldest' | 'dateNewest'>('dateNewest');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('dateNewest');
 
   // Load pottery items only on initial mount
   useEffect(() => {
@@ -133,98 +134,7 @@ export default function Collection() {
       </View>
 
       {/* Sort Bar */}
-      <View style={{ 
-        flexDirection: 'row', 
-        paddingHorizontal: 20, 
-        marginBottom: 15,
-        gap: 8,
-        flexWrap: 'wrap',
-        justifyContent: 'center'
-      }}>
-        <TouchableOpacity
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 20,
-            backgroundColor: sortOrder === 'nameAsc' ? colors.primary : colors.card,
-            borderWidth: 1,
-            borderColor: sortOrder === 'nameAsc' ? colors.primary : colors.border,
-          }}
-          onPress={() => setSortOrder('nameAsc')}
-          activeOpacity={0.7}
-        >
-          <Text style={{ 
-            color: sortOrder === 'nameAsc' ? '#fff' : colors.text,
-            fontSize: 12,
-            fontWeight: sortOrder === 'nameAsc' ? '600' : 'normal'
-          }}>
-            {t('collection.sort.nameAsc')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 20,
-            backgroundColor: sortOrder === 'nameDesc' ? colors.primary : colors.card,
-            borderWidth: 1,
-            borderColor: sortOrder === 'nameDesc' ? colors.primary : colors.border,
-          }}
-          onPress={() => setSortOrder('nameDesc')}
-          activeOpacity={0.7}
-        >
-          <Text style={{ 
-            color: sortOrder === 'nameDesc' ? '#fff' : colors.text,
-            fontSize: 12,
-            fontWeight: sortOrder === 'nameDesc' ? '600' : 'normal'
-          }}>
-            {t('collection.sort.nameDesc')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 20,
-            backgroundColor: sortOrder === 'dateOldest' ? colors.primary : colors.card,
-            borderWidth: 1,
-            borderColor: sortOrder === 'dateOldest' ? colors.primary : colors.border,
-          }}
-          onPress={() => setSortOrder('dateOldest')}
-          activeOpacity={0.7}
-        >
-          <Text style={{ 
-            color: sortOrder === 'dateOldest' ? '#fff' : colors.text,
-            fontSize: 12,
-            fontWeight: sortOrder === 'dateOldest' ? '600' : 'normal'
-          }}>
-            {t('collection.sort.dateOldest')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={{
-            paddingVertical: 8,
-            paddingHorizontal: 12,
-            borderRadius: 20,
-            backgroundColor: sortOrder === 'dateNewest' ? colors.primary : colors.card,
-            borderWidth: 1,
-            borderColor: sortOrder === 'dateNewest' ? colors.primary : colors.border,
-          }}
-          onPress={() => setSortOrder('dateNewest')}
-          activeOpacity={0.7}
-        >
-          <Text style={{ 
-            color: sortOrder === 'dateNewest' ? '#fff' : colors.text,
-            fontSize: 12,
-            fontWeight: sortOrder === 'dateNewest' ? '600' : 'normal'
-          }}>
-            {t('collection.sort.dateNewest')}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <SortBar sortOrder={sortOrder} onSortChange={setSortOrder} />
       
       {/* Storage indicator and filter badge */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 10 }}>
