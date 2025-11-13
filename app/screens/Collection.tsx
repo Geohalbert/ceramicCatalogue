@@ -21,6 +21,7 @@ export default function Collection() {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished' | 'firing' | 'drying'>('all');
+  const [sortOrder, setSortOrder] = useState<'nameAsc' | 'nameDesc' | 'dateOldest' | 'dateNewest'>('dateNewest');
 
   // Load pottery items only on initial mount
   useEffect(() => {
@@ -34,21 +35,38 @@ export default function Collection() {
     dispatch(fetchPotteryItemsThunk());
   };
 
-  // Filter pottery items based on selected filter
-  const filteredPotteryItems = useMemo(() => {
-    if (selectedFilter === 'all') {
-      return potteryItems;
-    } else if (selectedFilter === 'inProgress') {
-      return potteryItems.filter(item => item.potStatus === 'In Progress');
+  // Filter and sort pottery items
+  const filteredAndSortedItems = useMemo(() => {
+    // First, filter items
+    let filtered = potteryItems;
+    if (selectedFilter === 'inProgress') {
+      filtered = potteryItems.filter(item => item.potStatus === 'In Progress');
     } else if (selectedFilter === 'finished') {
-      return potteryItems.filter(item => item.potStatus === 'Finished');
+      filtered = potteryItems.filter(item => item.potStatus === 'Finished');
     } else if (selectedFilter === 'firing') {
-      return potteryItems.filter(item => item.potStatus === 'Firing');
+      filtered = potteryItems.filter(item => item.potStatus === 'Firing');
     } else if (selectedFilter === 'drying') {
-      return potteryItems.filter(item => item.potStatus === 'Drying');
+      filtered = potteryItems.filter(item => item.potStatus === 'Drying');
     }
-    return potteryItems;
-  }, [potteryItems, selectedFilter]);
+
+    // Then, sort items
+    const sorted = [...filtered].sort((a, b) => {
+      switch (sortOrder) {
+        case 'nameAsc':
+          return a.potName.toLowerCase().localeCompare(b.potName.toLowerCase());
+        case 'nameDesc':
+          return b.potName.toLowerCase().localeCompare(a.potName.toLowerCase());
+        case 'dateOldest':
+          return new Date(a.dateCreated).getTime() - new Date(b.dateCreated).getTime();
+        case 'dateNewest':
+          return new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [potteryItems, selectedFilter, sortOrder]);
 
   const { container, title, emptyContainer, emptyText, emptySubtext, listContainer, storageIndicator, storageIndicatorText, hamburgerButton, hamburgerIcon } = CollectionStyles;
 
@@ -113,6 +131,100 @@ export default function Collection() {
       <View style={{ alignItems: 'center', marginBottom: 15 }}>
         <AddItemButton /> 
       </View>
+
+      {/* Sort Bar */}
+      <View style={{ 
+        flexDirection: 'row', 
+        paddingHorizontal: 20, 
+        marginBottom: 15,
+        gap: 8,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+        <TouchableOpacity
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+            backgroundColor: sortOrder === 'nameAsc' ? colors.primary : colors.card,
+            borderWidth: 1,
+            borderColor: sortOrder === 'nameAsc' ? colors.primary : colors.border,
+          }}
+          onPress={() => setSortOrder('nameAsc')}
+          activeOpacity={0.7}
+        >
+          <Text style={{ 
+            color: sortOrder === 'nameAsc' ? '#fff' : colors.text,
+            fontSize: 12,
+            fontWeight: sortOrder === 'nameAsc' ? '600' : 'normal'
+          }}>
+            {t('collection.sort.nameAsc')}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+            backgroundColor: sortOrder === 'nameDesc' ? colors.primary : colors.card,
+            borderWidth: 1,
+            borderColor: sortOrder === 'nameDesc' ? colors.primary : colors.border,
+          }}
+          onPress={() => setSortOrder('nameDesc')}
+          activeOpacity={0.7}
+        >
+          <Text style={{ 
+            color: sortOrder === 'nameDesc' ? '#fff' : colors.text,
+            fontSize: 12,
+            fontWeight: sortOrder === 'nameDesc' ? '600' : 'normal'
+          }}>
+            {t('collection.sort.nameDesc')}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+            backgroundColor: sortOrder === 'dateOldest' ? colors.primary : colors.card,
+            borderWidth: 1,
+            borderColor: sortOrder === 'dateOldest' ? colors.primary : colors.border,
+          }}
+          onPress={() => setSortOrder('dateOldest')}
+          activeOpacity={0.7}
+        >
+          <Text style={{ 
+            color: sortOrder === 'dateOldest' ? '#fff' : colors.text,
+            fontSize: 12,
+            fontWeight: sortOrder === 'dateOldest' ? '600' : 'normal'
+          }}>
+            {t('collection.sort.dateOldest')}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            borderRadius: 20,
+            backgroundColor: sortOrder === 'dateNewest' ? colors.primary : colors.card,
+            borderWidth: 1,
+            borderColor: sortOrder === 'dateNewest' ? colors.primary : colors.border,
+          }}
+          onPress={() => setSortOrder('dateNewest')}
+          activeOpacity={0.7}
+        >
+          <Text style={{ 
+            color: sortOrder === 'dateNewest' ? '#fff' : colors.text,
+            fontSize: 12,
+            fontWeight: sortOrder === 'dateNewest' ? '600' : 'normal'
+          }}>
+            {t('collection.sort.dateNewest')}
+          </Text>
+        </TouchableOpacity>
+      </View>
       
       {/* Storage indicator and filter badge */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 10 }}>
@@ -135,7 +247,7 @@ export default function Collection() {
         )}
       </View>
       
-      {filteredPotteryItems.length === 0 ? (
+      {filteredAndSortedItems.length === 0 ? (
         <View style={emptyContainer}>
           <Text style={[emptyText, { color: colors.text }]}>
             {potteryItems.length === 0 ? t('collection.empty.title') : t('collection.noItemsForFilter')}
@@ -146,7 +258,7 @@ export default function Collection() {
         </View>
       ) : (
         <FlatList
-          data={filteredPotteryItems}
+          data={filteredAndSortedItems}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <PotteryTile pottery={item} />}
           contentContainerStyle={listContainer}

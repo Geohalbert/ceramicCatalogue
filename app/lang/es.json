@@ -123,6 +123,12 @@
         "cloudStorage": "☁️ Almacenamiento en la Nube",
         "noItemsForFilter": "No hay artículos que coincidan con este filtro",
         "tryDifferentFilter": "Intenta seleccionar un filtro diferente para ver tu cerámica",
+        "sort": {
+            "nameAsc": "A → Z",
+            "nameDesc": "Z → A",
+            "dateOldest": "Más Antiguo",
+            "dateNewest": "Más Reciente"
+        },
         "drawer": {
             "title": "Menú",
             "navigation": "Navegación",

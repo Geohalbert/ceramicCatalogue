@@ -123,6 +123,12 @@
     "cloudStorage": "☁️ Cloud Storage",
     "noItemsForFilter": "No items match this filter",
     "tryDifferentFilter": "Try selecting a different filter to see your pottery",
+    "sort": {
+      "nameAsc": "A → Z",
+      "nameDesc": "Z → A",
+      "dateOldest": "Oldest First",
+      "dateNewest": "Newest First"
+    },
     "drawer": {
       "title": "Menu",
       "navigation": "Navigation",
