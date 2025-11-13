@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -293,177 +293,197 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   // Forgot Password view
   if (isForgotPassword) {
     return (
-      <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
-        <Text style={[authTitle, { color: colors.text }]}>{t('authentication.forgotPassword.title')}</Text>
-        
-        <Text style={{ marginBottom: 15, color: colors.secondaryText, textAlign: 'center' }}>
-          {t('authentication.forgotPassword.description')}
-        </Text>
-        
-        <TextInput
-          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
-          placeholder={t('authentication.signIn.emailPlaceholder')}
-          placeholderTextColor={colors.placeholder}
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-        
-        <TouchableOpacity 
-          style={[button, { backgroundColor: colors.primary }]} 
-          onPress={handleForgotPassword}
-          disabled={isResetting}
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
         >
-          {isResetting ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={buttonText}>{t('authentication.forgotPassword.button')}</Text>
-          )}
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={forgotPasswordLink}
-          onPress={() => {
-            setIsForgotPassword(false);
-            setEmail("");
-          }}
-        >
-          <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.forgotPassword.backLink')}</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+            <Text style={[authTitle, { color: colors.text }]}>{t('authentication.forgotPassword.title')}</Text>
+            
+            <Text style={{ marginBottom: 15, color: colors.secondaryText, textAlign: 'center' }}>
+              {t('authentication.forgotPassword.description')}
+            </Text>
+            
+            <TextInput
+              style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+              placeholder={t('authentication.signIn.emailPlaceholder')}
+              placeholderTextColor={colors.placeholder}
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+            
+            <TouchableOpacity 
+              style={[button, { backgroundColor: colors.primary }]} 
+              onPress={handleForgotPassword}
+              disabled={isResetting}
+            >
+              {isResetting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={buttonText}>{t('authentication.forgotPassword.button')}</Text>
+              )}
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={forgotPasswordLink}
+              onPress={() => {
+                setIsForgotPassword(false);
+                setEmail("");
+              }}
+            >
+              <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.forgotPassword.backLink')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
 
   // Unauthenticated view - Sign In/Sign Up form
   return (
-    <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
-      <Text style={[authTitle, { color: colors.text }]}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
-      
-      {error && <Text style={errorText}>{error}</Text>}
-      
-      {/* Google Sign-In Button */}
-      <TouchableOpacity 
-        style={[googleButton, { backgroundColor: colors.card, borderColor: colors.border }]} 
-        onPress={handleGoogleSignIn}
-        disabled={loading}
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
       >
-        {loading ? (
-          <ActivityIndicator color={colors.text} />
-        ) : (
-          <>
-            <Text style={{ fontSize: 18, marginRight: 10, color: colors.text }}>G</Text>
-            <Text style={[googleButtonText, { color: colors.text }]}>{t('authentication.google.button')}</Text>
-          </>
-        )}
-      </TouchableOpacity>
-
-      {/* Divider */}
-      <View style={dividerContainer}>
-        <View style={[dividerLine, { backgroundColor: colors.border }]} />
-        <Text style={[dividerText, { color: colors.secondaryText }]}>{t('authentication.google.divider')}</Text>
-        <View style={[dividerLine, { backgroundColor: colors.border }]} />
-      </View>
-      
-      {isSignUp && (
-        <TextInput
-          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
-          placeholder={t('authentication.signUp.namePlaceholder')}
-          placeholderTextColor={colors.placeholder}
-          value={displayName}
-          onChangeText={setDisplayName}
-          autoCapitalize="words"
-        />
-      )}
-      
-      <TextInput
-        style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
-        placeholder={t('authentication.signIn.emailPlaceholder')}
-        placeholderTextColor={colors.placeholder}
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoComplete="email"
-      />
-      
-      <TextInput
-        style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
-        placeholder={t('authentication.signIn.passwordPlaceholder')}
-        placeholderTextColor={colors.placeholder}
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-      />
-      
-      {!isSignUp && (
-        <>
-          {/* Remember Me Checkbox */}
+        <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+          <Text style={[authTitle, { color: colors.text }]}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
+          
+          {error && <Text style={errorText}>{error}</Text>}
+          
+          {/* Google Sign-In Button */}
           <TouchableOpacity 
-            style={{ 
-              flexDirection: 'row', 
-              alignItems: 'center', 
-              marginBottom: 10,
-              marginTop: 5
-            }}
-            onPress={() => setRememberMe(!rememberMe)}
-            activeOpacity={0.7}
+            style={[googleButton, { backgroundColor: colors.card, borderColor: colors.border }]} 
+            onPress={handleGoogleSignIn}
+            disabled={loading}
           >
-            <View style={{
-              width: 20,
-              height: 20,
-              borderRadius: 4,
-              borderWidth: 2,
-              borderColor: colors.primary,
-              backgroundColor: rememberMe ? colors.primary : 'transparent',
-              marginRight: 8,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              {rememberMe && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
-            </View>
-            <Text style={{ color: colors.text, fontSize: 14 }}>
-              {t('authentication.signIn.rememberMe')}
-            </Text>
+            {loading ? (
+              <ActivityIndicator color={colors.text} />
+            ) : (
+              <>
+                <Text style={{ fontSize: 18, marginRight: 10, color: colors.text }}>G</Text>
+                <Text style={[googleButtonText, { color: colors.text }]}>{t('authentication.google.button')}</Text>
+              </>
+            )}
           </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={dividerContainer}>
+            <View style={[dividerLine, { backgroundColor: colors.border }]} />
+            <Text style={[dividerText, { color: colors.secondaryText }]}>{t('authentication.google.divider')}</Text>
+            <View style={[dividerLine, { backgroundColor: colors.border }]} />
+          </View>
+          
+          {isSignUp && (
+            <TextInput
+              style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+              placeholder={t('authentication.signUp.namePlaceholder')}
+              placeholderTextColor={colors.placeholder}
+              value={displayName}
+              onChangeText={setDisplayName}
+              autoCapitalize="words"
+            />
+          )}
+          
+          <TextInput
+            style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+            placeholder={t('authentication.signIn.emailPlaceholder')}
+            placeholderTextColor={colors.placeholder}
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+          />
+          
+          <TextInput
+            style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+            placeholder={t('authentication.signIn.passwordPlaceholder')}
+            placeholderTextColor={colors.placeholder}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+          />
+          
+          {!isSignUp && (
+            <>
+              {/* Remember Me Checkbox */}
+              <TouchableOpacity 
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center', 
+                  marginBottom: 10,
+                  marginTop: 5
+                }}
+                onPress={() => setRememberMe(!rememberMe)}
+                activeOpacity={0.7}
+              >
+                <View style={{
+                  width: 20,
+                  height: 20,
+                  borderRadius: 4,
+                  borderWidth: 2,
+                  borderColor: colors.primary,
+                  backgroundColor: rememberMe ? colors.primary : 'transparent',
+                  marginRight: 8,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}>
+                  {rememberMe && <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>✓</Text>}
+                </View>
+                <Text style={{ color: colors.text, fontSize: 14 }}>
+                  {t('authentication.signIn.rememberMe')}
+                </Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={forgotPasswordLink}
+                onPress={() => setIsForgotPassword(true)}
+              >
+                <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.signIn.forgotPasswordLink')}</Text>
+              </TouchableOpacity>
+            </>
+          )}
           
           <TouchableOpacity 
-            style={forgotPasswordLink}
-            onPress={() => setIsForgotPassword(true)}
+            style={[button, { backgroundColor: colors.primary }]} 
+            onPress={handleAuth}
+            disabled={loading}
           >
-            <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.signIn.forgotPasswordLink')}</Text>
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={buttonText}>
+                {t(isSignUp ? 'authentication.signUp.button' : 'authentication.signIn.button')}
+              </Text>
+            )}
           </TouchableOpacity>
-        </>
-      )}
-      
-      <TouchableOpacity 
-        style={[button, { backgroundColor: colors.primary }]} 
-        onPress={handleAuth}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={buttonText}>
-            {t(isSignUp ? 'authentication.signUp.button' : 'authentication.signIn.button')}
-          </Text>
-        )}
-      </TouchableOpacity>
-      
-      <View style={switchText}>
-        <Text style={{ color: colors.text }}>{t(isSignUp ? 'authentication.signUp.hasAccount' : 'authentication.signIn.noAccount')}</Text>
-        <TouchableOpacity 
-          style={switchButton}
-          onPress={() => setIsSignUp(!isSignUp)}
-        >
-          <Text style={[switchButtonText, { color: colors.primary }]}>
-            {t(isSignUp ? 'authentication.signUp.signInLink' : 'authentication.signIn.signUpLink')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          
+          <View style={switchText}>
+            <Text style={{ color: colors.text }}>{t(isSignUp ? 'authentication.signUp.hasAccount' : 'authentication.signIn.noAccount')}</Text>
+            <TouchableOpacity 
+              style={switchButton}
+              onPress={() => setIsSignUp(!isSignUp)}
+            >
+              <Text style={[switchButtonText, { color: colors.primary }]}>
+                {t(isSignUp ? 'authentication.signUp.signInLink' : 'authentication.signIn.signUpLink')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
