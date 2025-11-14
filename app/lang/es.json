@@ -40,7 +40,8 @@
                 "chooseSource": "Elegir Origen de la Foto",
                 "permissionDenied": "Se denegó el permiso para acceder a la cámara o la galería",
                 "titlePlaceholder": "Agregar título de foto (opcional)",
-                "maxReached": "Máximo de 3 fotos alcanzado"
+                "maxReached": "Máximo de 3 fotos alcanzado",
+                "tapToEdit": "✏️ Toca para Editar"
             },
             "potName": {
                 "label": "Nombre de la pieza *",

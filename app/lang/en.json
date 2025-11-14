@@ -40,7 +40,8 @@
         "chooseSource": "Choose Photo Source",
         "permissionDenied": "Permission to access camera or photo library was denied",
         "titlePlaceholder": "Add photo title (optional)",
-        "maxReached": "Maximum of 3 photos reached"
+        "maxReached": "Maximum of 3 photos reached",
+        "tapToEdit": "✏️ Tap to Edit"
       },
       "potName": {
         "label": "Pot Name *",

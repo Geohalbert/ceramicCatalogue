@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Image, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { View, Image, Text, ScrollView, Dimensions, NativeSyntheticEvent, NativeScrollEvent, TouchableOpacity } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { PotteryImage } from '../store/types';
 import ImageCarouselStyles from './styles/ImageCarouselStyles';
@@ -9,18 +9,22 @@ interface ImageCarouselProps {
   height?: number;
   showTitle?: boolean;
   fallbackImage?: any;
+  onImagePress?: (index: number) => void;
+  interactive?: boolean;
 }
 
 export default function ImageCarousel({ 
   images, 
   height = 200, 
   showTitle = true,
-  fallbackImage = require('../../assets/pot_icon.png')
+  fallbackImage = require('../../assets/pot_icon.png'),
+  onImagePress,
+  interactive = false
 }: ImageCarouselProps) {
   const { colors } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
   const { width } = Dimensions.get('window');
-  const { container, image, titleOverlay, titleText, pagination, dot, counterBadge, counterText } = ImageCarouselStyles;
+  const { container, image, titleOverlay, titleText, pagination, dot, counterBadge, counterText, tapIndicator, tapIndicatorText } = ImageCarouselStyles;
 
   // If no images, show fallback
   if (!images || images.length === 0) {
@@ -53,24 +57,40 @@ export default function ImageCarousel({
         scrollEventThrottle={16}
         style={{ height }}
       >
-        {images.map((img, index) => (
-          <View key={index} style={{ width, height }}>
-            <Image 
-              source={{ uri: img.uri }} 
-              style={[image, { width, height }]} 
-              resizeMode="cover"
-            />
-            
-            {/* Image Title Overlay */}
-            {showTitle && img.title && (
-              <View style={[titleOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
-                <Text style={titleText} numberOfLines={2}>
-                  {img.title}
-                </Text>
-              </View>
-            )}
-          </View>
-        ))}
+        {images.map((img, index) => {
+          const ImageWrapper = interactive ? TouchableOpacity : View;
+          
+          return (
+            <ImageWrapper 
+              key={index} 
+              style={{ width, height }}
+              onPress={interactive ? () => onImagePress?.(index) : undefined}
+              activeOpacity={0.8}
+            >
+              <Image 
+                source={{ uri: img.uri }} 
+                style={[image, { width, height }]} 
+                resizeMode="cover"
+              />
+              
+              {/* Image Title Overlay */}
+              {showTitle && img.title && (
+                <View style={[titleOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}>
+                  <Text style={titleText} numberOfLines={2}>
+                    {img.title}
+                  </Text>
+                </View>
+              )}
+              
+              {/* Tap to Edit Indicator */}
+              {interactive && (
+                <View style={[tapIndicator, { backgroundColor: 'rgba(0, 0, 0, 0.5)' }]}>
+                  <Text style={tapIndicatorText}>✏️ Tap to Edit</Text>
+                </View>
+              )}
+            </ImageWrapper>
+          );
+        })}
       </ScrollView>
 
       {/* Pagination Dots - only show if more than 1 image */}

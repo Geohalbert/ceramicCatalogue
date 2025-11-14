@@ -60,6 +60,25 @@ const ImageCarouselStyles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '700',
   },
+  tapIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -60 }, { translateY: -20 }],
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+  },
+  tapIndicatorText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 });
 
 export default ImageCarouselStyles;

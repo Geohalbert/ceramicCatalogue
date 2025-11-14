@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -40,6 +40,10 @@ export default function AddItem() {
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
+  
+  // Refs for scrolling to specific images
+  const scrollViewRef = useRef<ScrollView>(null);
+  const imageRefs = useRef<Array<View | null>>([]);
 
   // Initialize form with existing pottery data if editing
   useEffect(() => {
@@ -159,6 +163,19 @@ export default function AddItem() {
     const newImages = [...images];
     newImages[index] = { ...newImages[index], title: title || undefined };
     setImages(newImages);
+  };
+
+  const handleCarouselImagePress = (index: number) => {
+    // Scroll to the specific image edit section
+    if (imageRefs.current[index]) {
+      imageRefs.current[index]?.measureLayout(
+        scrollViewRef.current as any,
+        (x, y) => {
+          scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
+        },
+        () => {}
+      );
+    }
   };
 
   const { container, form, label, input, multilineInput } = AddItemStyles;
@@ -314,7 +331,10 @@ export default function AddItem() {
   };
 
   return (
-    <ScrollView style={[container, { backgroundColor: colors.background }]}>
+    <ScrollView 
+      ref={scrollViewRef}
+      style={[container, { backgroundColor: colors.background }]}
+    >
       <View style={form}>
         {/* Preview Carousel - only show if images exist */}
         {images.length > 0 && (
@@ -323,6 +343,8 @@ export default function AddItem() {
               images={images}
               height={250}
               showTitle={true}
+              interactive={true}
+              onImagePress={handleCarouselImagePress}
             />
           </View>
         )}
@@ -341,7 +363,11 @@ export default function AddItem() {
         
         {/* Display existing images */}
         {images.map((image, index) => (
-          <View key={index} style={{ marginTop: 10, marginBottom: 15 }}>
+          <View 
+            key={index} 
+            style={{ marginTop: 10, marginBottom: 15 }}
+            ref={(ref) => { imageRefs.current[index] = ref; }}
+          >
             <Image 
               source={{ uri: image.uri }} 
               style={{ 
