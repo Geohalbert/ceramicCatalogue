@@ -157,7 +157,17 @@
     "delete": "Delete",
     "error": "Error",
     "ok": "OK",
-    "success": "Success"
+    "save": "Save",
+    "success": "Success",
+    "remove": "Remove"
+  },
+  "imageModal": {
+    "title": "Photo Title",
+    "noTitle": "No title",
+    "edit": "Edit Title",
+    "remove": "Remove Photo",
+    "removeTitle": "Remove Photo",
+    "removeMessage": "Are you sure you want to remove this photo?"
   },
   "dropdown": {
     "clayTypes": {

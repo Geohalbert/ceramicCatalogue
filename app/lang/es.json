@@ -157,7 +157,17 @@
         "delete": "Eliminar",
         "error": "Error",
         "ok": "Aceptar",
-        "success": "Éxito"
+        "save": "Guardar",
+        "success": "Éxito",
+        "remove": "Eliminar"
+    },
+    "imageModal": {
+        "title": "Título de la Foto",
+        "noTitle": "Sin título",
+        "edit": "Editar Título",
+        "remove": "Eliminar Foto",
+        "removeTitle": "Eliminar Foto",
+        "removeMessage": "¿Seguro que deseas eliminar esta foto?"
     },
     "dropdown": {
         "clayTypes": {

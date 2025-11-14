@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
+import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -8,6 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 import Dropdown from "../components/Dropdown";
 import ImageCarousel from "../components/ImageCarousel";
+import ImageModal from "../components/ImageModal";
 import { useAppDispatch } from "../store/hooks";
 import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } from "../store/types";
@@ -37,6 +38,8 @@ export default function AddItem() {
   const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
   const [images, setImages] = useState<PotteryImage[]>([]);
   const [notes, setNotes] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -44,6 +47,36 @@ export default function AddItem() {
   // Refs for scrolling to specific images
   const scrollViewRef = useRef<ScrollView>(null);
   const imageRefs = useRef<Array<View | null>>([]);
+  const inputRefs = useRef<Array<TextInput | null>>([]);
+  
+  // Handle keyboard appearance to scroll to focused input
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        // Small delay to ensure the input is focused
+        setTimeout(() => {
+          // Find the currently focused input
+          const focusedInputIndex = inputRefs.current.findIndex(ref => ref?.isFocused());
+          if (focusedInputIndex !== -1 && inputRefs.current[focusedInputIndex] && scrollViewRef.current) {
+            inputRefs.current[focusedInputIndex]?.measureLayout(
+              scrollViewRef.current as any,
+              (x, y) => {
+                const keyboardHeight = e.endCoordinates.height;
+                const scrollOffset = y - 50; // 50px padding from top
+                scrollViewRef.current?.scrollTo({ y: Math.max(0, scrollOffset), animated: true });
+              },
+              () => {}
+            );
+          }
+        }, 100);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   // Initialize form with existing pottery data if editing
   useEffect(() => {
@@ -166,16 +199,21 @@ export default function AddItem() {
   };
 
   const handleCarouselImagePress = (index: number) => {
-    // Scroll to the specific image edit section
-    if (imageRefs.current[index]) {
-      imageRefs.current[index]?.measureLayout(
-        scrollViewRef.current as any,
-        (x, y) => {
-          scrollViewRef.current?.scrollTo({ y: y - 100, animated: true });
-        },
-        () => {}
-      );
-    }
+    // Open modal with the selected image
+    setSelectedImageIndex(index);
+    setModalVisible(true);
+  };
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+  };
+
+  const handleModalEditTitle = (index: number, title: string) => {
+    handleUpdateImageTitle(index, title);
+  };
+
+  const handleModalRemove = (index: number) => {
+    handleRemovePhoto(index);
   };
 
   const { container, form, label, input, multilineInput } = AddItemStyles;
@@ -331,10 +369,17 @@ export default function AddItem() {
   };
 
   return (
-    <ScrollView 
-      ref={scrollViewRef}
-      style={[container, { backgroundColor: colors.background }]}
+    <KeyboardAvoidingView 
+      style={{ flex: 1, paddingTop: 30 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
+      <ScrollView 
+        ref={scrollViewRef}
+        style={[container, { backgroundColor: colors.background }]}
+        keyboardShouldPersistTaps="handled"
+        contentInsetAdjustmentBehavior="automatic"
+      >
       <View style={form}>
         {/* Preview Carousel - only show if images exist */}
         {images.length > 0 && (
@@ -351,6 +396,7 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.potName.label')}</Text>
         <TextInput
+          ref={(ref) => { inputRefs.current[0] = ref; }}
           style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           value={potName}
           onChangeText={setPotName}
@@ -379,6 +425,7 @@ export default function AddItem() {
               resizeMode="cover"
             />
             <TextInput
+              ref={(ref) => { inputRefs.current[1 + index] = ref; }}
               style={[input, { 
                 backgroundColor: colors.inputBackground, 
                 borderColor: colors.border, 
@@ -447,6 +494,10 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.dateCreated.label')}</Text>
         <TextInput
+          ref={(ref) => { 
+            const dateInputIndex = 1 + images.length;
+            inputRefs.current[dateInputIndex] = ref; 
+          }}
           style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           value={dateCreated}
           onChangeText={setDateCreated}
@@ -516,6 +567,10 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.notes.label')}</Text>
         <TextInput
+          ref={(ref) => { 
+            const notesInputIndex = 2 + images.length;
+            inputRefs.current[notesInputIndex] = ref; 
+          }}
           style={[multilineInput, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
           value={notes}
           onChangeText={setNotes}
@@ -537,6 +592,17 @@ export default function AddItem() {
           <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
         </View>
       </View>
-    </ScrollView>
+      </ScrollView>
+
+      {/* Image Modal */}
+      <ImageModal
+        visible={modalVisible}
+        image={images[selectedImageIndex] || null}
+        imageIndex={selectedImageIndex}
+        onClose={handleModalClose}
+        onEditTitle={handleModalEditTitle}
+        onRemove={handleModalRemove}
+      />
+    </KeyboardAvoidingView>
   );
 }
