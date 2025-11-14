@@ -5,23 +5,50 @@ import Home from "../screens/Home";
 import Collection from "../screens/Collection";
 import Settings from "../screens/Settings";
 
-const Stack = createNativeStackNavigator();
+// Main stack navigator for regular navigation (Home, Collection, AddItem)
+const MainStack = createNativeStackNavigator();
 
-export default function StackNavigator() {
+function MainStackNavigator() {
     return (
-        <Stack.Navigator>
-            <Stack.Screen 
+        <MainStack.Navigator>
+            <MainStack.Screen 
                 name="Home" 
                 component={Home} 
                 options={{ headerShown: false }}
             />
-            <Stack.Screen name="AddItem" component={AddItem} />
-            <Stack.Screen 
+            <MainStack.Screen 
                 name="Collection" 
                 component={Collection} 
                 options={{ headerShown: false }}
             />
-            <Stack.Screen name="Settings" component={Settings} />
-        </Stack.Navigator>
+            <MainStack.Screen 
+                name="AddItem" 
+                component={AddItem} 
+            />
+        </MainStack.Navigator>
+    );
+}
+
+// Root stack navigator with modal presentation for Settings
+const RootStack = createNativeStackNavigator();
+
+export default function StackNavigator() {
+    return (
+        <RootStack.Navigator>
+            <RootStack.Screen 
+                name="Main" 
+                component={MainStackNavigator}
+                options={{ headerShown: false }}
+            />
+            <RootStack.Screen 
+                name="Settings" 
+                component={Settings}
+                options={{
+                    presentation: 'modal',
+                    headerShown: true,
+                    headerShadowVisible: false,
+                }}
+            />
+        </RootStack.Navigator>
     );
 }

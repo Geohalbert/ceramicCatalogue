@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Text, View, TextInput, Button, StyleSheet, ScrollView, Alert, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
 import { useTranslation } from "react-i18next";
-import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
+import { useNavigation, useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useTheme } from "../context/ThemeContext";
 import * as ImagePicker from 'expo-image-picker';
@@ -48,6 +48,29 @@ export default function AddItem() {
   const scrollViewRef = useRef<ScrollView>(null);
   const imageRefs = useRef<Array<View | null>>([]);
   const inputRefs = useRef<Array<TextInput | null>>([]);
+  
+  // Close modal when navigating back or when screen loses focus
+  useFocusEffect(
+    useCallback(() => {
+      const onBeforeRemove = (e: any) => {
+        // If modal is visible, close it first instead of navigating back
+        if (modalVisible) {
+          e.preventDefault();
+          setModalVisible(false);
+        }
+      };
+
+      const unsubscribe = navigation.addListener('beforeRemove', onBeforeRemove);
+
+      // Close modal when screen loses focus (e.g., navigating to another screen)
+      return () => {
+        unsubscribe();
+        if (modalVisible) {
+          setModalVisible(false);
+        }
+      };
+    }, [navigation, modalVisible])
+  );
   
   // Handle keyboard appearance to scroll to focused input
   useEffect(() => {
