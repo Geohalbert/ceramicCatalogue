@@ -454,17 +454,21 @@ export default function AddItem() {
           </Text>
         )}
 
-        {/* Action Buttons at the top */}
-        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />
-        
-        {editingPottery && (
-          <View style={{ marginTop: 20 }}>
-            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
+        {/* Action Buttons at the top - in one row */}
+        <View style={{ flexDirection: 'row', marginBottom: 20, alignItems: 'center' }}>
+          <View style={{ flex: 1, marginRight: 5 }}>
+            <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />
           </View>
-        )}
+          
+          {editingPottery && (
+            <View style={{ flex: 1, marginHorizontal: 5 }}>
+              <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
+            </View>
+          )}
 
-        <View style={{ marginTop: 20 }}>
-          <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
+          <View style={{ flex: 1, marginLeft: 5 }}>
+            <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
+          </View>
         </View>
 
         <View style={{ marginTop: 20, marginBottom: 10 }}>
