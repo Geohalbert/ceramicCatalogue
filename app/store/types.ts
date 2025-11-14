@@ -10,6 +10,7 @@ export interface Pottery {
   notificationId?: string; // ID of scheduled notification
   timerDays?: number; // Number of days for the timer (1, 2, or 3)
   timerStartDate?: string; // ISO string of when timer was set
+  notes?: string; // Optional notes about the pottery
 }
 
 export interface PotteryState {

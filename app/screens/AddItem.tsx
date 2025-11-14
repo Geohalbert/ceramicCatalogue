@@ -35,6 +35,7 @@ export default function AddItem() {
   const [timerDays, setTimerDays] = useState<number | null>(null);
   const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
   const [imageUri, setImageUri] = useState<string | undefined>();
+  const [notes, setNotes] = useState("");
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -51,6 +52,7 @@ export default function AddItem() {
       setTimerDays(editingPottery.timerDays || null);
       setExistingNotificationId(editingPottery.notificationId);
       setImageUri(editingPottery.imageUri);
+      setNotes(editingPottery.notes || "");
     }
   }, [editingPottery]);
 
@@ -129,7 +131,7 @@ export default function AddItem() {
     setImageUri(undefined);
   };
 
-  const { container, form, label, input } = AddItemStyles;
+  const { container, form, label, input, multilineInput } = AddItemStyles;
 
   // Dropdown options
   const clayTypeOptions = [
@@ -213,6 +215,7 @@ export default function AddItem() {
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
+          notes: notes.trim() || undefined,
         };
 
         await dispatch(updatePotteryThunk(updatedPottery)).unwrap();
@@ -230,6 +233,7 @@ export default function AddItem() {
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
+          notes: notes.trim() || undefined,
         };
 
         await dispatch(addPotteryThunk(newPottery)).unwrap();
@@ -436,6 +440,17 @@ export default function AddItem() {
           options={glazeTypeOptions}
           selectedValue={glazeType}
           onValueChange={(value) => setGlazeType(value as GlazeType)}
+        />
+
+        <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.notes.label')}</Text>
+        <TextInput
+          style={[multilineInput, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+          value={notes}
+          onChangeText={setNotes}
+          placeholder={t('addEditItem.fields.notes.placeholder')}
+          placeholderTextColor={colors.placeholder}
+          multiline={true}
+          numberOfLines={3}
         />
 
         <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />

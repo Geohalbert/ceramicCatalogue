@@ -15,6 +15,15 @@ const AddItemStyles = StyleSheet.create({
         fontSize: 16,
         padding: 10
     },
+    multilineInput: {
+        borderColor: "#ddd",
+        borderRadius: 5,
+        borderWidth: 1,
+        fontSize: 16,
+        padding: 10,
+        height: 75,
+        textAlignVertical: "top"
+    },
     label: {
         fontSize: 16,
         fontWeight: "bold",

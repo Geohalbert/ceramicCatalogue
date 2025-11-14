@@ -51,6 +51,10 @@
         "label": "Set Notification Timer (Optional)",
         "days": "day",
         "description": "You'll receive a notification in {{days}} day(s)"
+      },
+      "notes": {
+        "label": "Notes (Optional)",
+        "placeholder": "Add any notes or observations..."
       }
     }
   },

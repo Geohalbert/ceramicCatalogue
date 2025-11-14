@@ -51,6 +51,10 @@
                 "label": "Configurar Temporizador de Notificación (Opcional)",
                 "days": "día",
                 "description": "Recibirás una notificación en {{days}} día(s)"
+            },
+            "notes": {
+                "label": "Notas (Opcional)",
+                "placeholder": "Agrega cualquier nota u observación..."
             }
         }
     },

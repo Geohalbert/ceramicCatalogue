@@ -28,7 +28,8 @@ service cloud.firestore {
                       && (!request.resource.data.keys().hasAny(['imageUri']) || (request.resource.data.imageUri is string && request.resource.data.imageUri.size() <= 2048))
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
                       && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
-                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
+                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string)
+                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
         
         allow update: if request.auth != null 
                       && request.auth.uid == userId
@@ -39,7 +40,8 @@ service cloud.firestore {
                       && (!request.resource.data.keys().hasAny(['imageUri']) || (request.resource.data.imageUri is string && request.resource.data.imageUri.size() <= 2048))
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
                       && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
-                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string);
+                      && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string)
+                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
         
         allow delete: if request.auth != null && request.auth.uid == userId;
       }
