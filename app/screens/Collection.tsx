@@ -74,10 +74,12 @@ export default function Collection() {
   // Only show full loading screen on very first load (no items and haven't loaded yet)
   const isInitialLoad = loading && potteryItems.length === 0 && !hasInitiallyLoaded;
 
+  const statusBarHeight = StatusBar.currentHeight || 0;
+
   if (isInitialLoad) {
     return (
-      <View style={[container, { backgroundColor: colors.background }]}>
-        <Text style={[title, { color: colors.text }]}>{t('collection.title')}</Text>
+      <View style={[container, { backgroundColor: colors.background, paddingTop: statusBarHeight + 30 }]}>
+        <Text style={[title, { color: colors.text, marginTop: 20 }]}>{t('collection.title')}</Text>
         <View style={emptyContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
           <Text style={[emptySubtext, { color: colors.secondaryText }]}>{t('collection.loading')}</Text>
@@ -88,8 +90,8 @@ export default function Collection() {
 
   if (error && potteryItems.length === 0) {
     return (
-      <View style={[container, { backgroundColor: colors.background }]}>
-        <Text style={[title, { color: colors.text }]}>{t('collection.title')}</Text>
+      <View style={[container, { backgroundColor: colors.background, paddingTop: statusBarHeight + 30 }]}>
+        <Text style={[title, { color: colors.text, marginTop: 20 }]}>{t('collection.title')}</Text>
         <View style={emptyContainer}>
           <Text style={[emptyText, { color: colors.text }]}>{t('collection.error.title')}</Text>
           <Text style={[emptySubtext, { color: colors.secondaryText }]}>{error}</Text>
@@ -99,19 +101,18 @@ export default function Collection() {
     );
   }
 
-  const statusBarHeight = StatusBar.currentHeight || 0;
-
   return (
-    <View style={[container, { backgroundColor: colors.background, paddingTop: statusBarHeight + 10 }]}>
+    <View style={[container, { backgroundColor: colors.background, paddingTop: statusBarHeight + 30 }]}>
       {/* Header with Title and Hamburger Menu */}
       <View style={{ 
         flexDirection: 'row', 
         alignItems: 'center', 
         justifyContent: 'space-between', 
         paddingHorizontal: 20, 
-        paddingVertical: 15,
-        marginBottom: 10,
-        position: 'relative'
+        paddingVertical: 20,
+        marginBottom: 15,
+        position: 'relative',
+        minHeight: 60
       }}>
         {/* Spacer for centering */}
         <View style={{ width: 48 }} />
@@ -129,7 +130,7 @@ export default function Collection() {
         </TouchableOpacity>
       </View>
 
-      <View style={{ alignItems: 'center', marginBottom: 15 }}>
+      <View style={{ alignItems: 'center', marginBottom: 20, marginTop: 5 }}>
         <AddItemButton /> 
       </View>
 
@@ -137,7 +138,7 @@ export default function Collection() {
       <SortBar sortOrder={sortOrder} onSortChange={setSortOrder} />
       
       {/* Storage indicator and filter badge */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 15, marginTop: 5 }}>
         {isAuthenticated !== undefined && (
           <View style={[storageIndicator, { backgroundColor: colors.secondaryBackground }]}>
             <Text style={[storageIndicatorText, { color: colors.secondaryText }]}>
