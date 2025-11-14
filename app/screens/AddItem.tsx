@@ -40,6 +40,8 @@ export default function AddItem() {
   const [notes, setNotes] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+  const modalVisibleRef = useRef(false);
+  const isNavigatingRef = useRef(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -49,27 +51,54 @@ export default function AddItem() {
   const imageRefs = useRef<Array<View | null>>([]);
   const inputRefs = useRef<Array<TextInput | null>>([]);
   
-  // Close modal when navigating back or when screen loses focus
+  // Keep ref in sync with state
+  useEffect(() => {
+    modalVisibleRef.current = modalVisible;
+    // Reset navigation flag when modal closes
+    if (!modalVisible) {
+      isNavigatingRef.current = false;
+    }
+  }, [modalVisible]);
+  
+  // Close modal when navigating back
   useFocusEffect(
     useCallback(() => {
       const onBeforeRemove = (e: any) => {
-        // If modal is visible, close it first instead of navigating back
-        if (modalVisible) {
+        // If modal is visible and we're not already navigating, close it first and allow navigation to proceed
+        if (modalVisibleRef.current && !isNavigatingRef.current) {
           e.preventDefault();
+          isNavigatingRef.current = true;
+          // Close modal immediately
           setModalVisible(false);
+          // Use requestAnimationFrame to ensure modal closes, then navigate
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              navigation.pop();
+            });
+          });
         }
       };
 
       const unsubscribe = navigation.addListener('beforeRemove', onBeforeRemove);
 
-      // Close modal when screen loses focus (e.g., navigating to another screen)
       return () => {
         unsubscribe();
-        if (modalVisible) {
-          setModalVisible(false);
-        }
       };
-    }, [navigation, modalVisible])
+    }, [navigation])
+  );
+
+  // Reset state when screen regains focus
+  useFocusEffect(
+    useCallback(() => {
+      // Reset navigation flag when screen is focused
+      isNavigatingRef.current = false;
+      
+      return () => {
+        // Close modal when screen loses focus
+        setModalVisible(false);
+        isNavigatingRef.current = false;
+      };
+    }, [])
   );
   
   // Handle keyboard appearance to scroll to focused input
@@ -417,6 +446,23 @@ export default function AddItem() {
           </View>
         )}
 
+        {/* Action Buttons at the top */}
+        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />
+        
+        {editingPottery && (
+          <View style={{ marginTop: 20 }}>
+            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
+          </View>
+        )}
+
+        <View style={{ marginTop: 20 }}>
+          <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
+        </View>
+
+        <View style={{ marginTop: 20, marginBottom: 10 }}>
+          <View style={{ height: 1, backgroundColor: colors.border }} />
+        </View>
+
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.potName.label')}</Text>
         <TextInput
           ref={(ref) => { inputRefs.current[0] = ref; }}
@@ -554,18 +600,6 @@ export default function AddItem() {
           multiline={true}
           numberOfLines={3}
         />
-
-        <Button title={t(editingPottery ? 'addEditItem.buttons.update' : 'addEditItem.buttons.add')} onPress={handleSubmit} color={colors.primary} />
-        
-        {editingPottery && (
-          <View style={{ marginTop: 20 }}>
-            <Button title={t('addEditItem.buttons.delete')} onPress={handleDelete} color={colors.danger} />
-          </View>
-        )}
-
-        <View style={{ marginTop: 20 }}>
-          <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
-        </View>
       </View>
       </ScrollView>
 

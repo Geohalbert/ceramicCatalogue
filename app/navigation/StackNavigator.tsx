@@ -24,6 +24,7 @@ function MainStackNavigator() {
             <MainStack.Screen 
                 name="AddItem" 
                 component={AddItem} 
+                options={{ headerShown: false }}
             />
         </MainStack.Navigator>
     );
