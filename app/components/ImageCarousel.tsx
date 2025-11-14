@@ -11,6 +11,9 @@ interface ImageCarouselProps {
   fallbackImage?: any;
   onImagePress?: (index: number) => void;
   interactive?: boolean;
+  maxImages?: number;
+  onPlaceholderPress?: () => void;
+  showPlaceholders?: boolean;
 }
 
 export default function ImageCarousel({ 
@@ -19,15 +22,22 @@ export default function ImageCarousel({
   showTitle = true,
   fallbackImage = require('../../assets/pot_icon.png'),
   onImagePress,
-  interactive = false
+  interactive = false,
+  maxImages = 3,
+  onPlaceholderPress,
+  showPlaceholders = false
 }: ImageCarouselProps) {
   const { colors } = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
   const { width } = Dimensions.get('window');
-  const { container, image, titleOverlay, titleText, pagination, dot, counterBadge, counterText, tapIndicator, tapIndicatorText } = ImageCarouselStyles;
+  const { container, image, titleOverlay, titleText, pagination, dot, counterBadge, counterText, tapIndicator, tapIndicatorText, placeholderContainer, placeholderImage, placeholderText, placeholderButton } = ImageCarouselStyles;
 
-  // If no images, show fallback
-  if (!images || images.length === 0) {
+  const imageCount = images?.length || 0;
+  const placeholderCount = showPlaceholders ? Math.max(0, maxImages - imageCount) : 0;
+  const totalSlots = imageCount + placeholderCount;
+
+  // If no images and no placeholders, show fallback
+  if (imageCount === 0 && !showPlaceholders) {
     return (
       <View style={[container, { height }]}>
         <Image 
@@ -42,7 +52,7 @@ export default function ImageCarousel({
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const currentIndex = Math.round(contentOffsetX / width);
-    if (currentIndex >= 0 && currentIndex < images.length) {
+    if (currentIndex >= 0 && currentIndex < totalSlots) {
       setActiveIndex(currentIndex);
     }
   };
@@ -56,14 +66,15 @@ export default function ImageCarousel({
         onScroll={handleScroll}
         scrollEventThrottle={16}
         style={{ height }}
-        contentContainerStyle={{ width: width * images.length, height }}
+        contentContainerStyle={{ width: width * totalSlots, height }}
       >
+        {/* Render existing images */}
         {images.map((img, index) => {
           const ImageWrapper = interactive ? TouchableOpacity : View;
           
           return (
             <ImageWrapper 
-              key={index} 
+              key={`img-${index}`} 
               style={{ width, height, flex: 0 }}
               onPress={interactive ? () => onImagePress?.(index) : undefined}
               activeOpacity={0.8}
@@ -92,12 +103,30 @@ export default function ImageCarousel({
             </ImageWrapper>
           );
         })}
+        
+        {/* Render placeholder slots */}
+        {Array.from({ length: placeholderCount }).map((_, index) => (
+          <TouchableOpacity
+            key={`placeholder-${index}`}
+            style={[placeholderContainer, { width, height, backgroundColor: colors.inputBackground, borderColor: colors.border }]}
+            onPress={onPlaceholderPress}
+            activeOpacity={0.7}
+          >
+            <Image 
+              source={fallbackImage} 
+              style={[placeholderImage, { width: width * 0.4, height: height * 0.4 }]} 
+              resizeMode="contain"
+            />
+            <Text style={[placeholderText, { color: colors.secondaryText }]}>📷</Text>
+            <Text style={[placeholderButton, { color: colors.primary }]}>Add Photo</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
-      {/* Pagination Dots - only show if more than 1 image */}
-      {images.length > 1 && (
+      {/* Pagination Dots - show if more than 1 slot */}
+      {totalSlots > 1 && (
         <View style={pagination}>
-          {images.map((_, index) => (
+          {Array.from({ length: totalSlots }).map((_, index) => (
             <View
               key={index}
               style={[
@@ -112,11 +141,11 @@ export default function ImageCarousel({
         </View>
       )}
 
-      {/* Image Counter Badge */}
-      {images.length > 1 && (
+      {/* Image Counter Badge - only show for actual images, not placeholders */}
+      {imageCount > 1 && (
         <View style={[counterBadge, { backgroundColor: 'rgba(0, 0, 0, 0.7)' }]}>
           <Text style={counterText}>
-            {activeIndex + 1}/{images.length}
+            {activeIndex + 1 <= imageCount ? activeIndex + 1 : imageCount}/{imageCount}
           </Text>
         </View>
       )}

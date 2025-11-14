@@ -433,17 +433,25 @@ export default function AddItem() {
         contentInsetAdjustmentBehavior="automatic"
       >
       <View style={form}>
-        {/* Preview Carousel - only show if images exist */}
-        {images.length > 0 && (
-          <View style={{ marginBottom: 20, marginHorizontal: -20, marginTop: -20 }}>
-            <ImageCarousel 
-              images={images}
-              height={250}
-              showTitle={true}
-              interactive={true}
-              onImagePress={handleCarouselImagePress}
-            />
-          </View>
+        {/* Preview Carousel - always show with placeholders if space available */}
+        <View style={{ marginBottom: 20, marginHorizontal: -20, marginTop: -20 }}>
+          <ImageCarousel 
+            images={images}
+            height={250}
+            showTitle={true}
+            interactive={true}
+            onImagePress={handleCarouselImagePress}
+            maxImages={3}
+            showPlaceholders={images.length < 3}
+            onPlaceholderPress={handleAddPhoto}
+          />
+        </View>
+        
+        {/* Show "Photos (Optional - Up to 3)" text below carousel when less than 3 photos */}
+        {images.length < 3 && (
+          <Text style={[label, { color: colors.secondaryText, marginTop: -10, marginBottom: 20, textAlign: 'center', fontSize: 14, fontWeight: 'normal' }]}>
+            {t('addEditItem.fields.image.label')}
+          </Text>
         )}
 
         {/* Action Buttons at the top */}
@@ -472,39 +480,6 @@ export default function AddItem() {
           placeholder={t('addEditItem.fields.potName.placeholder')}
           placeholderTextColor={colors.placeholder}
         />
-
-        {/* Photo Section */}
-        <Text style={[label, { color: colors.text, marginTop: 15 }]}>{t('addEditItem.fields.image.label')}</Text>
-        
-        {/* Add photo button */}
-        {images.length < 3 && (
-          <TouchableOpacity
-            style={{
-              marginTop: images.length > 0 ? 0 : 10,
-              marginBottom: 15,
-              paddingVertical: 40,
-              paddingHorizontal: 20,
-              borderRadius: 8,
-              backgroundColor: colors.inputBackground,
-              borderWidth: 2,
-              borderColor: colors.border,
-              borderStyle: 'dashed',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            onPress={handleAddPhoto}
-          >
-            <Text style={{ fontSize: 40, marginBottom: 10 }}>📷</Text>
-            <Text style={{ color: colors.text, fontSize: 16, fontWeight: '500' }}>
-              {t('addEditItem.fields.image.addPhoto')}
-            </Text>
-            {images.length > 0 && (
-              <Text style={{ color: colors.secondaryText, fontSize: 12, marginTop: 5 }}>
-                ({images.length}/3)
-              </Text>
-            )}
-          </TouchableOpacity>
-        )}
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.clayType.label')}</Text>
         <Dropdown

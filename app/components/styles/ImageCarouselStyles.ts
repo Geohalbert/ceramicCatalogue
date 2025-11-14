@@ -79,6 +79,25 @@ const ImageCarouselStyles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
+  placeholderContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    borderColor: '#ddd',
+  },
+  placeholderImage: {
+    opacity: 0.3,
+    marginBottom: 10,
+  },
+  placeholderText: {
+    fontSize: 32,
+    marginBottom: 8,
+  },
+  placeholderButton: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
 });
 
 export default ImageCarouselStyles;
