@@ -56,6 +56,7 @@ export default function ImageCarousel({
         onScroll={handleScroll}
         scrollEventThrottle={16}
         style={{ height }}
+        contentContainerStyle={{ width: width * images.length, height }}
       >
         {images.map((img, index) => {
           const ImageWrapper = interactive ? TouchableOpacity : View;
@@ -63,7 +64,7 @@ export default function ImageCarousel({
           return (
             <ImageWrapper 
               key={index} 
-              style={{ width, height }}
+              style={{ width, height, flex: 0 }}
               onPress={interactive ? () => onImagePress?.(index) : undefined}
               activeOpacity={0.8}
             >

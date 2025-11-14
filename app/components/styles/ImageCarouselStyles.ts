@@ -62,9 +62,9 @@ const ImageCarouselStyles = StyleSheet.create({
   },
   tapIndicator: {
     position: 'absolute',
-    top: '50%',
+    top: 15,
     left: '50%',
-    transform: [{ translateX: -60 }, { translateY: -20 }],
+    transform: [{ translateX: -60 }],
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
