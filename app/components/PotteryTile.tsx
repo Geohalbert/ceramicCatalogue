@@ -29,16 +29,16 @@ export default function PotteryTile({ pottery }: PotteryTileProps) {
     ? getRemainingTime(pottery.timerStartDate!, pottery.timerDays!) 
     : null;
 
-  // Get the first image URI from either new images array or legacy imageUri
-  const firstImageUri = pottery.images && pottery.images.length > 0 
-    ? pottery.images[0].uri 
+  // Get the LAST image from the array, or fall back to legacy imageUri
+  const lastImageUri = pottery.images && pottery.images.length > 0 
+    ? pottery.images[pottery.images.length - 1].uri 
     : pottery.imageUri;
 
   if (pottery) {
   return (
     <TouchableOpacity style={[container, { backgroundColor: colors.card, borderColor: colors.border }]} onPress={handlePress}>
       <Image 
-        source={firstImageUri ? { uri: firstImageUri } : require('../../assets/pot_icon.png')} 
+        source={lastImageUri ? { uri: lastImageUri } : require('../../assets/pot_icon.png')} 
         style={image} 
       />
       <Text style={[name, { color: colors.text }]}>{pottery.potName || t('potteryTile.unnamed')}</Text>

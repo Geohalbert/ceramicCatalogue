@@ -7,6 +7,7 @@ import { useTheme } from "../context/ThemeContext";
 import * as ImagePicker from 'expo-image-picker';
 
 import Dropdown from "../components/Dropdown";
+import ImageCarousel from "../components/ImageCarousel";
 import { useAppDispatch } from "../store/hooks";
 import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } from "../store/types";
@@ -315,6 +316,17 @@ export default function AddItem() {
   return (
     <ScrollView style={[container, { backgroundColor: colors.background }]}>
       <View style={form}>
+        {/* Preview Carousel - only show if images exist */}
+        {images.length > 0 && (
+          <View style={{ marginBottom: 20, marginHorizontal: -20, marginTop: -20 }}>
+            <ImageCarousel 
+              images={images}
+              height={250}
+              showTitle={true}
+            />
+          </View>
+        )}
+
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.potName.label')}</Text>
         <TextInput
           style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
