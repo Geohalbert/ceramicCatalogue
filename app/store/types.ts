@@ -1,3 +1,8 @@
+export interface PotteryImage {
+  uri: string;
+  title?: string;
+}
+
 export interface Pottery {
   clayType: ClayType;
   dateCreated: string;
@@ -6,7 +11,8 @@ export interface Pottery {
   id: string;
   potName: string;
   potStatus: PotStatus;
-  imageUri?: string; // Local or remote URI for the pottery image
+  imageUri?: string; // Deprecated: kept for backward compatibility
+  images?: PotteryImage[]; // Array of up to 3 images with optional titles
   notificationId?: string; // ID of scheduled notification
   timerDays?: number; // Number of days for the timer (1, 2, or 3)
   timerStartDate?: string; // ISO string of when timer was set

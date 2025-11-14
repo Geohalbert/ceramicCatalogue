@@ -31,14 +31,16 @@
                 "label": "Tipo de esmalte"
             },
             "image": {
-                "label": "Foto (Opcional)",
+                "label": "Fotos (Opcional - Hasta 3)",
                 "addPhoto": "Agregar Foto",
                 "changePhoto": "Cambiar Foto",
                 "removePhoto": "Eliminar Foto",
                 "fromCamera": "Tomar Foto",
                 "fromLibrary": "Elegir de la Galería",
                 "chooseSource": "Elegir Origen de la Foto",
-                "permissionDenied": "Se denegó el permiso para acceder a la cámara o la galería"
+                "permissionDenied": "Se denegó el permiso para acceder a la cámara o la galería",
+                "titlePlaceholder": "Agregar título de foto (opcional)",
+                "maxReached": "Máximo de 3 fotos alcanzado"
             },
             "potName": {
                 "label": "Nombre de la pieza *",

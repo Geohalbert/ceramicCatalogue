@@ -3,6 +3,24 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Helper function to validate image object
+    function isValidImage(image) {
+      return image is map
+             && image.keys().hasAll(['uri'])
+             && image.uri is string
+             && image.uri.size() > 0
+             && image.uri.size() <= 2048
+             && (!image.keys().hasAny(['title']) || (image.title is string && image.title.size() <= 100));
+    }
+    
+    // Helper function to validate images array
+    function isValidImagesArray(images) {
+      return images is list
+             && images.size() >= 1
+             && images.size() <= 3
+             && images[0].keys().hasAll(['uri']);
+    }
+    
     // Users collection - each user can only read/write their own data
     match /users/{userId} {
       // Users can read and write their own user document
@@ -29,7 +47,8 @@ service cloud.firestore {
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
                       && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
                       && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string)
-                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
+                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000))
+                      && (!request.resource.data.keys().hasAny(['images']) || isValidImagesArray(request.resource.data.images));
         
         allow update: if request.auth != null 
                       && request.auth.uid == userId
@@ -41,7 +60,8 @@ service cloud.firestore {
                       && (!request.resource.data.keys().hasAny(['notificationId']) || request.resource.data.notificationId is string)
                       && (!request.resource.data.keys().hasAny(['timerDays']) || (request.resource.data.timerDays is number && request.resource.data.timerDays >= 1 && request.resource.data.timerDays <= 3))
                       && (!request.resource.data.keys().hasAny(['timerStartDate']) || request.resource.data.timerStartDate is string)
-                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000));
+                      && (!request.resource.data.keys().hasAny(['notes']) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 1000))
+                      && (!request.resource.data.keys().hasAny(['images']) || isValidImagesArray(request.resource.data.images));
         
         allow delete: if request.auth != null && request.auth.uid == userId;
       }

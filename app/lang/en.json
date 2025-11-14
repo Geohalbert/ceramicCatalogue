@@ -31,14 +31,16 @@
         "label": "Glaze Type"
       },
       "image": {
-        "label": "Photo (Optional)",
+        "label": "Photos (Optional - Up to 3)",
         "addPhoto": "Add Photo",
         "changePhoto": "Change Photo",
         "removePhoto": "Remove Photo",
         "fromCamera": "Take Photo",
         "fromLibrary": "Choose from Library",
         "chooseSource": "Choose Photo Source",
-        "permissionDenied": "Permission to access camera or photo library was denied"
+        "permissionDenied": "Permission to access camera or photo library was denied",
+        "titlePlaceholder": "Add photo title (optional)",
+        "maxReached": "Maximum of 3 photos reached"
       },
       "potName": {
         "label": "Pot Name *",

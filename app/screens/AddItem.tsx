@@ -9,7 +9,7 @@ import * as ImagePicker from 'expo-image-picker';
 import Dropdown from "../components/Dropdown";
 import { useAppDispatch } from "../store/hooks";
 import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
-import { ClayType, DesignType, PotStatus, GlazeType, Pottery } from "../store/types";
+import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } from "../store/types";
 import { schedulePotteryNotification, cancelPotteryNotification, getRemainingTime } from "../services/notificationService";
 
 import AddItemStyles from "./styles/AddItemStyles";
@@ -34,7 +34,7 @@ export default function AddItem() {
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
   const [timerDays, setTimerDays] = useState<number | null>(null);
   const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
-  const [imageUri, setImageUri] = useState<string | undefined>();
+  const [images, setImages] = useState<PotteryImage[]>([]);
   const [notes, setNotes] = useState("");
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
@@ -51,13 +51,25 @@ export default function AddItem() {
       setGlazeType(editingPottery.glazeType);
       setTimerDays(editingPottery.timerDays || null);
       setExistingNotificationId(editingPottery.notificationId);
-      setImageUri(editingPottery.imageUri);
+      
+      // Migrate old imageUri to new images array format
+      if (editingPottery.images && editingPottery.images.length > 0) {
+        setImages(editingPottery.images);
+      } else if (editingPottery.imageUri) {
+        setImages([{ uri: editingPottery.imageUri }]);
+      }
+      
       setNotes(editingPottery.notes || "");
     }
   }, [editingPottery]);
 
   // Image picker functions
   const pickImageFromLibrary = async () => {
+    if (images.length >= 3) {
+      Alert.alert(t('common.error'), t('addEditItem.fields.image.maxReached'));
+      return;
+    }
+
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
@@ -74,7 +86,7 @@ export default function AddItem() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        setImageUri(result.assets[0].uri);
+        setImages([...images, { uri: result.assets[0].uri }]);
       }
     } catch (error) {
       console.error('Error picking image from library:', error);
@@ -83,6 +95,11 @@ export default function AddItem() {
   };
 
   const pickImageFromCamera = async () => {
+    if (images.length >= 3) {
+      Alert.alert(t('common.error'), t('addEditItem.fields.image.maxReached'));
+      return;
+    }
+
     try {
       const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
       
@@ -98,7 +115,7 @@ export default function AddItem() {
       });
 
       if (!result.canceled && result.assets[0]) {
-        setImageUri(result.assets[0].uri);
+        setImages([...images, { uri: result.assets[0].uri }]);
       }
     } catch (error) {
       console.error('Error taking photo:', error);
@@ -107,6 +124,11 @@ export default function AddItem() {
   };
 
   const handleAddPhoto = () => {
+    if (images.length >= 3) {
+      Alert.alert(t('common.error'), t('addEditItem.fields.image.maxReached'));
+      return;
+    }
+
     Alert.alert(
       t('addEditItem.fields.image.chooseSource'),
       '',
@@ -127,8 +149,15 @@ export default function AddItem() {
     );
   };
 
-  const handleRemovePhoto = () => {
-    setImageUri(undefined);
+  const handleRemovePhoto = (index: number) => {
+    const newImages = images.filter((_, i) => i !== index);
+    setImages(newImages);
+  };
+
+  const handleUpdateImageTitle = (index: number, title: string) => {
+    const newImages = [...images];
+    newImages[index] = { ...newImages[index], title: title || undefined };
+    setImages(newImages);
   };
 
   const { container, form, label, input, multilineInput } = AddItemStyles;
@@ -211,7 +240,8 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
-          imageUri,
+          images: images.length > 0 ? images : undefined,
+          imageUri: images.length > 0 ? images[0].uri : undefined, // Keep for backward compatibility
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
@@ -229,7 +259,8 @@ export default function AddItem() {
           designType,
           potStatus,
           glazeType,
-          imageUri,
+          images: images.length > 0 ? images : undefined,
+          imageUri: images.length > 0 ? images[0].uri : undefined, // Keep for backward compatibility
           notificationId,
           timerDays: timerDays || undefined,
           timerStartDate: (potStatus === 'Firing' || potStatus === 'Drying') && timerDays ? timerStartDate : undefined,
@@ -295,10 +326,12 @@ export default function AddItem() {
 
         {/* Photo Section */}
         <Text style={[label, { color: colors.text, marginTop: 15 }]}>{t('addEditItem.fields.image.label')}</Text>
-        {imageUri ? (
-          <View style={{ marginTop: 10, marginBottom: 15 }}>
+        
+        {/* Display existing images */}
+        {images.map((image, index) => (
+          <View key={index} style={{ marginTop: 10, marginBottom: 15 }}>
             <Image 
-              source={{ uri: imageUri }} 
+              source={{ uri: image.uri }} 
               style={{ 
                 width: '100%', 
                 height: 200, 
@@ -307,45 +340,41 @@ export default function AddItem() {
               }} 
               resizeMode="cover"
             />
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  paddingHorizontal: 15,
-                  borderRadius: 8,
-                  backgroundColor: colors.inputBackground,
-                  borderWidth: 2,
-                  borderColor: colors.border,
-                  alignItems: 'center',
-                }}
-                onPress={handleAddPhoto}
-              >
-                <Text style={{ color: colors.text, fontSize: 14, fontWeight: '500' }}>
-                  {t('addEditItem.fields.image.changePhoto')}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  paddingVertical: 12,
-                  paddingHorizontal: 15,
-                  borderRadius: 8,
-                  backgroundColor: colors.danger,
-                  alignItems: 'center',
-                }}
-                onPress={handleRemovePhoto}
-              >
-                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                  {t('addEditItem.fields.image.removePhoto')}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TextInput
+              style={[input, { 
+                backgroundColor: colors.inputBackground, 
+                borderColor: colors.border, 
+                color: colors.text,
+                marginTop: 8 
+              }]}
+              value={image.title || ''}
+              onChangeText={(text) => handleUpdateImageTitle(index, text)}
+              placeholder={t('addEditItem.fields.image.titlePlaceholder')}
+              placeholderTextColor={colors.placeholder}
+            />
+            <TouchableOpacity
+              style={{
+                marginTop: 8,
+                paddingVertical: 12,
+                paddingHorizontal: 15,
+                borderRadius: 8,
+                backgroundColor: colors.danger,
+                alignItems: 'center',
+              }}
+              onPress={() => handleRemovePhoto(index)}
+            >
+              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
+                {t('addEditItem.fields.image.removePhoto')}
+              </Text>
+            </TouchableOpacity>
           </View>
-        ) : (
+        ))}
+        
+        {/* Add photo button */}
+        {images.length < 3 && (
           <TouchableOpacity
             style={{
-              marginTop: 10,
+              marginTop: images.length > 0 ? 0 : 10,
               marginBottom: 15,
               paddingVertical: 40,
               paddingHorizontal: 20,
@@ -363,6 +392,11 @@ export default function AddItem() {
             <Text style={{ color: colors.text, fontSize: 16, fontWeight: '500' }}>
               {t('addEditItem.fields.image.addPhoto')}
             </Text>
+            {images.length > 0 && (
+              <Text style={{ color: colors.secondaryText, fontSize: 12, marginTop: 5 }}>
+                ({images.length}/3)
+              </Text>
+            )}
           </TouchableOpacity>
         )}
 
