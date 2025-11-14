@@ -407,54 +407,6 @@ export default function AddItem() {
         {/* Photo Section */}
         <Text style={[label, { color: colors.text, marginTop: 15 }]}>{t('addEditItem.fields.image.label')}</Text>
         
-        {/* Display existing images */}
-        {images.map((image, index) => (
-          <View 
-            key={index} 
-            style={{ marginTop: 10, marginBottom: 15 }}
-            ref={(ref) => { imageRefs.current[index] = ref; }}
-          >
-            <Image 
-              source={{ uri: image.uri }} 
-              style={{ 
-                width: '100%', 
-                height: 200, 
-                borderRadius: 8, 
-                backgroundColor: colors.inputBackground 
-              }} 
-              resizeMode="cover"
-            />
-            <TextInput
-              ref={(ref) => { inputRefs.current[1 + index] = ref; }}
-              style={[input, { 
-                backgroundColor: colors.inputBackground, 
-                borderColor: colors.border, 
-                color: colors.text,
-                marginTop: 8 
-              }]}
-              value={image.title || ''}
-              onChangeText={(text) => handleUpdateImageTitle(index, text)}
-              placeholder={t('addEditItem.fields.image.titlePlaceholder')}
-              placeholderTextColor={colors.placeholder}
-            />
-            <TouchableOpacity
-              style={{
-                marginTop: 8,
-                paddingVertical: 12,
-                paddingHorizontal: 15,
-                borderRadius: 8,
-                backgroundColor: colors.danger,
-                alignItems: 'center',
-              }}
-              onPress={() => handleRemovePhoto(index)}
-            >
-              <Text style={{ color: '#fff', fontSize: 14, fontWeight: '500' }}>
-                {t('addEditItem.fields.image.removePhoto')}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
-        
         {/* Add photo button */}
         {images.length < 3 && (
           <TouchableOpacity
