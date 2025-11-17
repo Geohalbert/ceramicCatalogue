@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard } from "react-native";
+import { Text, View, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -42,9 +42,24 @@ export default function AddItem() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   const modalVisibleRef = useRef(false);
   const isNavigatingRef = useRef(false);
+  const hasUnsavedChangesRef = useRef(false);
+  const isSavingRef = useRef(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
+
+  // Track initial state for change detection
+  const initialStateRef = useRef<{
+    potName: string;
+    clayType: ClayType;
+    dateCreated: string;
+    designType: DesignType;
+    potStatus: PotStatus;
+    glazeType: GlazeType;
+    timerDays: number | null;
+    images: PotteryImage[];
+    notes: string;
+  } | null>(null);
   
   // Refs for scrolling to specific images
   const scrollViewRef = useRef<ScrollView>(null);
@@ -59,33 +74,6 @@ export default function AddItem() {
       isNavigatingRef.current = false;
     }
   }, [modalVisible]);
-  
-  // Close modal when navigating back
-  useFocusEffect(
-    useCallback(() => {
-      const onBeforeRemove = (e: any) => {
-        // If modal is visible and we're not already navigating, close it first and allow navigation to proceed
-        if (modalVisibleRef.current && !isNavigatingRef.current) {
-          e.preventDefault();
-          isNavigatingRef.current = true;
-          // Close modal immediately
-          setModalVisible(false);
-          // Use requestAnimationFrame to ensure modal closes, then navigate
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              navigation.pop();
-            });
-          });
-        }
-      };
-
-      const unsubscribe = navigation.addListener('beforeRemove', onBeforeRemove);
-
-      return () => {
-        unsubscribe();
-      };
-    }, [navigation])
-  );
 
   // Reset state when screen regains focus
   useFocusEffect(
@@ -143,13 +131,44 @@ export default function AddItem() {
       setExistingNotificationId(editingPottery.notificationId);
       
       // Migrate old imageUri to new images array format
+      let initialImages: PotteryImage[] = [];
       if (editingPottery.images && editingPottery.images.length > 0) {
+        initialImages = editingPottery.images;
         setImages(editingPottery.images);
       } else if (editingPottery.imageUri) {
+        initialImages = [{ uri: editingPottery.imageUri }];
         setImages([{ uri: editingPottery.imageUri }]);
       }
       
       setNotes(editingPottery.notes || "");
+      
+      // Store initial state for change detection
+      initialStateRef.current = {
+        potName: editingPottery.potName,
+        clayType: editingPottery.clayType,
+        dateCreated: editingPottery.dateCreated,
+        designType: editingPottery.designType,
+        potStatus: editingPottery.potStatus,
+        glazeType: editingPottery.glazeType,
+        timerDays: editingPottery.timerDays || null,
+        images: initialImages,
+        notes: editingPottery.notes || "",
+      };
+      hasUnsavedChangesRef.current = false;
+    } else {
+      // For new items, initial state is empty/default
+      initialStateRef.current = {
+        potName: "",
+        clayType: "Porcelain",
+        dateCreated: new Date().toISOString().split('T')[0],
+        designType: "Pot",
+        potStatus: "In Progress",
+        glazeType: "No Glaze",
+        timerDays: null,
+        images: [],
+        notes: "",
+      };
+      hasUnsavedChangesRef.current = false;
     }
   }, [editingPottery]);
 
@@ -183,6 +202,104 @@ export default function AddItem() {
     setModalVisible,
     setSelectedImageIndex,
   });
+
+  // Function to check if there are unsaved changes
+  const hasUnsavedChanges = useCallback(() => {
+    if (!initialStateRef.current) return false;
+    if (isSavingRef.current) return false; // Don't prompt if we're in the process of saving
+
+    const initial = initialStateRef.current;
+    
+    // Check if any field has changed
+    if (potName.trim() !== initial.potName.trim()) return true;
+    if (clayType !== initial.clayType) return true;
+    if (dateCreated !== initial.dateCreated) return true;
+    if (designType !== initial.designType) return true;
+    if (potStatus !== initial.potStatus) return true;
+    if (glazeType !== initial.glazeType) return true;
+    if (timerDays !== initial.timerDays) return true;
+    if (notes.trim() !== (initial.notes || "").trim()) return true;
+
+    // Check images - compare count, URIs, and titles
+    if (images.length !== initial.images.length) return true;
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].uri !== initial.images[i]?.uri) return true;
+      if ((images[i].title || "") !== (initial.images[i]?.title || "")) return true;
+    }
+
+    return false;
+  }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, images, notes]);
+
+  // Close modal when navigating back and check for unsaved changes
+  useFocusEffect(
+    useCallback(() => {
+      const onBeforeRemove = (e: any) => {
+        // If modal is visible, close it first
+        if (modalVisibleRef.current && !isNavigatingRef.current) {
+          e.preventDefault();
+          isNavigatingRef.current = true;
+          setModalVisible(false);
+          // After modal closes, check for unsaved changes
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              isNavigatingRef.current = false;
+              // Trigger navigation again to check for unsaved changes
+              navigation.dispatch(e.data.action);
+            });
+          });
+          return;
+        }
+
+        // Check for unsaved changes
+        if (hasUnsavedChanges() && !isNavigatingRef.current) {
+          e.preventDefault();
+
+          Alert.alert(
+            t('addEditItem.alerts.unsavedChangesTitle'),
+            t('addEditItem.alerts.unsavedChangesMessage'),
+            [
+              {
+                text: t('common.cancel'),
+                style: 'cancel',
+                onPress: () => {
+                  // Do nothing, stay on screen
+                },
+              },
+              {
+                text: t('addEditItem.alerts.discard'),
+                style: 'destructive',
+                onPress: () => {
+                  isNavigatingRef.current = true;
+                  navigation.dispatch(e.data.action);
+                },
+              },
+              {
+                text: t('addEditItem.alerts.save'),
+                onPress: async () => {
+                  isNavigatingRef.current = true;
+                  isSavingRef.current = true;
+                  try {
+                    await handleSubmit();
+                    // After successful save, navigation will happen automatically
+                  } catch (error) {
+                    isSavingRef.current = false;
+                    isNavigatingRef.current = false;
+                    // If save fails, stay on screen
+                  }
+                },
+              },
+            ]
+          );
+        }
+      };
+
+      const unsubscribe = navigation.addListener('beforeRemove', onBeforeRemove);
+
+      return () => {
+        unsubscribe();
+      };
+    }, [navigation, hasUnsavedChanges, handleSubmit, t])
+  );
 
   const { container, form, label, input, multilineInput } = AddItemStyles;
 
@@ -266,7 +383,42 @@ export default function AddItem() {
           )}
 
           <View style={{ flex: 1, marginLeft: 5 }}>
-            <Button title={t('addEditItem.buttons.cancel')} onPress={() => navigation.pop()} color={colors.secondaryText} />
+            <Button 
+              title={t('addEditItem.buttons.cancel')} 
+              onPress={() => {
+                if (hasUnsavedChanges()) {
+                  Alert.alert(
+                    t('addEditItem.alerts.unsavedChangesTitle'),
+                    t('addEditItem.alerts.unsavedChangesMessage'),
+                    [
+                      {
+                        text: t('common.cancel'),
+                        style: 'cancel',
+                      },
+                      {
+                        text: t('addEditItem.alerts.discard'),
+                        style: 'destructive',
+                        onPress: () => navigation.pop(),
+                      },
+                      {
+                        text: t('addEditItem.alerts.save'),
+                        onPress: async () => {
+                          isSavingRef.current = true;
+                          try {
+                            await handleSubmit();
+                          } catch (error) {
+                            isSavingRef.current = false;
+                          }
+                        },
+                      },
+                    ]
+                  );
+                } else {
+                  navigation.pop();
+                }
+              }} 
+              color={colors.secondaryText} 
+            />
           </View>
         </View>
 

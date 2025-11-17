@@ -8,7 +8,11 @@
             "deleteSuccess": "¡Artículo de cerámica eliminado!",
             "enterName": "Por favor ingresa un nombre para la pieza",
             "saveFailed": "No se pudo guardar el artículo de cerámica. Verifica tu configuración de Firebase.",
-            "updateSuccess": "¡Artículo de cerámica actualizado!"
+            "updateSuccess": "¡Artículo de cerámica actualizado!",
+            "unsavedChangesTitle": "Cambios sin guardar",
+            "unsavedChangesMessage": "Tienes cambios sin guardar. ¿Deseas guardarlos antes de salir?",
+            "save": "Guardar",
+            "discard": "Descartar cambios"
         },
         "buttons": {
             "add": "Agregar cerámica",

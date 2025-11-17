@@ -8,7 +8,11 @@
       "deleteSuccess": "Pottery item deleted!",
       "enterName": "Please enter a pot name",
       "saveFailed": "Failed to save pottery item. Please check your Firebase configuration.",
-      "updateSuccess": "Pottery item updated!"
+      "updateSuccess": "Pottery item updated!",
+      "unsavedChangesTitle": "Unsaved Changes",
+      "unsavedChangesMessage": "You have unsaved changes. Do you want to save them before leaving?",
+      "save": "Save",
+      "discard": "Discard Changes"
     },
     "buttons": {
       "add": "Add Pottery",
