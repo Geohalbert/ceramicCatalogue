@@ -8,7 +8,9 @@ import PotteryTile from '../components/PotteryTile';
 import AddItemButton from '../components/AddItemButton';
 import CollectionDrawer from '../components/CollectionDrawer';
 import SortBar, { SortOrder } from '../components/SortBar';
+import Dropdown from '../components/Dropdown';
 import { fetchPotteryItemsThunk } from '../store/potterySlice';
+import { DesignType } from '../store/types';
 import CollectionStyles from './styles/CollectionStyles';
 
 export default function Collection() {
@@ -22,6 +24,7 @@ export default function Collection() {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'inProgress' | 'finished' | 'firing' | 'drying'>('all');
+  const [selectedDesignType, setSelectedDesignType] = useState<DesignType | 'all'>('all');
   const [sortOrder, setSortOrder] = useState<SortOrder>('dateNewest');
 
   // Load pottery items only on initial mount
@@ -38,7 +41,7 @@ export default function Collection() {
 
   // Filter and sort pottery items
   const filteredAndSortedItems = useMemo(() => {
-    // First, filter items
+    // First, filter items by status
     let filtered = potteryItems;
     if (selectedFilter === 'inProgress') {
       filtered = potteryItems.filter(item => item.potStatus === 'In Progress');
@@ -48,6 +51,11 @@ export default function Collection() {
       filtered = potteryItems.filter(item => item.potStatus === 'Firing');
     } else if (selectedFilter === 'drying') {
       filtered = potteryItems.filter(item => item.potStatus === 'Drying');
+    }
+
+    // Then, filter by design type
+    if (selectedDesignType !== 'all') {
+      filtered = filtered.filter(item => item.designType === selectedDesignType);
     }
 
     // Then, sort items
@@ -67,7 +75,7 @@ export default function Collection() {
     });
 
     return sorted;
-  }, [potteryItems, selectedFilter, sortOrder]);
+  }, [potteryItems, selectedFilter, selectedDesignType, sortOrder]);
 
   const { container, title, emptyContainer, emptyText, emptySubtext, listContainer, storageIndicator, storageIndicatorText, hamburgerButton, hamburgerIcon } = CollectionStyles;
 
@@ -137,6 +145,33 @@ export default function Collection() {
       {/* Sort Bar */}
       <SortBar sortOrder={sortOrder} onSortChange={setSortOrder} />
       
+      {/* Design Type Filter */}
+      <View style={{ paddingHorizontal: 20, marginBottom: 15 }}>
+        <Text style={{ 
+          fontSize: 14, 
+          fontWeight: '600', 
+          color: colors.text, 
+          marginBottom: 8 
+        }}>
+          {t('addEditItem.fields.designType.label')}
+        </Text>
+        <Dropdown
+          options={[
+            { label: t('collection.drawer.filters.all'), value: 'all' },
+            { label: t('dropdown.designTypes.pot'), value: 'Pot' },
+            { label: t('dropdown.designTypes.vase'), value: 'Vase' },
+            { label: t('dropdown.designTypes.platter'), value: 'Platter' },
+            { label: t('dropdown.designTypes.mug'), value: 'Mug' },
+            { label: t('dropdown.designTypes.bowl'), value: 'Bowl' },
+            { label: t('dropdown.designTypes.tile'), value: 'Tile' },
+            { label: t('dropdown.designTypes.other'), value: 'Other' },
+          ]}
+          selectedValue={selectedDesignType}
+          onValueChange={(value) => setSelectedDesignType(value as DesignType | 'all')}
+          placeholder={t('collection.drawer.filters.all')}
+        />
+      </View>
+      
       {/* Storage indicator and filter badge */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginBottom: 15, marginTop: 5 }}>
         {isAuthenticated !== undefined && (
@@ -153,6 +188,13 @@ export default function Collection() {
               {selectedFilter === 'finished' && t('collection.drawer.filters.finished')}
               {selectedFilter === 'firing' && t('collection.drawer.filters.firing')}
               {selectedFilter === 'drying' && t('collection.drawer.filters.drying')}
+            </Text>
+          </View>
+        )}
+        {selectedDesignType !== 'all' && (
+          <View style={[storageIndicator, { backgroundColor: colors.primary }]}>
+            <Text style={[storageIndicatorText, { color: '#fff' }]}>
+              {t(`dropdown.designTypes.${selectedDesignType.toLowerCase()}`)}
             </Text>
           </View>
         )}
