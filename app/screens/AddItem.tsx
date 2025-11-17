@@ -320,6 +320,7 @@ export default function AddItem() {
     { label: t('dropdown.designTypes.platter'), value: "Platter" },
     { label: t('dropdown.designTypes.mug'), value: "Mug" },
     { label: t('dropdown.designTypes.bowl'), value: "Bowl" },
+    { label: t('dropdown.designTypes.tile'), value: "Tile" },
     { label: t('dropdown.designTypes.other'), value: "Other" },
   ];
 
