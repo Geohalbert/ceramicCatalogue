@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
+import { Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -293,70 +293,52 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
   // Forgot Password view
   if (isForgotPassword) {
     return (
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        <ScrollView 
-          contentContainerStyle={{ flexGrow: 1 }}
-          keyboardShouldPersistTaps="handled"
+      <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+        <Text style={[authTitle, { color: colors.text }]}>{t('authentication.forgotPassword.title')}</Text>
+        
+        <Text style={{ marginBottom: 15, color: colors.secondaryText, textAlign: 'center' }}>
+          {t('authentication.forgotPassword.description')}
+        </Text>
+        
+        <TextInput
+          style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+          placeholder={t('authentication.signIn.emailPlaceholder')}
+          placeholderTextColor={colors.placeholder}
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+        />
+        
+        <TouchableOpacity 
+          style={[button, { backgroundColor: colors.primary }]} 
+          onPress={handleForgotPassword}
+          disabled={isResetting}
         >
-          <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
-            <Text style={[authTitle, { color: colors.text }]}>{t('authentication.forgotPassword.title')}</Text>
-            
-            <Text style={{ marginBottom: 15, color: colors.secondaryText, textAlign: 'center' }}>
-              {t('authentication.forgotPassword.description')}
-            </Text>
-            
-            <TextInput
-              style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
-              placeholder={t('authentication.signIn.emailPlaceholder')}
-              placeholderTextColor={colors.placeholder}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
-            />
-            
-            <TouchableOpacity 
-              style={[button, { backgroundColor: colors.primary }]} 
-              onPress={handleForgotPassword}
-              disabled={isResetting}
-            >
-              {isResetting ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={buttonText}>{t('authentication.forgotPassword.button')}</Text>
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={forgotPasswordLink}
-              onPress={() => {
-                setIsForgotPassword(false);
-                setEmail("");
-              }}
-            >
-              <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.forgotPassword.backLink')}</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          {isResetting ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={buttonText}>{t('authentication.forgotPassword.button')}</Text>
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={forgotPasswordLink}
+          onPress={() => {
+            setIsForgotPassword(false);
+            setEmail("");
+          }}
+        >
+          <Text style={[forgotPasswordText, { color: colors.primary }]}>{t('authentication.forgotPassword.backLink')}</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   // Unauthenticated view - Sign In/Sign Up form
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
+    <View style={[authContainer, { backgroundColor: colors.secondaryBackground }]}>
           <Text style={[authTitle, { color: colors.text }]}>{t(isSignUp ? 'authentication.signUp.title' : 'authentication.signIn.title')}</Text>
           
           {error && <Text style={errorText}>{error}</Text>}
@@ -482,8 +464,6 @@ export default function Authentication({ onAuthenticated }: AuthenticationProps)
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
   );
 }
 
