@@ -44,6 +44,7 @@ export default function AddItem() {
   const isNavigatingRef = useRef(false);
   const hasUnsavedChangesRef = useRef(false);
   const isSavingRef = useRef(false);
+  const isProgrammaticNavigationRef = useRef(false);
 
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
@@ -180,8 +181,8 @@ export default function AddItem() {
     handleModalClose,
     handleModalEditTitle,
     handleModalRemove,
-    handleSubmit,
-    handleDelete,
+    handleSubmit: originalHandleSubmit,
+    handleDelete: originalHandleDelete,
   } = useAddItemHandlers({
     t,
     navigation,
@@ -202,6 +203,18 @@ export default function AddItem() {
     setModalVisible,
     setSelectedImageIndex,
   });
+
+  // Wrap handleSubmit to mark navigation as programmatic
+  const handleSubmit = useCallback(async () => {
+    isProgrammaticNavigationRef.current = true;
+    await originalHandleSubmit();
+  }, [originalHandleSubmit]);
+
+  // Wrap handleDelete to mark navigation as programmatic
+  const handleDelete = useCallback(async () => {
+    isProgrammaticNavigationRef.current = true;
+    await originalHandleDelete();
+  }, [originalHandleDelete]);
 
   // Function to check if there are unsaved changes
   const hasUnsavedChanges = useCallback(() => {
@@ -230,10 +243,16 @@ export default function AddItem() {
     return false;
   }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, images, notes]);
 
-  // Close modal when navigating back and check for unsaved changes
+  // Close modal when navigating back and check for unsaved changes (only for header back button)
   useFocusEffect(
     useCallback(() => {
       const onBeforeRemove = (e: any) => {
+        // If this is a programmatic navigation (e.g., after save), allow it
+        if (isProgrammaticNavigationRef.current) {
+          isProgrammaticNavigationRef.current = false;
+          return;
+        }
+
         // If modal is visible, close it first
         if (modalVisibleRef.current && !isNavigatingRef.current) {
           e.preventDefault();
@@ -250,7 +269,7 @@ export default function AddItem() {
           return;
         }
 
-        // Check for unsaved changes
+        // Check for unsaved changes (only for user-initiated back navigation)
         if (hasUnsavedChanges() && !isNavigatingRef.current) {
           e.preventDefault();
 
@@ -399,7 +418,10 @@ export default function AddItem() {
                       {
                         text: t('addEditItem.alerts.discard'),
                         style: 'destructive',
-                        onPress: () => navigation.pop(),
+                        onPress: () => {
+                          isProgrammaticNavigationRef.current = true;
+                          navigation.pop();
+                        },
                       },
                       {
                         text: t('addEditItem.alerts.save'),
@@ -415,6 +437,7 @@ export default function AddItem() {
                     ]
                   );
                 } else {
+                  isProgrammaticNavigationRef.current = true;
                   navigation.pop();
                 }
               }} 
