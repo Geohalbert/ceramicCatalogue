@@ -13,7 +13,7 @@ import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } fro
 
 import AddItemStyles from "./styles/AddItemStyles";
 import { useAddItemHandlers } from "./hooks/useAddItemHandlers";
-import { clayTypeOptions, designTypeOptions, potStatusOptions, glazeTypeOptions } from "../constants/AddItemConstants";
+import { getClayTypeOptions, getDesignTypeOptions, getPotStatusOptions, getGlazeTypeOptions } from "../constants/AddItemConstants";
 
 type AddItemRouteParams = {
   AddItem: {
@@ -426,7 +426,7 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.clayType.label')}</Text>
         <Dropdown
-          options={clayTypeOptions}
+          options={getClayTypeOptions(t)}
           selectedValue={clayType}
           onValueChange={(value) => setClayType(value as ClayType)}
         />
@@ -446,14 +446,14 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.designType.label')}</Text>
         <Dropdown
-          options={designTypeOptions}
+          options={getDesignTypeOptions(t)}
           selectedValue={designType}
           onValueChange={(value) => setDesignType(value as DesignType)}
         />
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.status.label')}</Text>
         <Dropdown
-          options={potStatusOptions}
+          options={getPotStatusOptions(t)}
           selectedValue={potStatus}
           onValueChange={(value) => setPotStatus(value as PotStatus)}
         />
@@ -499,7 +499,7 @@ export default function AddItem() {
 
         <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.glazeType.label')}</Text>
         <Dropdown
-          options={glazeTypeOptions}
+          options={getGlazeTypeOptions(t)}
           selectedValue={glazeType}
           onValueChange={(value) => setGlazeType(value as GlazeType)}
         />
