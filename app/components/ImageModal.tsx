@@ -35,12 +35,15 @@ export default function ImageModal({
   const { colors } = useTheme();
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleText, setTitleText] = useState(image?.title || '');
+  const [originalTitle, setOriginalTitle] = useState<string>('');
   const { width, height } = Dimensions.get('window');
 
   // Update title text when image changes
   useEffect(() => {
     if (image) {
-      setTitleText(image.title || '');
+      const currentTitle = image.title || '';
+      setTitleText(currentTitle);
+      setOriginalTitle(currentTitle);
       setEditingTitle(false);
     }
   }, [image]);
@@ -49,7 +52,79 @@ export default function ImageModal({
 
   const handleSaveTitle = () => {
     onEditTitle(imageIndex, titleText);
+    setOriginalTitle(titleText);
     setEditingTitle(false);
+  };
+
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = () => {
+    return titleText.trim() !== originalTitle.trim();
+  };
+
+  // Handle close with unsaved changes check
+  const handleClose = () => {
+    if (hasUnsavedChanges()) {
+      Alert.alert(
+        t('addEditItem.alerts.unsavedChangesTitle') || 'Unsaved Changes',
+        t('addEditItem.alerts.unsavedChangesMessage') || 'You have unsaved changes. Do you want to save them before leaving?',
+        [
+          {
+            text: t('common.cancel') || 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: t('addEditItem.alerts.discard') || 'Discard Changes',
+            style: 'destructive',
+            onPress: () => {
+              setTitleText(originalTitle);
+              setEditingTitle(false);
+              onClose();
+            },
+          },
+          {
+            text: t('addEditItem.alerts.save') || 'Save',
+            onPress: () => {
+              handleSaveTitle();
+              onClose();
+            },
+          },
+        ]
+      );
+    } else {
+      onClose();
+    }
+  };
+
+  // Handle cancel editing with unsaved changes check
+  const handleCancelEdit = () => {
+    if (hasUnsavedChanges()) {
+      Alert.alert(
+        t('addEditItem.alerts.unsavedChangesTitle') || 'Unsaved Changes',
+        t('addEditItem.alerts.unsavedChangesMessage') || 'You have unsaved changes. Do you want to save them before leaving?',
+        [
+          {
+            text: t('common.cancel') || 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: t('addEditItem.alerts.discard') || 'Discard Changes',
+            style: 'destructive',
+            onPress: () => {
+              setTitleText(originalTitle);
+              setEditingTitle(false);
+            },
+          },
+          {
+            text: t('addEditItem.alerts.save') || 'Save',
+            onPress: () => {
+              handleSaveTitle();
+            },
+          },
+        ]
+      );
+    } else {
+      setEditingTitle(false);
+    }
   };
 
   const handleRemove = () => {
@@ -88,11 +163,11 @@ export default function ImageModal({
       visible={visible}
       transparent={false}
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
       <View style={styles.modalContent}>
         {/* Close Button */}
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
           <Text style={styles.closeButtonText}>×</Text>
         </TouchableOpacity>
 
@@ -147,7 +222,13 @@ export default function ImageModal({
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={[styles.button, styles.editButton]}
-              onPress={() => setEditingTitle(!editingTitle)}
+              onPress={() => {
+                if (editingTitle) {
+                  handleCancelEdit();
+                } else {
+                  setEditingTitle(true);
+                }
+              }}
             >
               <Text style={styles.buttonText}>
                 {editingTitle
