@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Text, View, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
+import { Text, View, TextInput, Button, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform, Keyboard, Alert } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -9,12 +9,11 @@ import Dropdown from "../components/Dropdown";
 import ImageCarousel from "../components/ImageCarousel";
 import ImageModal from "../components/ImageModal";
 import { useAppDispatch } from "../store/hooks";
-import { addPotteryThunk, updatePotteryThunk, deletePotteryThunk } from "../store/potterySlice";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } from "../store/types";
-import { getRemainingTime } from "../services/notificationService";
 
 import AddItemStyles from "./styles/AddItemStyles";
 import { useAddItemHandlers } from "./hooks/useAddItemHandlers";
+import { clayTypeOptions, designTypeOptions, potStatusOptions, glazeTypeOptions } from "../constants/AddItemConstants";
 
 type AddItemRouteParams = {
   AddItem: {
@@ -321,40 +320,6 @@ export default function AddItem() {
   );
 
   const { container, form, label, input, multilineInput } = AddItemStyles;
-
-  // Dropdown options
-  const clayTypeOptions = [
-    { label: t('dropdown.clayTypes.porcelain'), value: "Porcelain" },
-    { label: t('dropdown.clayTypes.cincoRojo'), value: "Cinco Rojo" },
-    { label: t('dropdown.clayTypes.cincoBlanco'), value: "Cinco Blanco" },
-    { label: t('dropdown.clayTypes.buffaloWallow'), value: "Buffalo Wallow" },
-    { label: t('dropdown.clayTypes.darkChocolate'), value: "Dark Chocolate" },
-    { label: t('dropdown.clayTypes.custom'), value: "Custom" },
-    { label: t('dropdown.clayTypes.other'), value: "Other" },
-  ];
-
-  const designTypeOptions = [
-    { label: t('dropdown.designTypes.pot'), value: "Pot" },
-    { label: t('dropdown.designTypes.vase'), value: "Vase" },
-    { label: t('dropdown.designTypes.platter'), value: "Platter" },
-    { label: t('dropdown.designTypes.mug'), value: "Mug" },
-    { label: t('dropdown.designTypes.bowl'), value: "Bowl" },
-    { label: t('dropdown.designTypes.tile'), value: "Tile" },
-    { label: t('dropdown.designTypes.other'), value: "Other" },
-  ];
-
-  const potStatusOptions = [
-    { label: t('dropdown.statuses.inProgress'), value: "In Progress" },
-    { label: t('dropdown.statuses.drying'), value: "Drying" },
-    { label: t('dropdown.statuses.firing'), value: "Firing" },
-    { label: t('dropdown.statuses.finished'), value: "Finished" },
-  ];
-
-  const glazeTypeOptions = [
-    { label: t('dropdown.glazeTypes.noGlaze'), value: "No Glaze" },
-    { label: t('dropdown.glazeTypes.matte'), value: "Matte" },
-    { label: t('dropdown.glazeTypes.gloss'), value: "Gloss" },
-  ];
 
   return (
     <KeyboardAvoidingView 
