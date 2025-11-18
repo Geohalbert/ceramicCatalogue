@@ -1,5 +1,7 @@
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { signOutThunk } from '../store/authSlice';
 import { useTheme } from '../context/ThemeContext';
@@ -8,6 +10,7 @@ import SettingsStyles from './styles/SettingsStyles';
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const dispatch = useAppDispatch();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const { theme, toggleTheme, colors } = useTheme();
@@ -29,6 +32,28 @@ export default function Settings() {
 
   return (
     <View style={[{ flex: 1, backgroundColor: colors.background, padding: 20 }]}>
+      {/* Close Button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          backgroundColor: colors.secondaryBackground,
+          borderRadius: 20,
+          width: 40,
+          height: 40,
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 10,
+          borderWidth: 1,
+          borderColor: colors.border,
+        }}
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.7}
+      >
+        <Text style={{ color: colors.text, fontSize: 24, fontWeight: 'bold' }}>×</Text>
+      </TouchableOpacity>
+
       <Text style={[{ fontSize: 28, fontWeight: 'bold', marginBottom: 30, color: colors.text }]}>
         {t('settings.title')}
       </Text>
