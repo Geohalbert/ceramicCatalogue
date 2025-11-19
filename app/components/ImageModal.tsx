@@ -7,12 +7,12 @@ import {
   TextInput,
   TouchableOpacity,
   Dimensions,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { PotteryImage } from '../store/types';
 import createImageModalStyles from './styles/ImageModalStyles';
+import { useImageModalHandlers } from './hooks/ImageModalHooks';
 
 interface ImageModalProps {
   visible: boolean;
@@ -50,103 +50,24 @@ export default function ImageModal({
 
   if (!image) return null;
 
-  const handleSaveTitle = () => {
-    onEditTitle(imageIndex, titleText);
-    setOriginalTitle(titleText);
-    setEditingTitle(false);
-  };
-
-  // Check if there are unsaved changes
-  const hasUnsavedChanges = () => {
-    return titleText.trim() !== originalTitle.trim();
-  };
-
-  // Handle close with unsaved changes check
-  const handleClose = () => {
-    if (hasUnsavedChanges()) {
-      Alert.alert(
-        t('addEditItem.alerts.unsavedChangesTitle') || 'Unsaved Changes',
-        t('addEditItem.alerts.unsavedChangesMessage') || 'You have unsaved changes. Do you want to save them before leaving?',
-        [
-          {
-            text: t('common.cancel') || 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: t('addEditItem.alerts.discard') || 'Discard Changes',
-            style: 'destructive',
-            onPress: () => {
-              setTitleText(originalTitle);
-              setEditingTitle(false);
-              onClose();
-            },
-          },
-          {
-            text: t('addEditItem.alerts.save') || 'Save',
-            onPress: () => {
-              handleSaveTitle();
-              onClose();
-            },
-          },
-        ]
-      );
-    } else {
-      onClose();
-    }
-  };
-
-  // Handle cancel editing with unsaved changes check
-  const handleCancelEdit = () => {
-    if (hasUnsavedChanges()) {
-      Alert.alert(
-        t('addEditItem.alerts.unsavedChangesTitle') || 'Unsaved Changes',
-        t('addEditItem.alerts.unsavedChangesMessage') || 'You have unsaved changes. Do you want to save them before leaving?',
-        [
-          {
-            text: t('common.cancel') || 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: t('addEditItem.alerts.discard') || 'Discard Changes',
-            style: 'destructive',
-            onPress: () => {
-              setTitleText(originalTitle);
-              setEditingTitle(false);
-            },
-          },
-          {
-            text: t('addEditItem.alerts.save') || 'Save',
-            onPress: () => {
-              handleSaveTitle();
-            },
-          },
-        ]
-      );
-    } else {
-      setEditingTitle(false);
-    }
-  };
-
-  const handleRemove = () => {
-    Alert.alert(
-      t('imageModal.removeTitle') || 'Remove Photo',
-      t('imageModal.removeMessage') || 'Are you sure you want to remove this photo?',
-      [
-        {
-          text: t('common.cancel') || 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: t('common.remove') || 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            onRemove(imageIndex);
-            onClose();
-          },
-        },
-      ]
-    );
-  };
+  const {
+    handleSaveTitle,
+    handleClose,
+    handleCancelEdit,
+    handleRemove,
+  } = useImageModalHandlers({
+    t,
+    imageIndex,
+    titleText,
+    originalTitle,
+    editingTitle,
+    onEditTitle,
+    onRemove,
+    onClose,
+    setTitleText,
+    setOriginalTitle,
+    setEditingTitle,
+  });
 
   const styles = createImageModalStyles({
     background: colors.background,
