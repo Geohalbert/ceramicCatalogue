@@ -174,12 +174,12 @@ export function useAddItemHandlers({
       let notificationId: string | undefined = existingNotificationId;
       const timerStartDate = new Date().toISOString();
 
-      if (existingNotificationId && ((potStatus !== "Firing" && potStatus !== "Drying") || !timerDays)) {
+      if (existingNotificationId && ((potStatus !== "Firing" && potStatus !== "Drying" && potStatus !== "In Progress") || !timerDays)) {
         await cancelPotteryNotification(existingNotificationId);
         notificationId = undefined;
       }
 
-      if ((potStatus === "Firing" || potStatus === "Drying") && timerDays) {
+      if ((potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays) {
         if (existingNotificationId) {
           await cancelPotteryNotification(existingNotificationId);
         }
@@ -207,7 +207,7 @@ export function useAddItemHandlers({
           timerDays: timerDays || undefined,
           timerTime: timerTime || undefined,
           timerStartDate:
-            (potStatus === "Firing" || potStatus === "Drying") && timerDays ? timerStartDate : undefined,
+            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays ? timerStartDate : undefined,
           notes: notes.trim() || undefined,
         };
 
@@ -227,7 +227,7 @@ export function useAddItemHandlers({
           timerDays: timerDays || undefined,
           timerTime: timerTime || undefined,
           timerStartDate:
-            (potStatus === "Firing" || potStatus === "Drying") && timerDays ? timerStartDate : undefined,
+            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays ? timerStartDate : undefined,
           notes: notes.trim() || undefined,
         };
 

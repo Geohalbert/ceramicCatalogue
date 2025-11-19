@@ -214,7 +214,7 @@ export default function AddItem() {
     designType,
     potStatus,
     glazeType,
-    timerDays: useCustomTimer ? (customTimerDays ? parseInt(customTimerDays, 10) : null) : timerDays,
+    timerDays: useCustomTimer ? (customTimerDays !== "" ? parseInt(customTimerDays, 10) : null) : timerDays,
     timerTime: useCustomTimer ? customTimerTime : undefined,
     existingNotificationId,
     setExistingNotificationId,
@@ -483,8 +483,8 @@ export default function AddItem() {
           onValueChange={(value) => setPotStatus(value as PotStatus)}
         />
 
-        {/* Timer for Firing or Drying */}
-        {(potStatus === 'Firing' || potStatus === 'Drying') && (
+        {/* Timer for Firing, Drying, or In Progress */}
+        {(potStatus === 'Firing' || potStatus === 'Drying' || potStatus === 'In Progress') && (
           <View style={{ marginTop: 15, marginBottom: 15 }}>
             <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.timer.label')}</Text>
             
@@ -572,7 +572,7 @@ export default function AddItem() {
                     style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
                     value={customTimerDays}
                     onChangeText={(text) => {
-                      // Only allow numbers
+                      // Only allow numbers (including 0)
                       const numericValue = text.replace(/[^0-9]/g, '');
                       setCustomTimerDays(numericValue);
                     }}
@@ -626,7 +626,7 @@ export default function AddItem() {
                 {t('addEditItem.fields.timer.description', { days: timerDays })}
               </Text>
             )}
-            {useCustomTimer && customTimerDays && customTimerTime && (
+            {useCustomTimer && customTimerDays !== "" && customTimerTime && (
               <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
                 {t('addEditItem.fields.timer.description', { days: customTimerDays })} at {customTimerTime}
               </Text>

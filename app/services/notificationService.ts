@@ -46,11 +46,11 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
 };
 
 /**
- * Schedule a notification for pottery status (Firing or Drying)
+ * Schedule a notification for pottery status (Firing, Drying, or In Progress)
  */
 export const schedulePotteryNotification = async (
   potteryName: string,
-  status: 'Firing' | 'Drying',
+  status: 'Firing' | 'Drying' | 'In Progress',
   days: number,
   time?: string // Optional time in HH:MM format
 ): Promise<string | null> => {
@@ -98,8 +98,10 @@ export const schedulePotteryNotification = async (
 
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
-        title: `${status} Complete! 🎨`,
-        body: `Your pottery "${potteryName}" has finished ${status.toLowerCase()}. Time to check on it!`,
+        title: status === 'In Progress' ? `Timer Complete! 🎨` : `${status} Complete! 🎨`,
+        body: status === 'In Progress' 
+          ? `Your pottery "${potteryName}" timer is complete. Time to check on it!`
+          : `Your pottery "${potteryName}" has finished ${status.toLowerCase()}. Time to check on it!`,
         sound: true,
         priority: Notifications.AndroidNotificationPriority.HIGH,
         data: { potteryName, status },
