@@ -12,7 +12,7 @@ import { useAppDispatch } from "../store/hooks";
 import { ClayType, DesignType, PotStatus, GlazeType, Pottery, PotteryImage } from "../store/types";
 
 import AddItemStyles from "./styles/AddItemStyles";
-import { useAddItemHandlers } from "./hooks/useAddItemHandlers";
+import { useAddItemHandlers } from "./hooks/AddItemHooks";
 import { getClayTypeOptions, getDesignTypeOptions, getPotStatusOptions, getGlazeTypeOptions } from "../constants/AddItemConstants";
 
 type AddItemRouteParams = {
