@@ -51,12 +51,49 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
 export const schedulePotteryNotification = async (
   potteryName: string,
   status: 'Firing' | 'Drying',
-  days: number
+  days: number,
+  time?: string // Optional time in HH:MM format
 ): Promise<string | null> => {
   try {
     const hasPermission = await requestNotificationPermissions();
     if (!hasPermission) {
       throw new Error('Notification permissions not granted');
+    }
+
+    let trigger: Notifications.NotificationTriggerInput;
+
+    if (time) {
+      // Custom timer with specific time
+      const [hours, minutes] = time.split(':').map(Number);
+      const now = new Date();
+      const targetDate = new Date();
+      
+      // Set target date to X days from now
+      targetDate.setDate(now.getDate() + days);
+      targetDate.setHours(hours, minutes, 0, 0);
+
+      // If the target date/time has already passed, add one more day
+      if (targetDate <= now) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
+
+      const secondsUntilNotification = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
+      
+      // Ensure we're scheduling for a future time
+      if (secondsUntilNotification <= 0) {
+        throw new Error('Cannot schedule notification in the past');
+      }
+      
+      trigger = {
+        seconds: secondsUntilNotification,
+        channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
+      };
+    } else {
+      // Simple timer based on days only
+      trigger = {
+        seconds: days * 24 * 60 * 60, // Convert days to seconds
+        channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
+      };
     }
 
     const notificationId = await Notifications.scheduleNotificationAsync({
@@ -67,10 +104,7 @@ export const schedulePotteryNotification = async (
         priority: Notifications.AndroidNotificationPriority.HIGH,
         data: { potteryName, status },
       },
-      trigger: {
-        seconds: days * 24 * 60 * 60, // Convert days to seconds
-        channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
-      },
+      trigger,
     });
 
     console.log(`Notification scheduled with ID: ${notificationId}`);

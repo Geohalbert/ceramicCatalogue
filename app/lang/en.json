@@ -57,7 +57,12 @@
       "timer": {
         "label": "Set Notification Timer (Optional)",
         "days": "day",
-        "description": "You'll receive a notification in {{days}} day(s)"
+        "description": "You'll receive a notification in {{days}} day(s)",
+        "customTimer": "Custom Timer",
+        "customDays": "Days",
+        "customTime": "Time (HH:MM)",
+        "customTimePlaceholder": "14:30",
+        "useCustomTimer": "Use Custom Timer"
       },
       "notes": {
         "label": "Notes (Optional)",

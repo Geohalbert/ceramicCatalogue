@@ -57,7 +57,12 @@
             "timer": {
                 "label": "Configurar Temporizador de Notificación (Opcional)",
                 "days": "día",
-                "description": "Recibirás una notificación en {{days}} día(s)"
+                "description": "Recibirás una notificación en {{days}} día(s)",
+                "customTimer": "Temporizador Personalizado",
+                "customDays": "Días",
+                "customTime": "Hora (HH:MM)",
+                "customTimePlaceholder": "14:30",
+                "useCustomTimer": "Usar Temporizador Personalizado"
             },
             "notes": {
                 "label": "Notas (Opcional)",

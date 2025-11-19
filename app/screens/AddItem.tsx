@@ -34,6 +34,9 @@ export default function AddItem() {
   const [potStatus, setPotStatus] = useState<PotStatus>("In Progress");
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
   const [timerDays, setTimerDays] = useState<number | null>(null);
+  const [useCustomTimer, setUseCustomTimer] = useState(false);
+  const [customTimerDays, setCustomTimerDays] = useState<string>("");
+  const [customTimerTime, setCustomTimerTime] = useState<string>("");
   const [existingNotificationId, setExistingNotificationId] = useState<string | undefined>();
   const [images, setImages] = useState<PotteryImage[]>([]);
   const [notes, setNotes] = useState("");
@@ -57,6 +60,9 @@ export default function AddItem() {
     potStatus: PotStatus;
     glazeType: GlazeType;
     timerDays: number | null;
+    useCustomTimer: boolean;
+    customTimerDays: string;
+    customTimerTime: string;
     images: PotteryImage[];
     notes: string;
   } | null>(null);
@@ -128,6 +134,15 @@ export default function AddItem() {
       setPotStatus(editingPottery.potStatus);
       setGlazeType(editingPottery.glazeType);
       setTimerDays(editingPottery.timerDays || null);
+      if (editingPottery.timerTime) {
+        setUseCustomTimer(true);
+        setCustomTimerTime(editingPottery.timerTime);
+        setCustomTimerDays(editingPottery.timerDays?.toString() || "");
+      } else {
+        setUseCustomTimer(false);
+        setCustomTimerTime("");
+        setCustomTimerDays("");
+      }
       setExistingNotificationId(editingPottery.notificationId);
       
       // Migrate old imageUri to new images array format
@@ -151,6 +166,9 @@ export default function AddItem() {
         potStatus: editingPottery.potStatus,
         glazeType: editingPottery.glazeType,
         timerDays: editingPottery.timerDays || null,
+        useCustomTimer: !!editingPottery.timerTime,
+        customTimerDays: editingPottery.timerDays?.toString() || "",
+        customTimerTime: editingPottery.timerTime || "",
         images: initialImages,
         notes: editingPottery.notes || "",
       };
@@ -165,6 +183,9 @@ export default function AddItem() {
         potStatus: "In Progress",
         glazeType: "No Glaze",
         timerDays: null,
+        useCustomTimer: false,
+        customTimerDays: "",
+        customTimerTime: "",
         images: [],
         notes: "",
       };
@@ -193,7 +214,8 @@ export default function AddItem() {
     designType,
     potStatus,
     glazeType,
-    timerDays,
+    timerDays: useCustomTimer ? (customTimerDays ? parseInt(customTimerDays, 10) : null) : timerDays,
+    timerTime: useCustomTimer ? customTimerTime : undefined,
     existingNotificationId,
     setExistingNotificationId,
     images,
@@ -230,6 +252,9 @@ export default function AddItem() {
     if (potStatus !== initial.potStatus) return true;
     if (glazeType !== initial.glazeType) return true;
     if (timerDays !== initial.timerDays) return true;
+    if (useCustomTimer !== initial.useCustomTimer) return true;
+    if (customTimerDays !== initial.customTimerDays) return true;
+    if (customTimerTime !== initial.customTimerTime) return true;
     if (notes.trim() !== (initial.notes || "").trim()) return true;
 
     // Check images - compare count, URIs, and titles
@@ -240,7 +265,7 @@ export default function AddItem() {
     }
 
     return false;
-  }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, images, notes]);
+  }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, useCustomTimer, customTimerDays, customTimerTime, images, notes]);
 
   // Close modal when navigating back and check for unsaved changes (only for header back button)
   useFocusEffect(
@@ -462,36 +487,148 @@ export default function AddItem() {
         {(potStatus === 'Firing' || potStatus === 'Drying') && (
           <View style={{ marginTop: 15, marginBottom: 15 }}>
             <Text style={[label, { color: colors.text }]}>{t('addEditItem.fields.timer.label')}</Text>
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-              {[1, 2, 3].map((days) => (
-                <TouchableOpacity
-                  key={days}
-                  style={{
-                    flex: 1,
-                    paddingVertical: 12,
-                    paddingHorizontal: 15,
-                    borderRadius: 8,
-                    backgroundColor: timerDays === days ? colors.primary : colors.inputBackground,
-                    borderWidth: 2,
-                    borderColor: timerDays === days ? colors.primary : colors.border,
-                    alignItems: 'center',
-                  }}
-                  onPress={() => setTimerDays(timerDays === days ? null : days)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={{ 
-                    fontSize: 16, 
-                    fontWeight: timerDays === days ? '600' : 'normal',
-                    color: timerDays === days ? '#fff' : colors.text 
-                  }}>
-                    {days} {t('addEditItem.fields.timer.days')}
+            
+            {/* Quick Timer Buttons */}
+            {!useCustomTimer && (
+              <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
+                {[1, 2, 3].map((days) => (
+                  <TouchableOpacity
+                    key={days}
+                    style={{
+                      flex: 1,
+                      paddingVertical: 12,
+                      paddingHorizontal: 15,
+                      borderRadius: 8,
+                      backgroundColor: timerDays === days ? colors.primary : colors.inputBackground,
+                      borderWidth: 2,
+                      borderColor: timerDays === days ? colors.primary : colors.border,
+                      alignItems: 'center',
+                    }}
+                    onPress={() => {
+                      setTimerDays(timerDays === days ? null : days);
+                      setUseCustomTimer(false);
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={{ 
+                      fontSize: 16, 
+                      fontWeight: timerDays === days ? '600' : 'normal',
+                      color: timerDays === days ? '#fff' : colors.text 
+                    }}>
+                      {days} {t('addEditItem.fields.timer.days')}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+            
+            {/* Custom Timer Toggle */}
+            <TouchableOpacity
+              style={{
+                marginTop: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 15,
+                borderRadius: 8,
+                backgroundColor: useCustomTimer ? colors.primary : colors.inputBackground,
+                borderWidth: 2,
+                borderColor: useCustomTimer ? colors.primary : colors.border,
+                alignItems: 'center',
+              }}
+              onPress={() => {
+                setUseCustomTimer(!useCustomTimer);
+                if (!useCustomTimer) {
+                  // When enabling custom timer, clear quick timer
+                  setTimerDays(null);
+                  // Set default time to current time + 1 hour
+                  const now = new Date();
+                  now.setHours(now.getHours() + 1);
+                  setCustomTimerTime(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+                  setCustomTimerDays("1");
+                } else {
+                  // When disabling custom timer, clear custom fields
+                  setCustomTimerDays("");
+                  setCustomTimerTime("");
+                }
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ 
+                fontSize: 16, 
+                fontWeight: useCustomTimer ? '600' : 'normal',
+                color: useCustomTimer ? '#fff' : colors.text 
+              }}>
+                {t('addEditItem.fields.timer.useCustomTimer')}
+              </Text>
+            </TouchableOpacity>
+            
+            {/* Custom Timer Inputs */}
+            {useCustomTimer && (
+              <View style={{ marginTop: 10, gap: 10 }}>
+                <View>
+                  <Text style={[label, { color: colors.text, fontSize: 14, marginBottom: 5 }]}>
+                    {t('addEditItem.fields.timer.customDays')}
                   </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {timerDays && (
+                  <TextInput
+                    style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+                    value={customTimerDays}
+                    onChangeText={(text) => {
+                      // Only allow numbers
+                      const numericValue = text.replace(/[^0-9]/g, '');
+                      setCustomTimerDays(numericValue);
+                    }}
+                    placeholder="1"
+                    placeholderTextColor={colors.placeholder}
+                    keyboardType="numeric"
+                  />
+                </View>
+                
+                <View>
+                  <Text style={[label, { color: colors.text, fontSize: 14, marginBottom: 5 }]}>
+                    {t('addEditItem.fields.timer.customTime')}
+                  </Text>
+                  <TextInput
+                    style={[input, { backgroundColor: colors.inputBackground, borderColor: colors.border, color: colors.text }]}
+                    value={customTimerTime}
+                    onChangeText={(text) => {
+                      // Format as HH:MM
+                      let formatted = text.replace(/[^0-9]/g, '');
+                      if (formatted.length >= 3) {
+                        formatted = formatted.slice(0, 2) + ':' + formatted.slice(2, 4);
+                      }
+                      if (formatted.length === 2 && !formatted.includes(':')) {
+                        formatted = formatted + ':';
+                      }
+                      // Validate hours (0-23) and minutes (0-59)
+                      const parts = formatted.split(':');
+                      if (parts.length === 2) {
+                        const hours = parseInt(parts[0], 10);
+                        const minutes = parseInt(parts[1], 10);
+                        if (hours > 23) {
+                          formatted = '23:' + (minutes > 59 ? '59' : parts[1]);
+                        } else if (minutes > 59) {
+                          formatted = parts[0] + ':59';
+                        }
+                      }
+                      setCustomTimerTime(formatted);
+                    }}
+                    placeholder={t('addEditItem.fields.timer.customTimePlaceholder')}
+                    placeholderTextColor={colors.placeholder}
+                    keyboardType="numeric"
+                    maxLength={5}
+                  />
+                </View>
+              </View>
+            )}
+            
+            {/* Timer Description */}
+            {timerDays && !useCustomTimer && (
               <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
                 {t('addEditItem.fields.timer.description', { days: timerDays })}
+              </Text>
+            )}
+            {useCustomTimer && customTimerDays && customTimerTime && (
+              <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
+                {t('addEditItem.fields.timer.description', { days: customTimerDays })} at {customTimerTime}
               </Text>
             )}
           </View>

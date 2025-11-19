@@ -22,6 +22,7 @@ interface UseAddItemHandlersArgs {
   potStatus: PotStatus;
   glazeType: GlazeType;
   timerDays: number | null;
+  timerTime?: string; // Optional time in HH:MM format
   existingNotificationId?: string;
   setExistingNotificationId: (id: string | undefined) => void;
   images: PotteryImage[];
@@ -44,6 +45,7 @@ export function useAddItemHandlers({
   potStatus,
   glazeType,
   timerDays,
+  timerTime,
   existingNotificationId,
   setExistingNotificationId,
   images,
@@ -182,7 +184,7 @@ export function useAddItemHandlers({
           await cancelPotteryNotification(existingNotificationId);
         }
 
-        const newNotificationId = await schedulePotteryNotification(potName.trim(), potStatus, timerDays);
+        const newNotificationId = await schedulePotteryNotification(potName.trim(), potStatus, timerDays, timerTime);
 
         if (newNotificationId) {
           notificationId = newNotificationId;
@@ -203,6 +205,7 @@ export function useAddItemHandlers({
           imageUri: images.length > 0 ? images[0].uri : undefined,
           notificationId,
           timerDays: timerDays || undefined,
+          timerTime: timerTime || undefined,
           timerStartDate:
             (potStatus === "Firing" || potStatus === "Drying") && timerDays ? timerStartDate : undefined,
           notes: notes.trim() || undefined,
@@ -222,6 +225,7 @@ export function useAddItemHandlers({
           imageUri: images.length > 0 ? images[0].uri : undefined,
           notificationId,
           timerDays: timerDays || undefined,
+          timerTime: timerTime || undefined,
           timerStartDate:
             (potStatus === "Firing" || potStatus === "Drying") && timerDays ? timerStartDate : undefined,
           notes: notes.trim() || undefined,

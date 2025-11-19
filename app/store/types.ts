@@ -14,7 +14,8 @@ export interface Pottery {
   imageUri?: string; // Deprecated: kept for backward compatibility
   images?: PotteryImage[]; // Array of up to 3 images with optional titles
   notificationId?: string; // ID of scheduled notification
-  timerDays?: number; // Number of days for the timer (1, 2, or 3)
+  timerDays?: number; // Number of days for the timer (can be any number for custom timer)
+  timerTime?: string; // Time in HH:MM format for custom timer notification
   timerStartDate?: string; // ISO string of when timer was set
   notes?: string; // Optional notes about the pottery
 }
