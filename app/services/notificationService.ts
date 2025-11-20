@@ -4,7 +4,8 @@ import { Platform } from 'react-native';
 // Configure notification behavior
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
   }),
@@ -64,23 +65,22 @@ export const schedulePotteryNotification = async (
     let trigger: Notifications.NotificationTriggerInput;
 
     if (isMinutes) {
-      // Timer based on minutes - use Date object for more reliable scheduling
+      // Timer based on minutes - use seconds for more reliable scheduling
       if (duration <= 0) {
         throw new Error('Cannot schedule notification with zero or negative minutes');
       }
-      const now = new Date();
-      const targetDate = new Date(now.getTime() + duration * 60 * 1000); // Add minutes in milliseconds
-      const seconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
-      console.log(`Scheduling minute-based notification: ${duration} minutes, target date: ${targetDate.toISOString()}, seconds until: ${seconds}, now: ${now.toISOString()}`);
+      const seconds = duration * 60; // Convert minutes to seconds
+      console.log(`Scheduling minute-based notification: ${duration} minutes = ${seconds} seconds`);
       if (seconds <= 0) {
-        throw new Error(`Invalid seconds calculation: ${seconds}. Target date: ${targetDate.toISOString()}, Now: ${now.toISOString()}`);
+        throw new Error(`Invalid seconds calculation: ${seconds}`);
       }
       // Ensure minimum 1 second delay to prevent immediate notification
       if (seconds < 1) {
         throw new Error('Notification must be scheduled for at least 1 second in the future');
       }
       trigger = {
-        date: targetDate,
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: seconds,
         channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
       };
     } else if (time) {
@@ -113,6 +113,7 @@ export const schedulePotteryNotification = async (
       
       // Use Date object for more reliable scheduling
       trigger = {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: targetDate,
         channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
       };
@@ -136,6 +137,7 @@ export const schedulePotteryNotification = async (
         throw new Error('Notification must be scheduled for at least 1 second in the future');
       }
       trigger = {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
         date: targetDate,
         channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
       };
