@@ -15,6 +15,7 @@ export interface Pottery {
   images?: PotteryImage[]; // Array of up to 3 images with optional titles
   notificationId?: string; // ID of scheduled notification
   timerDays?: number; // Number of days for the timer (can be any number for custom timer)
+  timerMinutes?: number; // Number of minutes for short timers (e.g., 2 minutes)
   timerTime?: string; // Time in HH:MM format for custom timer notification
   timerStartDate?: string; // ISO string of when timer was set
   notes?: string; // Optional notes about the pottery

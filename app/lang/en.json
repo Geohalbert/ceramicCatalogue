@@ -57,7 +57,9 @@
       "timer": {
         "label": "Set Notification Timer (Optional)",
         "days": "day",
+        "minutes": "minutes",
         "description": "You'll receive a notification in {{days}} day(s)",
+        "minutesDescription": "You'll receive a notification in {{minutes}} minute(s)",
         "customTimer": "Custom Timer",
         "customDays": "Days",
         "customTime": "Time (HH:MM)",

@@ -22,6 +22,7 @@ interface UseAddItemHandlersArgs {
   potStatus: PotStatus;
   glazeType: GlazeType;
   timerDays: number | null;
+  timerMinutes?: number | null; // Optional minutes for short timers
   timerTime?: string; // Optional time in HH:MM format
   existingNotificationId?: string;
   setExistingNotificationId: (id: string | undefined) => void;
@@ -45,6 +46,7 @@ export function useAddItemHandlers({
   potStatus,
   glazeType,
   timerDays,
+  timerMinutes,
   timerTime,
   existingNotificationId,
   setExistingNotificationId,
@@ -174,17 +176,60 @@ export function useAddItemHandlers({
       let notificationId: string | undefined = existingNotificationId;
       const timerStartDate = new Date().toISOString();
 
-      if (existingNotificationId && ((potStatus !== "Firing" && potStatus !== "Drying" && potStatus !== "In Progress") || !timerDays)) {
+      if (existingNotificationId && ((potStatus !== "Firing" && potStatus !== "Drying" && potStatus !== "In Progress") || (timerDays === null && timerMinutes === null))) {
         await cancelPotteryNotification(existingNotificationId);
         notificationId = undefined;
       }
 
-      if ((potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays) {
+      // Only schedule if we have a valid timer value (not null, and > 0 unless using custom time)
+      const hasValidTimer = (timerMinutes !== null && timerMinutes !== undefined && timerMinutes > 0) || 
+                           (timerDays !== null && timerDays !== undefined && timerDays > 0) ||
+                           (timerDays === 0 && timerTime); // 0 days is valid with custom time
+      
+      if ((potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && hasValidTimer) {
         if (existingNotificationId) {
           await cancelPotteryNotification(existingNotificationId);
         }
 
-        const newNotificationId = await schedulePotteryNotification(potName.trim(), potStatus, timerDays, timerTime);
+        // Determine duration and whether it's in minutes
+        let duration: number;
+        let isMinutes: boolean;
+        
+        if (timerMinutes !== null && timerMinutes !== undefined) {
+          duration = timerMinutes;
+          isMinutes = true;
+          // Validate minutes
+          if (duration <= 0) {
+            console.warn('Cannot schedule notification with zero or negative minutes');
+            return;
+          }
+        } else if (timerDays !== null && timerDays !== undefined) {
+          duration = timerDays;
+          isMinutes = false;
+          // Validate days - 0 days is only valid with custom time
+          if (duration === 0 && !timerTime) {
+            console.warn('Cannot schedule notification for 0 days without a custom time');
+            return;
+          }
+          if (duration < 0) {
+            console.warn('Cannot schedule notification with negative days');
+            return;
+          }
+        } else {
+          // Should not reach here due to condition above, but handle gracefully
+          console.warn('Attempted to schedule notification with no timer value');
+          return;
+        }
+
+        console.log(`Scheduling notification: duration=${duration}, isMinutes=${isMinutes}, time=${timerTime || 'none'}`);
+
+        const newNotificationId = await schedulePotteryNotification(
+          potName.trim(), 
+          potStatus, 
+          duration, 
+          timerTime,
+          isMinutes
+        );
 
         if (newNotificationId) {
           notificationId = newNotificationId;
@@ -205,9 +250,10 @@ export function useAddItemHandlers({
           imageUri: images.length > 0 ? images[0].uri : undefined,
           notificationId,
           timerDays: timerDays || undefined,
+          timerMinutes: timerMinutes || undefined,
           timerTime: timerTime || undefined,
           timerStartDate:
-            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays ? timerStartDate : undefined,
+            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && (timerDays || timerMinutes) ? timerStartDate : undefined,
           notes: notes.trim() || undefined,
         };
 
@@ -225,9 +271,10 @@ export function useAddItemHandlers({
           imageUri: images.length > 0 ? images[0].uri : undefined,
           notificationId,
           timerDays: timerDays || undefined,
+          timerMinutes: timerMinutes || undefined,
           timerTime: timerTime || undefined,
           timerStartDate:
-            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && timerDays ? timerStartDate : undefined,
+            (potStatus === "Firing" || potStatus === "Drying" || potStatus === "In Progress") && (timerDays || timerMinutes) ? timerStartDate : undefined,
           notes: notes.trim() || undefined,
         };
 

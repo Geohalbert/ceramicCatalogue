@@ -34,6 +34,7 @@ export default function AddItem() {
   const [potStatus, setPotStatus] = useState<PotStatus>("In Progress");
   const [glazeType, setGlazeType] = useState<GlazeType>("No Glaze");
   const [timerDays, setTimerDays] = useState<number | null>(null);
+  const [timerMinutes, setTimerMinutes] = useState<number | null>(null);
   const [useCustomTimer, setUseCustomTimer] = useState(false);
   const [customTimerDays, setCustomTimerDays] = useState<string>("");
   const [customTimerTime, setCustomTimerTime] = useState<string>("");
@@ -60,6 +61,7 @@ export default function AddItem() {
     potStatus: PotStatus;
     glazeType: GlazeType;
     timerDays: number | null;
+    timerMinutes: number | null;
     useCustomTimer: boolean;
     customTimerDays: string;
     customTimerTime: string;
@@ -134,6 +136,14 @@ export default function AddItem() {
       setPotStatus(editingPottery.potStatus);
       setGlazeType(editingPottery.glazeType);
       setTimerDays(editingPottery.timerDays || null);
+      setTimerMinutes(editingPottery.timerMinutes || null);
+      // Clear timerMinutes if timerDays is set and vice versa
+      if (editingPottery.timerDays) {
+        setTimerMinutes(null);
+      }
+      if (editingPottery.timerMinutes) {
+        setTimerDays(null);
+      }
       if (editingPottery.timerTime) {
         setUseCustomTimer(true);
         setCustomTimerTime(editingPottery.timerTime);
@@ -166,6 +176,7 @@ export default function AddItem() {
         potStatus: editingPottery.potStatus,
         glazeType: editingPottery.glazeType,
         timerDays: editingPottery.timerDays || null,
+        timerMinutes: editingPottery.timerMinutes || null,
         useCustomTimer: !!editingPottery.timerTime,
         customTimerDays: editingPottery.timerDays?.toString() || "",
         customTimerTime: editingPottery.timerTime || "",
@@ -183,6 +194,7 @@ export default function AddItem() {
         potStatus: "In Progress",
         glazeType: "No Glaze",
         timerDays: null,
+        timerMinutes: null,
         useCustomTimer: false,
         customTimerDays: "",
         customTimerTime: "",
@@ -214,7 +226,8 @@ export default function AddItem() {
     designType,
     potStatus,
     glazeType,
-    timerDays: useCustomTimer ? (customTimerDays !== "" ? parseInt(customTimerDays, 10) : null) : timerDays,
+    timerDays: useCustomTimer ? (customTimerDays !== "" ? parseInt(customTimerDays, 10) : null) : (timerMinutes ? null : timerDays),
+    timerMinutes: timerMinutes,
     timerTime: useCustomTimer ? customTimerTime : undefined,
     existingNotificationId,
     setExistingNotificationId,
@@ -252,6 +265,7 @@ export default function AddItem() {
     if (potStatus !== initial.potStatus) return true;
     if (glazeType !== initial.glazeType) return true;
     if (timerDays !== initial.timerDays) return true;
+    if (timerMinutes !== initial.timerMinutes) return true;
     if (useCustomTimer !== initial.useCustomTimer) return true;
     if (customTimerDays !== initial.customTimerDays) return true;
     if (customTimerTime !== initial.customTimerTime) return true;
@@ -265,7 +279,7 @@ export default function AddItem() {
     }
 
     return false;
-  }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, useCustomTimer, customTimerDays, customTimerTime, images, notes]);
+  }, [potName, clayType, dateCreated, designType, potStatus, glazeType, timerDays, timerMinutes, useCustomTimer, customTimerDays, customTimerTime, images, notes]);
 
   // Close modal when navigating back and check for unsaved changes (only for header back button)
   useFocusEffect(
@@ -490,35 +504,65 @@ export default function AddItem() {
             
             {/* Quick Timer Buttons */}
             {!useCustomTimer && (
-              <View style={{ flexDirection: 'row', gap: 10, marginTop: 5 }}>
-                {[1, 2, 3].map((days) => (
-                  <TouchableOpacity
-                    key={days}
-                    style={{
-                      flex: 1,
-                      paddingVertical: 12,
-                      paddingHorizontal: 15,
-                      borderRadius: 8,
-                      backgroundColor: timerDays === days ? colors.primary : colors.inputBackground,
-                      borderWidth: 2,
-                      borderColor: timerDays === days ? colors.primary : colors.border,
-                      alignItems: 'center',
-                    }}
-                    onPress={() => {
-                      setTimerDays(timerDays === days ? null : days);
-                      setUseCustomTimer(false);
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={{ 
-                      fontSize: 16, 
-                      fontWeight: timerDays === days ? '600' : 'normal',
-                      color: timerDays === days ? '#fff' : colors.text 
-                    }}>
-                      {days} {t('addEditItem.fields.timer.days')}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+              <View style={{ marginTop: 5 }}>
+                {/* Day Buttons */}
+                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 10 }}>
+                  {[1, 2, 3].map((days) => (
+                    <TouchableOpacity
+                      key={days}
+                      style={{
+                        flex: 1,
+                        paddingVertical: 12,
+                        paddingHorizontal: 15,
+                        borderRadius: 8,
+                        backgroundColor: timerDays === days ? colors.primary : colors.inputBackground,
+                        borderWidth: 2,
+                        borderColor: timerDays === days ? colors.primary : colors.border,
+                        alignItems: 'center',
+                      }}
+                      onPress={() => {
+                        setTimerDays(timerDays === days ? null : days);
+                        setTimerMinutes(null);
+                        setUseCustomTimer(false);
+                      }}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={{ 
+                        fontSize: 16, 
+                        fontWeight: timerDays === days ? '600' : 'normal',
+                        color: timerDays === days ? '#fff' : colors.text 
+                      }}>
+                        {days} {t('addEditItem.fields.timer.days')}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                {/* 2 Minutes Button */}
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: 12,
+                    paddingHorizontal: 15,
+                    borderRadius: 8,
+                    backgroundColor: timerMinutes === 2 ? colors.primary : colors.inputBackground,
+                    borderWidth: 2,
+                    borderColor: timerMinutes === 2 ? colors.primary : colors.border,
+                    alignItems: 'center',
+                  }}
+                  onPress={() => {
+                    setTimerMinutes(timerMinutes === 2 ? null : 2);
+                    setTimerDays(null);
+                    setUseCustomTimer(false);
+                  }}
+                  activeOpacity={0.7}
+                >
+                  <Text style={{ 
+                    fontSize: 16, 
+                    fontWeight: timerMinutes === 2 ? '600' : 'normal',
+                    color: timerMinutes === 2 ? '#fff' : colors.text 
+                  }}>
+                    2 {t('addEditItem.fields.timer.minutes') || 'minutes'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             )}
             
@@ -624,6 +668,11 @@ export default function AddItem() {
             {timerDays && !useCustomTimer && (
               <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
                 {t('addEditItem.fields.timer.description', { days: timerDays })}
+              </Text>
+            )}
+            {timerMinutes && !useCustomTimer && (
+              <Text style={{ fontSize: 12, color: colors.secondaryText, marginTop: 8 }}>
+                {t('addEditItem.fields.timer.minutesDescription', { minutes: timerMinutes }) || `You'll receive a notification in ${timerMinutes} minute(s)`}
               </Text>
             )}
             {useCustomTimer && customTimerDays !== "" && customTimerTime && (

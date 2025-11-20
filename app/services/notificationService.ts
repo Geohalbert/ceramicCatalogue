@@ -51,8 +51,9 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
 export const schedulePotteryNotification = async (
   potteryName: string,
   status: 'Firing' | 'Drying' | 'In Progress',
-  days: number,
-  time?: string // Optional time in HH:MM format
+  duration: number, // Duration in days or minutes
+  time?: string, // Optional time in HH:MM format
+  isMinutes?: boolean // If true, duration is in minutes; if false, duration is in days
 ): Promise<string | null> => {
   try {
     const hasPermission = await requestNotificationPermissions();
@@ -62,14 +63,34 @@ export const schedulePotteryNotification = async (
 
     let trigger: Notifications.NotificationTriggerInput;
 
-    if (time) {
+    if (isMinutes) {
+      // Timer based on minutes - use Date object for more reliable scheduling
+      if (duration <= 0) {
+        throw new Error('Cannot schedule notification with zero or negative minutes');
+      }
+      const now = new Date();
+      const targetDate = new Date(now.getTime() + duration * 60 * 1000); // Add minutes in milliseconds
+      const seconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
+      console.log(`Scheduling minute-based notification: ${duration} minutes, target date: ${targetDate.toISOString()}, seconds until: ${seconds}, now: ${now.toISOString()}`);
+      if (seconds <= 0) {
+        throw new Error(`Invalid seconds calculation: ${seconds}. Target date: ${targetDate.toISOString()}, Now: ${now.toISOString()}`);
+      }
+      // Ensure minimum 1 second delay to prevent immediate notification
+      if (seconds < 1) {
+        throw new Error('Notification must be scheduled for at least 1 second in the future');
+      }
+      trigger = {
+        date: targetDate,
+        channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
+      };
+    } else if (time) {
       // Custom timer with specific time
       const [hours, minutes] = time.split(':').map(Number);
       const now = new Date();
       const targetDate = new Date();
       
       // Set target date to X days from now
-      targetDate.setDate(now.getDate() + days);
+      targetDate.setDate(now.getDate() + duration);
       targetDate.setHours(hours, minutes, 0, 0);
 
       // If the target date/time has already passed, add one more day
@@ -79,23 +100,49 @@ export const schedulePotteryNotification = async (
 
       const secondsUntilNotification = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
       
+      console.log(`Scheduling custom time notification: ${duration} days, time ${time}, target date: ${targetDate.toISOString()}, seconds until: ${secondsUntilNotification}, now: ${now.toISOString()}`);
+      
       // Ensure we're scheduling for a future time
       if (secondsUntilNotification <= 0) {
-        throw new Error('Cannot schedule notification in the past');
+        throw new Error(`Cannot schedule notification in the past. Seconds: ${secondsUntilNotification}, Target: ${targetDate.toISOString()}, Now: ${now.toISOString()}`);
+      }
+      // Ensure minimum 1 second delay to prevent immediate notification
+      if (secondsUntilNotification < 1) {
+        throw new Error('Notification must be scheduled for at least 1 second in the future');
       }
       
+      // Use Date object for more reliable scheduling
       trigger = {
-        seconds: secondsUntilNotification,
+        date: targetDate,
         channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
       };
     } else {
-      // Simple timer based on days only
+      // Simple timer based on days only - use Date object for more reliable scheduling
+      if (duration < 0) {
+        throw new Error('Cannot schedule notification with negative days');
+      }
+      if (duration === 0) {
+        throw new Error('Cannot schedule notification for 0 days without a custom time');
+      }
+      const now = new Date();
+      const targetDate = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000); // Add days in milliseconds
+      const seconds = Math.floor((targetDate.getTime() - now.getTime()) / 1000);
+      console.log(`Scheduling day-based notification: ${duration} days, target date: ${targetDate.toISOString()}, seconds until: ${seconds}, now: ${now.toISOString()}`);
+      if (seconds <= 0) {
+        throw new Error(`Invalid seconds calculation: ${seconds}. Target date: ${targetDate.toISOString()}, Now: ${now.toISOString()}`);
+      }
+      // Ensure minimum 1 second delay to prevent immediate notification
+      if (seconds < 1) {
+        throw new Error('Notification must be scheduled for at least 1 second in the future');
+      }
       trigger = {
-        seconds: days * 24 * 60 * 60, // Convert days to seconds
+        date: targetDate,
         channelId: Platform.OS === 'android' ? 'pottery-timers' : undefined,
       };
     }
 
+    console.log(`Final trigger object:`, JSON.stringify(trigger, null, 2));
+    
     const notificationId = await Notifications.scheduleNotificationAsync({
       content: {
         title: status === 'In Progress' ? `Timer Complete! 🎨` : `${status} Complete! 🎨`,
@@ -109,7 +156,7 @@ export const schedulePotteryNotification = async (
       trigger,
     });
 
-    console.log(`Notification scheduled with ID: ${notificationId}`);
+    console.log(`Notification scheduled with ID: ${notificationId}, trigger:`, trigger);
     return notificationId;
   } catch (error) {
     console.error('Error scheduling notification:', error);
