@@ -3,11 +3,11 @@ import { StyleSheet } from 'react-native';
 const SettingsButtonStyles = StyleSheet.create({
   button: {
     backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 8,
-    borderWidth: 1,
     borderColor: '#ddd',
+    borderRadius: 20,
+    borderWidth: 1,
     elevation: 2,
+    padding: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

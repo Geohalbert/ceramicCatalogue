@@ -39,21 +39,21 @@ const PotteryTileStyles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600"
   },
+  timerBadge: {
+    borderRadius: 6,
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  timerText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '600',
+  },
   type: {
     color: "#666",
     fontSize: 14,
     marginBottom: 2
-  },
-  timerBadge: {
-    marginTop: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-  },
-  timerText: {
-    fontSize: 10,
-    color: '#fff',
-    fontWeight: '600',
   },
 });
 

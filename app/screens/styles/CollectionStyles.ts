@@ -21,40 +21,40 @@ const CollectionStyles = StyleSheet.create({
         fontWeight: "600",
         marginBottom: 8
     },
+    hamburgerButton: {
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderColor: '#ddd',
+        borderRadius: 8,
+        borderWidth: 1,
+        height: 48,
+        justifyContent: 'center',
+        width: 48,
+    },
+    hamburgerIcon: {
+        color: '#333',
+        fontSize: 24,
+    },
     listContainer: {
         paddingBottom: 16
+    },
+    storageIndicator: {
+        alignSelf: 'center',
+        backgroundColor: '#f0f0f0',
+        borderRadius: 6,
+        marginBottom: 15,
+        padding: 8,
+    },
+    storageIndicatorText: {
+        color: '#666',
+        fontSize: 12,
+        fontWeight: '500',
     },
     title: {
         color: "#333",
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 16
-    },
-    storageIndicator: {
-        backgroundColor: '#f0f0f0',
-        padding: 8,
-        borderRadius: 6,
-        marginBottom: 15,
-        alignSelf: 'center',
-    },
-    storageIndicatorText: {
-        fontSize: 12,
-        color: '#666',
-        fontWeight: '500',
-    },
-    hamburgerButton: {
-        width: 48,
-        height: 48,
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#ddd',
-    },
-    hamburgerIcon: {
-        fontSize: 24,
-        color: '#333',
     }
 });
 

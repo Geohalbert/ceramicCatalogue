@@ -2,14 +2,14 @@ import { StyleSheet } from 'react-native';
 
 const TopBarStyles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
+    alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    left: 0,
     paddingHorizontal: 10,
+    position: 'absolute',
+    right: 0,
+    top: 40,
     zIndex: 10,
   },
 });

@@ -33,9 +33,9 @@ const HomeStyles = StyleSheet.create({
     container: {
         alignItems: "center",
         flexGrow: 1,
+        paddingBottom: 20,
         paddingHorizontal: 20,
-        paddingTop: 40,
-        paddingBottom: 20
+        paddingTop: 40
     },
     dividerContainer: {
         alignItems: "center",
